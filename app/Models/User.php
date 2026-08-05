@@ -14,5 +14,20 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Model
 {
-    use HasUuids;
+    use HasUuids, HasFactory;
+    
+    protected $table = 'users';
+    protected $keyType = 'string';
+    public $incrementing = false;
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+
 }
