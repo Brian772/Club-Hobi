@@ -14,12 +14,8 @@ return new class extends Migration
         Schema::create('clubs', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->string('category')->nullable();
-            $table->string('privacy_type');
-            $table->integer('max_number');
-
-            $table->foreignUuid('created_by')->constrained('users')->cascadeOnDelete();
-            $table->timestamps();
+            $table->string('category');
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

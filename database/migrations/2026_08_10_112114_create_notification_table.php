@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('announcements', function (Blueprint $table) {
+        Schema::create('notification', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('club_id')->constrained('clubs')->cascadeOnDelete();
-            $table->foreignUuid('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->text('content');
+            $table->enum('type', ['message', 'report', 'account_status', 'comment', 'other']);
+            $table->uuid('source_id')->nullable();
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('announcements');
+        Schema::dropIfExists('notification');
     }
 };

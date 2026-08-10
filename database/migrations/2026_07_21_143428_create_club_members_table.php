@@ -13,10 +13,8 @@ return new class extends Migration
     {
         Schema::create('club_members', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('club_id')->constrained('clubs')->cascadeOnDelete();
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('role_in_club');
-            $table->string('status');
+            $table->foreignUuid('club_id')->constrained('clubs')->onDelete('cascade');
+            $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamp('joined_at')->useCurrent();
         });
     }

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('sender_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('receiver_id')->constrained('users')->cascadeOnDelete();
-            $table->string('content');
+            $table->foreignUuid('sender_id')->constrained('users')->onDelete('cascade');
+            $table->foreignUuid('receiver_id')->constrained('users')->onDelete('cascade');
+            $table->text('content');
             $table->boolean('is_read')->default(false);
             $table->timestamp('send_at')->useCurrent();
         });

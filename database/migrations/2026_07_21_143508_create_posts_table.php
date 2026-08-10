@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('club_id')->constrained('clubs')->cascadeOnDelete();
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('club_id')->constrained('clubs')->onDelete('cascade');
+            $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('title');
             $table->text('content');
             $table->string('media_url')->nullable();
+            $table->boolean('is_announcement')->default(false);
             $table->timestamps();
         });
     }

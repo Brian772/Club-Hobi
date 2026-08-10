@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media_gallery', function (Blueprint $table) {
+        Schema::create('club_file', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('club_id')->constrained('clubs')->cascadeOnDelete();
-            $table->foreignUuid('uploaded_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('club_id')->constrained('clubs')->onDelete('cascade');
+            $table->foreignUuid('uploaded_by')->constrained('users')->onDelete('cascade');
+            $table->string('title');
             $table->string('file_url');
-            $table->string('type');
+            $table->enum('type', ['image', 'video', 'document']);
             $table->timestamp('uploaded_at')->useCurrent();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('media_gallery');
+        Schema::dropIfExists('club_file');
     }
 };

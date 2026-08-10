@@ -16,10 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password_hash');
-            $table->string('phone')->nullable();
             $table->string('avatar_url')->nullable();
-            $table->string('role_global')->default('user');
-            $table->boolean('is_verified')->default(false);
+            $table->text('bio')->nullable();
+            $table->enum('role', ['admin', 'member'])->default('member');
+            $table->enum('status', ['active', 'suspended', 'banned'])->default('active');
+            $table->timestamp('suspend_until')->nullable();
             $table->timestamps();
         });
     }

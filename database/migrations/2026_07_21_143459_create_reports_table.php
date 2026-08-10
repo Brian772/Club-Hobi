@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('reporter_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('reported_user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('content_type');
+            $table->foreignUuid('reporter_id')->constrained('users')->onDelete('cascade');
+            $table->foreignUuid('reported_user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->enum('content_type', ['post', 'comment', 'message', 'user']);
             $table->uuid('content_id');
-            $table->string('reason');
-            $table->string('status')->default('pending');
+            $table->text('reason');
+            $table->enum('status', ['pending', 'resolved', 'ignored'])->default('pending');
             $table->timestamps();
         });
     }
