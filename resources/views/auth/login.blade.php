@@ -1,47 +1,89 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.app')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+{{-- Memanggil CSS dari resources/css/auth.css --}}
+@vite(['resources/css/auth.css'])
+@endsection
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+@section('content')
+<div class="halaman1">
+<div class="page">
+    <div class="container-auth">
+        <div class="left">
+            <h1 class="title">
+                Welcome Back To Orbii
+            </h1>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <form method="POST" action="{{ route('login.authenticate') }}" class="form">
+                @csrf
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ old('email') }}"
+                        placeholder="Example@example.com"
+                        required
+                        autofocus>
+                    @error('email')
+                        <small class="error-text">{{ $message }}</small>
+                    @enderror
+                </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="********"
+                        required>
+                    @error('password')
+                        <small class="error-text">{{ $message }}</small>
+                    @enderror
+                </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+                <button type="submit" class="button">
+                    Login
+                </button>
+            </form>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+            <div class="divider">
+                <span>Login With SSO</span>
+            </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+            <div class="social-login">
+                <a href="{{ route('auth.google') }}" class="social-button">
+                    <img
+                        src="https://www.svgrepo.com/show/475656/google-color.svg"
+                        alt="Google">
+                    <span>Continue With Google</span>
                 </a>
-            @endif
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
+                <a href="{{ route('auth.facebook') }}" class="social-button">
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
+                        alt="Facebook">
+                    <span>Continue With Facebook</span>
+                </a>
+            </div>
+
+            <p class="register-text">
+                Don't have an account yet?
+                <a href="{{ route('register') }}">
+                    Register now
+                </a>
+            </p>
         </div>
-    </form>
-</x-guest-layout>
+
+        <div class="right">
+            <img
+                src="{{ asset('images/pana.png') }}"
+                alt="Login Illustration">
+        </div>
+    </div>
+</div>
+</div>
+@endsection

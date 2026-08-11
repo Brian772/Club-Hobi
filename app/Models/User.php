@@ -1,33 +1,48 @@
 <?php
 
 namespace App\Models;
-
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Models\Post;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
-class User extends Model
+class User extends Authenticatable
 {
-    use HasUuids, HasFactory;
-    
-    protected $table = 'users';
-    protected $keyType = 'string';
-    public $incrementing = false;
+    use HasFactory, Notifiable, HasUuids;
+
     protected $fillable = [
         'name',
         'email',
-        'password',
+        'password_hash',
+        'avatar_url',
+        'bio',
+        'role_global',
+        'status',
+        'suspended_until',
     ];
+
     protected $hidden = [
-        'password',
+        'password_hash',
         'remember_token',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'suspended_until' => 'datetime',
+        ];
+    }
 
+    public function getAuthPassword()
+    {
+        return $this->password_hash;
+    }
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
 }

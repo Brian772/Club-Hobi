@@ -1,0 +1,789 @@
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.halaman1 {
+    transform: scale(0.80) translateY(-60px);
+    transform-origin: center center;
+}
+
+/* Container Utama */
+.page {
+    width: 100%;
+    max-width: 920px;
+    margin: 80px auto;
+    padding: 0;
+    transform: translateX(-30px);
+}
+
+.container-auth {
+    width: 100%;
+    max-width: 988px;
+
+    height: 550px;
+
+    display: grid;
+    grid-template-columns: 406px 560px;
+
+    align-items: center;
+    gap: 22px;
+
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+
+    box-shadow: none;
+}
+
+/* Bagian Kiri (Form) */
+.left {
+    width: 380px;
+    align-self: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    color: #0066ff;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.8px;
+}
+
+.p {
+    color: #94a3b8;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+}
+
+/* Form Styling */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    height: 40px;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #e8ecf1;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    background-color: #fafbfc;
+    outline: none;
+    transition: all 0.3s ease;
+    color: #1a1a2e;
+}
+
+.form-group input:focus {
+    border-color: #0066ff;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.08);
+}
+
+.form-group input::placeholder {
+    color: #a0aec0;
+}
+
+.error-text {
+    color: #e53e3e;
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+/* Remember Me */
+.remember-me {
+    margin: 0rem 0 0rem 0;
+}
+
+.remember-me label {
+    display: flex;
+    align-items: center;
+    gap: 0.60rem;
+    height: 17px;
+    line-height: 17px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    cursor: pointer;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+    accent-color: #0066ff;
+    cursor: pointer;
+}
+
+/* Tombol Login Utama */
+.button {
+    background-color: #0066ff;
+    color: #fff;
+    border: none;
+    padding: 0.9rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 0.2rem;
+}
+
+.button:hover {
+    background-color: #0052cc;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 102, 255, 0.3);
+}
+
+/* Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 1.8rem 0 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.divider span {
+    padding: 0 1.2rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Social Login */
+.social-login {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    text-decoration: none;
+    color: #1a1a2e;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.social-button:hover {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+    transform: translateY(-1px);
+}
+
+.social-button img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+/* Register Text */
+.register-text {
+    text-align: center;
+    margin-top: 1.8rem;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.register-text a {
+    color: #0066ff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.register-text a:hover {
+    color: #0052cc;
+    text-decoration: underline;
+}
+
+/* Bagian Kanan (Gambar) */
+.right {
+    width: 600px;
+    height: 600px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    align-self: center;
+}
+
+.right img {
+    display: block;
+    width: 100%;
+    max-width: 580px;
+    max-height: 580px;
+    height: auto;
+    object-fit: contain;
+    transform: translateY(-5px);
+}
+
+/* Responsive Design */
+@media (max-width: 1100px) {
+    .page {
+        max-width: 900px;
+        margin-top: 100px;
+        padding: 0 30px;
+    }
+
+    .container {
+        width: 100%;
+        height: auto;
+
+        grid-template-columns: minmax(350px, 406px) 1fr;
+
+        gap: 30px;
+    }
+
+    .left {
+        width: 100%;
+    }
+
+    .right {
+        width: 100%;
+        height: auto;
+    }
+
+    .right img {
+        max-width: 450px;
+        max-height: 450px;
+    }
+
+    .title {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .page {
+        width: 100%;
+        margin: 50px auto 0;
+        padding: 0 25px;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+
+        height: auto;
+        gap: 30px;
+    }
+
+    .right {
+        order: -1;
+
+        width: 100%;
+        height: auto;
+    }
+
+    .right img {
+        width: 100%;
+        max-width: 300px;
+        max-height: none;
+    }
+
+    .left {
+        width: 100%;
+    }
+
+    .title {
+        font-size: 2rem;
+        text-align: center;
+    }
+}
+
+/* =========================================================
+   REGISTRATION PAGES - ADDITION ONLY
+   ---------------------------------------------------------
+   CSS di atas tidak diubah.
+   Block ini khusus untuk menyesuaikan step 1, 2, dan 3
+   dengan desain referensi registrasi.
+   ========================================================= */
+
+/* Registration layout */
+.register-page {
+    width: 100%;
+    transform: scale(0.80) translateY(-60px);
+    transform-origin: center center;
+}
+
+.register-step .page {
+    max-width: 920px;
+    margin: 80px auto 0;
+    padding: 0;
+    transform: translateX(-30px);
+}
+
+.register-step .container-auth {
+    width: 100%;
+    max-width: 988px;
+    min-height: 550px;
+    height: auto;
+    display: grid;
+    grid-template-columns: 406px 560px;
+    align-items: center;
+    gap: 22px;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+.register-step .left {
+    width: 380px;
+    align-self: center;
+}
+
+.register-step .right {
+    width: 600px;
+    height: 600px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    align-self: center;
+}
+
+.register-step .right img {
+    display: block;
+    width: 100%;
+    max-width: 580px;
+    max-height: 580px;
+    height: auto;
+    object-fit: contain;
+    transform: translateY(-55px);
+}
+
+/* Typography */
+.register-step .title {
+    margin-bottom: 0.35rem;
+    font-size: 2.5rem;
+    line-height: 1.2;
+    letter-spacing: -1px;
+}
+
+.register-step .p {
+    margin-bottom: 1.65rem;
+    color: #a0a0a0;
+    font-size: 1rem;
+}
+
+/* Three progress bars */
+.register-progress {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin: 0 0 1.8rem;
+}
+
+.progress-item {
+    display: block;
+    height: 10px;
+    border-radius: 999px;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgba(226, 232, 240, 0.35);
+}
+
+.progress-item.active {
+    background: #0878df;
+    box-shadow: none;
+}
+
+/* Form spacing */
+.register-step .form {
+    gap: 0.55rem;
+}
+
+.register-step .form-group {
+    gap: 0.42rem;
+}
+
+.register-step .form-group label {
+    font-size: 0.92rem;
+    color: #111111;
+}
+
+.register-step .form-group input[type="email"],
+.register-step .form-group input[type="password"],
+.register-step .form-group input[type="text"] {
+    height: 40px;
+}
+
+/* Step 1 */
+.register-step-1 .remember-me label {
+    font-size: 0.87rem;
+    color: #a0a0a0;
+    font-weight: 400;
+    height: auto;
+    min-height: 20px;
+}
+
+.register-step-1 .button {
+    margin-top: 0.35rem;
+}
+
+.button-arrow {
+    margin-left: 4px;
+    font-size: 1.05em;
+}
+
+.register-step-1 .divider {
+    margin-top: 1.75rem;
+    margin-bottom: 1.1rem;
+}
+
+.register-step-1 .social-login {
+    gap: 0.65rem;
+}
+
+.register-step-1 .social-button {
+    height: 49px;
+    padding: 0.65rem;
+}
+
+/* Step 2 */
+.register-step-2 .page {
+    margin-top: 78px;
+}
+
+.register-step-2 .register-progress {
+    margin-bottom: 1.55rem;
+}
+
+.profile-form {
+    gap: 0.55rem;
+}
+
+.profile-upload {
+    margin-bottom: 1.05rem;
+}
+
+.profile-upload input[type="file"] {
+    display: none;
+}
+
+.upload-label {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: fit-content;
+    cursor: pointer;
+    color: #a0a0a0;
+}
+
+.upload-icon {
+    width: 108px;
+    height: 108px;
+    border-radius: 50%;
+    background: #e9e9e9;
+    color: #9d9d9d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 108px;
+}
+
+.upload-icon svg {
+    width: 38px;
+    height: 38px;
+}
+
+.upload-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.upload-copy strong {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #a0a0a0;
+}
+
+.upload-copy small {
+    font-size: 0.82rem;
+    color: #a0a0a0;
+}
+
+.upload-label:hover .upload-icon {
+    background: #e3e3e3;
+}
+
+.register-step-2 .form-group input[type="text"] {
+    height: 40px;
+}
+
+.register-step-2 textarea {
+    width: 100%;
+    min-height: 120px;
+    resize: none;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #e8ecf1;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    background-color: #fafbfc;
+    outline: none;
+    transition: all 0.3s ease;
+    color: #1a1a2e;
+}
+
+.register-step-2 textarea:focus {
+    border-color: #0066ff;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.08);
+}
+
+.register-step-2 textarea::placeholder {
+    color: #a0aec0;
+}
+
+.register-step-2 .button {
+    margin-top: 0.35rem;
+}
+
+.skip-button {
+    display: block;
+    width: fit-content;
+    margin: 0.65rem auto 0;
+    color: #a0a0a0;
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 400;
+}
+
+.skip-button:hover {
+    color: #707070;
+}
+
+/* Step 3 */
+.register-step-3 .page {
+    margin-top: 5px;
+}
+
+.register-step-3 .register-progress {
+    margin-bottom: 1.7rem;
+}
+
+.hobby-form {
+    gap: 0;
+}
+
+.hobby-grid {
+    display: grid;
+    grid-template-columns: repeat(3, max-content);
+    column-gap: 12px;
+    row-gap: 12px;
+    justify-content: start;
+    margin-bottom: 2rem;
+}
+
+.hobby-option {
+    position: relative;
+    cursor: pointer;
+}
+
+.hobby-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.hobby-option span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 108px;
+    height: 43px;
+    padding: 0 18px;
+    border: 1px solid #e3e3e3;
+    border-radius: 999px;
+    background: #f9f9f9;
+    color: #111111;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.hobby-option:hover span {
+    border-color: #8bbcf0;
+    background: #f4f9ff;
+}
+
+.hobby-option input:checked+span {
+    border-color: #0878df;
+    background: #0878df;
+    color: #ffffff;
+    box-shadow: 0 5px 15px rgba(0, 102, 255, 0.15);
+}
+
+.hobby-submit {
+    margin-top: 0;
+}
+
+/* Responsive additions */
+@media (max-width: 1100px) {
+    .register-step .page {
+        max-width: 900px;
+        padding: 0 30px;
+        transform: none;
+    }
+
+    .register-step .container-auth {
+        grid-template-columns: minmax(350px, 406px) 1fr;
+        gap: 30px;
+    }
+
+    .register-step .left {
+        width: 100%;
+    }
+
+    .register-step .right {
+        width: 100%;
+        height: auto;
+    }
+
+    .register-step .right img {
+        max-width: 450px;
+        max-height: 450px;
+    }
+
+    .register-step .title {
+        font-size: 2rem;
+    }
+
+    .hobby-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .hobby-option span {
+        min-width: 0;
+        width: 100%;
+        padding: 0 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .register-step .page {
+        width: 100%;
+        margin: 40px auto 0;
+        padding: 0 25px;
+        transform: none;
+    }
+
+    .register-step .container-auth {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        gap: 30px;
+    }
+
+    .register-step .right {
+        order: -1;
+        width: 100%;
+        height: auto;
+    }
+
+    .register-step .right img {
+        width: 100%;
+        max-width: 300px;
+        max-height: none;
+    }
+
+    .register-step .left {
+        width: 100%;
+    }
+
+    .register-step .title {
+        font-size: 2rem;
+        text-align: left;
+    }
+
+    .register-progress {
+        gap: 12px;
+    }
+
+    .hobby-grid {
+        grid-template-columns: repeat(2, 1fr);
+        width: 100%;
+    }
+
+    .hobby-option span {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .upload-icon {
+        width: 90px;
+        height: 90px;
+        flex-basis: 90px;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-step .title {
+        font-size: 1.7rem;
+    }
+
+    .register-step .p {
+        font-size: 0.9rem;
+    }
+
+    .hobby-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 9px;
+    }
+
+    .hobby-option span {
+        height: 40px;
+        font-size: 0.8rem;
+        padding: 0 8px;
+    }
+}
