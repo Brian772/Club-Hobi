@@ -36,6 +36,9 @@
                             placeholder="Example @ example.com"
                             required
                             autofocus>
+                        @error('email')
+                            <small class="error-text">{{ $message }}</small>
+                        @enderror
                     </div>
 
                     <div class="form-group">
@@ -46,6 +49,9 @@
                             name="password"
                             placeholder="********"
                             required>
+                        @error('password')
+                            <small class="error-text">{{ $message }}</small>
+                        @enderror
                     </div>
 
                     <div class="form-group">
@@ -133,18 +139,31 @@
                             hidden>
 
                         <label for="avatar_url" class="upload-label">
-                            <span class="upload-icon" aria-hidden="true">
+                            <span
+                                class="upload-icon"
+                                id="avatar-icon"
+                                aria-hidden="true"
+                                style="width:96px; height:96px; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden; margin:0 auto;">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M4 7.5C4 6.67 4.67 6 5.5 6H8L9.2 4.5H14.8L16 6H18.5C19.33 6 20 6.67 20 7.5V17.5C20 18.33 19.33 19 18.5 19H5.5C4.67 19 4 18.33 4 17.5V7.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
                                     <circle cx="12" cy="12.5" r="3.2" stroke="currentColor" stroke-width="1.8"/>
                                 </svg>
                             </span>
 
-                            <span class="upload-copy">
+                            <span
+                                id="avatar-preview-wrap"
+                                style="display:none; width:96px; height:96px; border-radius:50%; overflow:hidden; margin:0 auto;">
+                                <img id="avatar-preview" alt="" style="width:100%; height:100%; object-fit:cover; display:block;">
+                            </span>
+
+                            <span class="upload-copy" id="avatar-copy">
                                 <strong>Upload Photo Profile</strong>
-                                <small>Choose File · JPG/PNG, max 2MB</small>
+                                <small>Choose File · JPG/PNG, max 5MB</small>
                             </span>
                         </label>
+                        @error('avatar_url')
+                            <small class="error-text">{{ $message }}</small>
+                        @enderror
                     </div>
 
                     <div class="form-group">
@@ -156,6 +175,9 @@
                             value="{{ old('name') }}"
                             placeholder="@username"
                             required>
+                        @error('name')
+                            <small class="error-text">{{ $message }}</small>
+                        @enderror
                     </div>
 
                     <div class="form-group">
@@ -164,14 +186,45 @@
                             id="bio"
                             name="bio"
                             placeholder="Tell us a little about yourself...">{{ old('bio') }}</textarea>
+                        @error('bio')
+                            <small class="error-text">{{ $message }}</small>
+                        @enderror
                     </div>
 
                     <button type="submit" class="button">
                         Next <span class="button-arrow">→</span>
                     </button>
 
-                    <a href="{{ route('register', ['step' => 3]) }}" class="skip-button">Skip For Now</a>
+                    <button
+                        type="submit"
+                        class="skip-button"
+                        formnovalidate
+                        onclick="document.getElementById('avatar_url').value = ''; document.getElementById('avatar-preview-wrap').style.display = 'none'; document.getElementById('avatar-icon').style.display = 'flex'; document.getElementById('avatar-copy').style.display = '';"
+                        style="background:none; border:none; padding:0; color:#9a9a9a; cursor:pointer; font:inherit; text-decoration:underline;">
+                        Skip For Now
+                    </button>
                 </form>
+
+                <script>
+                    document.getElementById('avatar_url').addEventListener('change', function (e) {
+                        const file = e.target.files[0];
+                        if (!file) return;
+
+                        const preview = document.getElementById('avatar-preview');
+                        const previewWrap = document.getElementById('avatar-preview-wrap');
+                        const icon = document.getElementById('avatar-icon');
+                        const copy = document.getElementById('avatar-copy');
+
+                        const reader = new FileReader();
+                        reader.onload = function (ev) {
+                            preview.src = ev.target.result;
+                            previewWrap.style.display = 'block';
+                            icon.style.display = 'none';
+                            copy.style.display = 'none';
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                </script>
             </div>
 
             <div class="right">

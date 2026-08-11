@@ -11,9 +11,6 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
-// Halaman register bisa diakses baik oleh guest (step 1 & 2)
-// maupun user yang baru saja login di step 2 (untuk menampilkan step 3).
-// Logikanya sudah ditangani di dalam RegisteredUserController::create().
 Route::get('register/{step?}', [RegisteredUserController::class, 'create'])
     ->name('register');
 
@@ -27,19 +24,25 @@ Route::get('auth/facebook', function () {
 })->name('auth.facebook');
 
 Route::middleware('guest')->group(function () {
-    // --- Register Multi-Step ---
+    // --- Register Step 1, 2, 3 ---
+    // Ketiganya sengaja di dalam middleware guest: user baru benar-benar
+    // dibuat di database dan di-login-kan di akhir step 3 (RegisteredUserController::step3),
+    // jadi selama step 1-2 dia masih murni guest, belum punya akun sama sekali.
     Route::post('register/step-1', [RegisteredUserController::class, 'step1'])
         ->name('register.step1');
 
     Route::post('register/step-2', [RegisteredUserController::class, 'step2'])
         ->name('register.step2');
 
+    Route::post('register/step-3', [RegisteredUserController::class, 'step3'])
+        ->name('register.step3');
+
     // --- Login ---
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store'])
-        ->name('login.authenticate'); // 👈 Tambahkan ini
+        ->name('login.authenticate');
 
     // --- Lupa / Reset Password ---
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
@@ -56,10 +59,6 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    // --- Register Step 3 (User Sudah Login dari Step 2) ---
-    Route::post('register/step-3', [RegisteredUserController::class, 'step3'])
-        ->name('register.step3');
-
     // --- Verifikasi Email ---
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
