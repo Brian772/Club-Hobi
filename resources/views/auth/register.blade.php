@@ -2,7 +2,7 @@
 
 @section('styles')
 {{-- Memanggil CSS dari resources/css/auth.css --}}
-@vite(['resources/css/auth.css'])
+@vite(['public/css/auth.css'])
 @endsection
 
 @section('content')
