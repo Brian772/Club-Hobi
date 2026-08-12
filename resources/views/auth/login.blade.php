@@ -2,8 +2,6 @@
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
-{{-- Memanggil CSS dari resources/css/auth.css --}}
-@vite(['resources/css/auth.css'])
 @endsection
 
 @section('content')

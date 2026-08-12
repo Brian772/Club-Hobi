@@ -1,9 +1,6 @@
 @extends('layouts.app')
 
-@section('styles')
-{{-- Memanggil CSS dari resources/css/auth.css --}}
-@vite(['public/css/auth.css'])
-@endsection
+<link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
 @section('content')
 
