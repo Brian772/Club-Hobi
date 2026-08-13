@@ -16,6 +16,7 @@ class User extends Authenticatable
     public $incrementing = false;
 
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password_hash',
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'bio',
         'role_global',
         'status',
+        'suspended_until',
     ];
 
     protected $hidden = [

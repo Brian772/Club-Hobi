@@ -193,7 +193,7 @@ class RegisteredUserController extends Controller
             'avatar_url'    => session('register.avatar_url'),
             'email'         => $email,
             'password_hash' => session('register.password'),
-            'role_global'   => 'user',
+            'role_global'   => 'member',
             'status'        => 'active',
         ]);
 
