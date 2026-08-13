@@ -6,7 +6,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
-                'css/auth.css',
+                'public/css/auth.css',
                 'resources/js/app.js',
             ],
             refresh: true,
