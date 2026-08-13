@@ -427,12 +427,12 @@ body {
     display: block;
     height: 10px;
     border-radius: 999px;
-    background: #ffffff;
+    background: #615d59;
     box-shadow: 0 0 0 1px rgba(226, 232, 240, 0.35);
 }
 
 .progress-item.active {
-    background: #0878df;
+    background: #0075de;
     box-shadow: none;
 }
 
