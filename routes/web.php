@@ -2,14 +2,29 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 
+// Halaman utama (Welcome Page)
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Halaman Dashboard (hanya bisa diakses jika sudah login)
+Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    Route::get('/dashboard/profile', [DashboardController::class, 'profile'])
+        ->name('profile.dashboard');
+
+    Route::get('/dashboard/posts', [DashboardController::class, 'posts'])
+        ->name('posts.dashboard');
+
+    Route::get('/dashboard/club-files', [DashboardController::class, 'clubFiles'])
+        ->name('club_files.dashboard');
+
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.index');
@@ -17,4 +32,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class ConfirmablePasswordController extends Controller
 {
     /**
-     * Show the confirm password view.
+     * Menampilkan halaman konfirmasi password.
      */
     public function show(): View
     {
@@ -20,21 +20,24 @@ class ConfirmablePasswordController extends Controller
     }
 
     /**
-     * Confirm the user's password.
+     * Memverifikasi password user.
      */
     public function store(Request $request): RedirectResponse
     {
-        if (! Auth::guard('web')->validate([
-            'email' => $request->user()->email,
-            'password' => $request->password,
-        ])) {
-            throw ValidationException::withMessages([
-                'password' => __('auth.password'),
+        $request->validate([
+            'password' => ['required', 'string'],
+        ]);
+
+        $user = Auth::user();
+
+        if (!$user || !Hash::check($request->password, $user->password_hash)) {
+            return back()->withErrors([
+                'password' => 'Password yang Anda masukkan salah.',
             ]);
         }
 
-        $request->session()->put('auth.password_confirmed_at', time());
+        $request->session()->passwordConfirmed();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('dashboard'));
     }
 }

@@ -6,24 +6,35 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class PasswordController extends Controller
 {
     /**
-     * Update the user's password.
+     * Mengubah password user yang sedang login.
      */
     public function update(Request $request): RedirectResponse
     {
-        $validated = $request->validateWithBag('updatePassword', [
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $request->user()->update([
-            'password' => Hash::make($validated['password']),
+        $user = $request->user();
+
+        if (!Hash::check($validated['current_password'], $user->password_hash)) {
+            throw ValidationException::withMessages([
+                'current_password' => 'Password saat ini salah.',
+            ]);
+        }
+
+        $user->update([
+            'password_hash' => Hash::make($validated['password']),
         ]);
 
-        return back()->with('status', 'password-updated');
+        return back()->with(
+            'success',
+            'Password berhasil diperbarui.'
+        );
     }
 }

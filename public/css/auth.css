@@ -502,7 +502,7 @@ body {
 }
 
 .profile-upload {
-    margin-bottom: 1.05rem;
+    margin-bottom: 1.2rem;
     display: flex;
     justify-content: center;
 }
@@ -512,12 +512,11 @@ body {
 }
 
 .upload-label {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 16px;
     cursor: pointer;
+    width: 100%;
 }
 
 #avatar-preview {

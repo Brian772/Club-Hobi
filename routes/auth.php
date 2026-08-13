@@ -11,76 +11,117 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('register/{step?}', [RegisteredUserController::class, 'create'])
-    ->name('register');
-
-// --- Login/Register dengan SSO ---
-Route::get('auth/google', function () {
-    abort(501, 'Login dengan Google belum diimplementasikan.');
-})->name('auth.google');
-
-Route::get('auth/facebook', function () {
-    abort(501, 'Login dengan Facebook belum diimplementasikan.');
-})->name('auth.facebook');
+Route::get(
+    'register/{step?}',
+    [RegisteredUserController::class, 'create']
+)->name('register');
 
 Route::middleware('guest')->group(function () {
-    // --- Register Step 1, 2, 3 ---
-    // Ketiganya sengaja di dalam middleware guest: user baru benar-benar
-    // dibuat di database dan di-login-kan di akhir step 3 (RegisteredUserController::step3),
-    // jadi selama step 1-2 dia masih murni guest, belum punya akun sama sekali.
-    Route::post('register/step-1', [RegisteredUserController::class, 'step1'])
-        ->name('register.step1');
 
-    Route::post('register/step-2', [RegisteredUserController::class, 'step2'])
-        ->name('register.step2');
+    Route::post(
+        'register/step-1',
+        [RegisteredUserController::class, 'step1']
+    )->name('register.step1');
 
-    Route::post('register/step-3', [RegisteredUserController::class, 'step3'])
-        ->name('register.step3');
+    Route::post(
+        'register/step-2',
+        [RegisteredUserController::class, 'step2']
+    )->name('register.step2');
 
-    // --- Login ---
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    Route::post(
+        'register/step-3',
+        [RegisteredUserController::class, 'step3']
+    )->name('register.step3');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store'])
-        ->name('login.authenticate');
+    Route::get(
+        'login',
+        [AuthenticatedSessionController::class, 'create']
+    )->name('login');
 
-    // --- Lupa / Reset Password ---
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
-        ->name('password.request');
+    Route::post(
+        'login',
+        [AuthenticatedSessionController::class, 'store']
+    )->name('login.authenticate');
 
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->name('password.email');
+    Route::get('auth/google', function () {
+        abort(
+            501,
+            'Login dengan Google belum diimplementasikan.'
+        );
+    })->name('auth.google');
 
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');
+    Route::get('auth/facebook', function () {
+        abort(
+            501,
+            'Login dengan Facebook belum diimplementasikan.'
+        );
+    })->name('auth.facebook');
 
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
+    Route::get(
+        'forgot-password',
+        [PasswordResetLinkController::class, 'create']
+    )->name('password.request');
+
+    Route::post(
+        'forgot-password',
+        [PasswordResetLinkController::class, 'store']
+    )->name('password.email');
+
+    Route::get(
+        'reset-password/{token}',
+        [NewPasswordController::class, 'create']
+    )->name('password.reset');
+
+    Route::post(
+        'reset-password',
+        [NewPasswordController::class, 'store']
+    )->name('password.store');
 });
 
 Route::middleware('auth')->group(function () {
-    // --- Verifikasi Email ---
-    Route::get('verify-email', EmailVerificationPromptController::class)
-        ->name('verification.notice');
 
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
+    Route::get(
+        'verify-email',
+        EmailVerificationPromptController::class
+    )->name('verification.notice');
+
+    Route::get(
+        'verify-email/{id}/{hash}',
+        VerifyEmailController::class
+    )
+        ->middleware([
+            'signed',
+            'throttle:6,1',
+        ])
         ->name('verification.verify');
 
-    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+    Route::post(
+        'email/verification-notification',
+        [
+            EmailVerificationNotificationController::class,
+            'store',
+        ]
+    )
         ->middleware('throttle:6,1')
         ->name('verification.send');
 
-    // --- Konfirmasi & Update Password ---
-    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
-        ->name('password.confirm');
+    Route::get(
+        'confirm-password',
+        [ConfirmablePasswordController::class, 'show']
+    )->name('password.confirm');
 
-    Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
+    Route::post(
+        'confirm-password',
+        [ConfirmablePasswordController::class, 'store']
+    );
 
-    Route::put('password', [PasswordController::class, 'update'])
-        ->name('password.update');
+    Route::put(
+        'password',
+        [PasswordController::class, 'update']
+    )->name('password.update');
 
-    // --- Logout ---
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout');
+    Route::post(
+        'logout',
+        [AuthenticatedSessionController::class, 'destroy']
+    )->name('logout');
 });

@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
+<link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
 @section('content')
 
