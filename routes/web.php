@@ -22,6 +22,7 @@ Route::get('/mobile/loading', function () {
     return view('mobile.loading');
 })->name('mobile.loading');
 
+
 Route::get('/mobile/notification', function () {
     return view('mobile.notification');
 })->name('mobile.notification');
