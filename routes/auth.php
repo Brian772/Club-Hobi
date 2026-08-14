@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -43,19 +44,11 @@ Route::middleware('guest')->group(function () {
         [AuthenticatedSessionController::class, 'store']
     )->name('login.authenticate');
 
-    Route::get('auth/google', function () {
-        abort(
-            501,
-            'Login dengan Google belum diimplementasikan.'
-        );
-    })->name('auth.google');
+    Route::get('auth/{provider}/redirect', [SocialiteController::class, 'redirectToProvider'])
+        ->name('social.redirect');
 
-    Route::get('auth/facebook', function () {
-        abort(
-            501,
-            'Login dengan Facebook belum diimplementasikan.'
-        );
-    })->name('auth.facebook');
+    Route::get('auth/{provider}/callback', [SocialiteController::class, 'handleProviderCallback'])
+        ->name('social.callback');
 
     Route::get(
         'forgot-password',

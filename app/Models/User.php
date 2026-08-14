@@ -20,6 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password_hash',
+        'provider_name',
+        'provider_id',
         'avatar_url',
         'bio',
         'role_global',
