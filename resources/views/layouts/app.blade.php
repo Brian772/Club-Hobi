@@ -137,7 +137,7 @@
     </nav>
     @endauth
 
-    <div class="flex flex-col justify-center p-[24px] md:p-[32px] min-h-dvh @if(Route::is('login') || Route::is('register')) auth-page @endif">
+    <div class="flex flex-col justify-center p-[24px] md:p-[32px] min-h-dvh @if(Route::is('login') || Route::is('register')) @endif">
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
