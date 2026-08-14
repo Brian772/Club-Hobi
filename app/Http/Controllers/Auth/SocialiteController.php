@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Exception;
+use Throwable;
 
 class SocialiteController extends Controller
 {
@@ -63,9 +64,8 @@ class SocialiteController extends Controller
             Auth::login($user, true);
 
             return redirect()->intended('/dashboard');
-        } catch (Exception $e) {
-            // return redirect()->route('login')->with('error', 'Gagal login menggunakan ' . $provider);
-            dd($e->getMessage(), $e);
+        } catch (Throwable $th) {
+            return redirect()->route('login')->with('error', 'Gagal login menggunakan ' . $provider);
         }
     }
 }
