@@ -19,6 +19,7 @@ class User extends Authenticatable
         'id',
         'name',
         'email',
+        'password',
         'password_hash',
         'provider_name',
         'provider_id',
@@ -27,9 +28,12 @@ class User extends Authenticatable
         'role_global',
         'status',
         'suspended_until',
+        'email_verified_at',
+        'remember_token',
     ];
 
     protected $hidden = [
+        'password',
         'password_hash',
     ];
 
@@ -37,9 +41,14 @@ class User extends Authenticatable
         'suspended_until' => 'datetime',
     ];
 
-    // Wajib di-override karena kolom password Anda bernama password_hash
-    public function getAuthPassword()
+    public function getAuthPassword(): string
     {
-        return $this->password_hash;
+        return $this->password_hash ?? $this->password ?? '';
+    }
+
+    public function setPasswordAttribute($value): void
+    {
+        $this->attributes['password'] = $value;
+        $this->attributes['password_hash'] = $value;
     }
 }

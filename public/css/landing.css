@@ -13,8 +13,8 @@ html {
 }
 
 body {
-    background: #fff !important;
-    color: #111;
+    background: #ffffff !important;
+    color: #111827;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -50,7 +50,7 @@ a {
 }
 
 .landing .container {
-    width: min(1180px, calc(100% - 60px));
+    width: min(1180px, calc(100% - 24px));
     margin: 0 auto;
 }
 
@@ -136,30 +136,31 @@ a {
 ================================================== */
 
 .hero {
-    padding: 70px 0 55px !important;
+    padding: 34px 0 26px !important;
 }
 
 .hero-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     align-items: center;
-    gap: 40px;
+    gap: 20px;
+    text-align: center;
 }
 
 .hero-text h1 {
-    color: #0784e8;
-    font-size: 64px;
-    line-height: 1.08;
-    letter-spacing: -2px;
+    color: #0f172a;
+    font-size: 2.5rem;
+    line-height: 1.05;
+    letter-spacing: -0.06em;
 }
 
 .hero-text > p {
-    max-width: 420px;
+    max-width: 100%;
     margin: 14px 0 18px;
 
-    color: #777;
-    font-size: 10px;
-    line-height: 1.5;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
 
 .hero-image {
@@ -168,7 +169,7 @@ a {
 }
 
 .hero-image img {
-    width: 500px;
+    width: min(300px, 100%);
 }
 
 .stats {
@@ -472,19 +473,19 @@ a {
 @media (max-width: 600px) {
 
     .landing .container {
-        width: calc(100% - 30px);
+        width: calc(100% - 20px);
     }
 
     .landing .section {
-        padding: 40px 0 !important;
+        padding: 32px 0 !important;
     }
 
     .hero {
-        padding: 45px 0 !important;
+        padding: 26px 0 20px !important;
     }
 
     .hero-text h1 {
-        font-size: 42px;
+        font-size: 2.2rem;
     }
 
     .stats {
@@ -494,37 +495,44 @@ a {
     }
 
     .features-small,
-    .hobbies {
-        grid-template-columns: 1fr 1fr;
-    }
-
+    .hobbies,
+    .communities,
     .steps {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+        grid-template-columns: 1fr;
+        display: grid;
     }
 
+    .features-small .card,
+    .features-small .card:nth-child(4),
+    .features-small .card:nth-child(5),
     .step,
     .step:nth-child(4),
     .step:nth-child(5) {
         grid-column: auto;
+        width: 100%;
+    }
+
+    .step {
+        display: flex;
+        align-items: flex-start;
     }
 
     .feature,
     .feature.reverse {
         flex-direction: column;
-        text-align: center;
+        text-align: left;
+        padding: 18px 16px;
     }
 
     .feature img {
         width: 120px;
     }
 
-    .communities {
-        grid-template-columns: 1fr;
-    }
-
     .community-image {
         height: 180px;
+    }
+
+    .cta-card {
+        padding: 24px 18px;
     }
 } 

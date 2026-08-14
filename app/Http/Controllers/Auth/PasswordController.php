@@ -20,15 +20,8 @@ class PasswordController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $user = $request->user();
-
-        if (!Hash::check($validated['current_password'], $user->password_hash)) {
-            throw ValidationException::withMessages([
-                'current_password' => 'Password saat ini salah.',
-            ]);
-        }
-
-        $user->update([
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
             'password_hash' => Hash::make($validated['password']),
         ]);
 

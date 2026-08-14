@@ -36,22 +36,12 @@ class AuthenticatedSessionController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
 
-        // 1. Verifikasi Password
-        if (
-            !$user ||
-            !Hash::check(
-                $credentials['password'],
-                $user->password_hash
-            )
-        ) {
-            return back()
-                ->withErrors([
-                    'email' => 'Email atau kata sandi yang Anda masukkan salah.',
-                ])
-                ->onlyInput('email');
+        if (!$user || !Hash::check($credentials['password'], $user->getAuthPassword())) {
+            return back()->withErrors([
+                'email' => 'Email atau kata sandi yang Anda masukkan salah.',
+            ])->onlyInput('email');
         }
 
-        // 2. Verifikasi Status User
         if ($user->status === 'suspended') {
             $until = $user->suspended_until
                 ? $user->suspended_until->format('d M Y H:i')
@@ -76,8 +66,8 @@ class AuthenticatedSessionController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        // 4. Redirect ke Dashboard (mengakses halaman tujuan awal jika ada)
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('dashboard'))
+            ->with('success', 'Berhasil masuk. Selamat datang kembali, ' . $user->name . '!');
     }
 
     /**
@@ -90,8 +80,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()
-            ->route('login')
-            ->with('success', 'Anda telah keluar.');
+        return redirect('/')->with('success', 'Anda telah keluar.');
     }
 }

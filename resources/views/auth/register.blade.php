@@ -3,10 +3,14 @@
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 @endsection
 <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
 @section('content')
+@php
+    $categories = $categories ?? ['Music', 'Hiking', 'Fishing', 'Gaming', 'Football', 'Reading', 'Traveling', 'Swimming', 'Photography'];
+@endphp
 
   @if ($step == 1)
     <div class="flex flex-col md:flex-row items-center justify-center">
