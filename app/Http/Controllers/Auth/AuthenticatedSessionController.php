@@ -13,19 +13,19 @@ use Illuminate\View\View;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Tampilkan form login.
+     * Tampilkan halaman login.
      */
     public function create(): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('profile.index');
+            return redirect()->route('dashboard');
         }
 
         return view('auth.login');
     }
 
     /**
-     * Proses otentikasi login.
+     * Proses login.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -43,20 +43,27 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($user->status === 'suspended') {
-            $until = $user->suspended_until?->translatedFormat('d M Y H:i');
-            return back()->withErrors([
-                'email' => 'Akun Anda ditangguhkan' . ($until ? " hingga {$until}." : '.'),
-            ])->onlyInput('email');
+            $until = $user->suspended_until
+                ? $user->suspended_until->format('d M Y H:i')
+                : null;
+
+            return back()
+                ->withErrors([
+                    'email' => 'Akun Anda sedang ditangguhkan' . ($until ? " hingga {$until}." : '.'),
+                ])
+                ->onlyInput('email');
         }
 
-        if ($user->status === 'banned') {
-            return back()->withErrors([
-                'email' => 'Akun Anda telah dinonaktifkan.',
-            ])->onlyInput('email');
+        if (in_array($user->status, ['banned', 'inactive'], true)) {
+            return back()
+                ->withErrors([
+                    'email' => 'Akun Anda telah dinonaktifkan.',
+                ])
+                ->onlyInput('email');
         }
 
-        Auth::login($user, $request->boolean('remember'));
-
+        // 3. Login & Regenerate Session
+        Auth::login($user);
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'))
@@ -64,7 +71,7 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Keluar dari sesi (Logout).
+     * Logout.
      */
     public function destroy(Request $request): RedirectResponse
     {

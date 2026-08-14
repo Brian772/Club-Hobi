@@ -2,13 +2,29 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 
-Route::view('/', 'TA.landing')->name('landing');
-Route::view('/landing', 'TA.landing')->name('landing.page');
+// Halaman utama (Welcome Page)
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Halaman Dashboard (hanya bisa diakses jika sudah login)
+Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    Route::get('/dashboard/profile', [DashboardController::class, 'profile'])
+        ->name('profile.dashboard');
+
+    Route::get('/dashboard/posts', [DashboardController::class, 'posts'])
+        ->name('posts.dashboard');
+
+    Route::get('/dashboard/club-files', [DashboardController::class, 'clubFiles'])
+        ->name('club_files.dashboard');
+
+});
 
 Route::get('/mobile/dashboard', function () {
     return view('mobile.dashboard');

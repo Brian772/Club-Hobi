@@ -37,9 +37,6 @@
             cursor: pointer;
         }
         
-        /* ============================================ */
-        /* PERUBAHAN UTAMA: Container menjadi lebih fleksibel */
-        /* ============================================ */
         .container { 
             max-width: 2000px; /* Diperbesar dari 720px */
             margin: 0rem auto; 
@@ -129,9 +126,9 @@
     @auth
     <nav>
         <div>
-            <a href="{{ route('dashboard') }}">Dashboard</a>
-            <a href="{{ route('profile.index') }}">Profil</a>
-            <a href="{{ route('mobile.dashboard') }}">Mobile</a>
+            <a href="{{ route('profile.dashboard') }}">Profil</a>
+            <a href="{{ route('posts.dashboard') }}">Konten</a>
+            <a href="{{ route('club_files.dashboard') }}">Dokumentasi</a>
         </div>
         <form method="POST" action="{{ route('logout') }}" style="margin:0;">
             @csrf
@@ -140,8 +137,7 @@
     </nav>
     @endauth
 
-    {{-- Tambahkan class auth-page untuk halaman login/register --}}
-    <div class="container @if(Route::is('login') || Route::is('register')) auth-page @endif">
+    <div class="flex flex-col justify-center p-[24px] md:p-[32px] min-h-dvh @if(Route::is('login') || Route::is('register')) auth-page @endif">
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif

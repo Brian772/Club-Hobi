@@ -27,13 +27,33 @@ class UserFactory extends Factory
         $hashed = static::$password ??= Hash::make('password');
 
         return [
+            'id' => (string) Str::uuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => $hashed,
-            'password_hash' => $hashed,
-            'remember_token' => Str::random(10),
+            'password_hash' => Hash::make('password'),
+            'avatar_url' => fake()->imageUrl(300, 300, 'people', true),
+            'bio' => fake()->paragraph(),
+            'role_global' => 'member',
+            'status' => 'active',
+            'suspended_until' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
+    }
+
+    public function suspended(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'suspended',
+            'suspended_until' => now()->addDays(fake()->numberBetween(1, 30)),
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role_global' => 'admin',
+        ]);
     }
 
     /**

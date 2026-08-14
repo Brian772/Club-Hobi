@@ -1,22 +1,28 @@
 <?php
 
 namespace App\Models;
-use App\Models\Post;
+
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasUuids;
+    use HasFactory, HasUuids, Notifiable;
+
+    // Primary key bertipe string (uuid), bukan auto-increment
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password',
         'password_hash',
+        'provider_name',
+        'provider_id',
         'avatar_url',
         'bio',
         'role_global',
@@ -29,16 +35,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'password_hash',
-        'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'suspended_until' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'suspended_until' => 'datetime',
+    ];
 
     public function getAuthPassword(): string
     {
@@ -49,10 +50,5 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = $value;
         $this->attributes['password_hash'] = $value;
-    }
-
-    public function posts(): HasMany
-    {
-        return $this->hasMany(Post::class);
     }
 }

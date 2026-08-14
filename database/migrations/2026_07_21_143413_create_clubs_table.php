@@ -15,6 +15,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('category');
+            $table->text('description')->nullable();
+            $table->string('cover_url')->nullable();
             $table->timestamp('created_at')->useCurrent();
         });
     }
