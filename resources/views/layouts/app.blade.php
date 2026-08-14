@@ -129,9 +129,9 @@
     @auth
     <nav>
         <div>
+            <a href="{{ route('dashboard') }}">Dashboard</a>
             <a href="{{ route('profile.index') }}">Profil</a>
-            <a href="{{ route('posts.index') }}">Konten</a>
-            <a href="{{ route('club_files.index') }}">Dokumentasi</a>
+            <a href="{{ route('mobile.dashboard') }}">Mobile</a>
         </div>
         <form method="POST" action="{{ route('logout') }}" style="margin:0;">
             @csrf

@@ -15,15 +15,19 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'password',
         'password_hash',
         'avatar_url',
         'bio',
         'role_global',
         'status',
         'suspended_until',
+        'email_verified_at',
+        'remember_token',
     ];
 
     protected $hidden = [
+        'password',
         'password_hash',
         'remember_token',
     ];
@@ -36,9 +40,15 @@ class User extends Authenticatable
         ];
     }
 
-    public function getAuthPassword()
+    public function getAuthPassword(): string
     {
-        return $this->password_hash;
+        return $this->password_hash ?? $this->password ?? '';
+    }
+
+    public function setPasswordAttribute($value): void
+    {
+        $this->attributes['password'] = $value;
+        $this->attributes['password_hash'] = $value;
     }
 
     public function posts(): HasMany

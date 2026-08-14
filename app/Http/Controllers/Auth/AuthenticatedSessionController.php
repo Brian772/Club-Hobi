@@ -36,14 +36,12 @@ class AuthenticatedSessionController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
 
-        // Cek user dan password_hash
-        if (!$user || !Hash::check($credentials['password'], $user->password_hash)) {
+        if (!$user || !Hash::check($credentials['password'], $user->getAuthPassword())) {
             return back()->withErrors([
                 'email' => 'Email atau kata sandi yang Anda masukkan salah.',
             ])->onlyInput('email');
         }
 
-        // Cek status suspended
         if ($user->status === 'suspended') {
             $until = $user->suspended_until?->translatedFormat('d M Y H:i');
             return back()->withErrors([
@@ -51,7 +49,6 @@ class AuthenticatedSessionController extends Controller
             ])->onlyInput('email');
         }
 
-        // Cek status banned
         if ($user->status === 'banned') {
             return back()->withErrors([
                 'email' => 'Akun Anda telah dinonaktifkan.',
@@ -62,7 +59,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('profile.index'))
+        return redirect()->intended(route('dashboard'))
             ->with('success', 'Berhasil masuk. Selamat datang kembali, ' . $user->name . '!');
     }
 
@@ -76,6 +73,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Anda telah keluar.');
+        return redirect('/')->with('success', 'Anda telah keluar.');
     }
 }

@@ -1,0 +1,420 @@
+﻿Running 2.10.2 (2026-07-01 11:24:45) with PHP 8.2.12 on Windows NT / 10.0
+Reading ./composer.json (D:\xampp\htdocs\TA\composer.json)
+Loading config file C:/Users/user/AppData/Roaming/Composer/config.json
+Loading config file C:/Users/user/AppData/Roaming/Composer/auth.json
+Loading config file ./composer.json (D:\xampp\htdocs\TA\composer.json)
+Checked CA file D:\xampp\apache\bin\curl-ca-bundle.crt: valid
+Executing command (CWD): git --version
+Executing command (D:\xampp\htdocs\TA): git branch -a --no-color --no-abbrev -v
+Failed to initialize global composer: Composer could not find the config file: C:/Users/user/AppData/Roaming/Composer/composer.json
+System.Management.Automation.RemoteException
+Reading ./composer.lock (D:\xampp\htdocs\TA\composer.lock)
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Reading ./composer.lock (D:\xampp\htdocs\TA\composer.lock)
+Built pool.
+Running filter list pool filter.
+Downloading https://repo.packagist.org/packages.json
+[200] https://repo.packagist.org/packages.json
+Writing D:\xampp\htdocs\TA\.composer-cache/repo/https---repo.packagist.org/packages.json into cache
+Downloading https://repo.packagist.org/lists/all/summary.json
+[200] https://repo.packagist.org/lists/all/summary.json
+Writing D:\xampp\htdocs\TA\.composer-cache/repo/https---repo.packagist.org/filter-summary.json into cache
+Generating rules
+Resolving dependencies through SAT
+Looking at all rules.
+System.Management.Automation.RemoteException
+Dependency resolution completed in 0.001 seconds
+Package operations: 125 installs, 0 updates, 0 removals
+Installs: pestphp/pest-plugin:v3.0.0, symfony/process:v7.4.13, symfony/polyfill-mbstring:v1.38.2, symfony/polyfill-intl-normalizer:v1.38.0, symfony/polyfill-intl-grapheme:v1.41.0, symfony/polyfill-ctype:v1.37.0, symfony/deprecation-contracts:v3.7.1, symfony/string:v7.4.15, psr/container:2.0.2, symfony/service-contracts:v3.7.1, symfony/console:v7.4.16, sebastian/environment:7.2.1, staabm/side-effects-detector:1.0.5, sebastian/version:5.0.2, sebastian/type:5.1.3, sebastian/recursion-context:6.0.3, sebastian/object-reflector:4.0.1, sebastian/object-enumerator:6.0.1, sebastian/global-state:7.0.2, sebastian/exporter:6.3.2, sebastian/diff:6.0.2, sebastian/comparator:6.3.3, sebastian/code-unit:3.0.3, sebastian/cli-parser:3.0.2, phpunit/php-timer:7.0.1, phpunit/php-text-template:4.0.1, phpunit/php-invoker:5.0.1, phpunit/php-file-iterator:5.1.1, theseer/tokenizer:1.3.1, nikic/php-parser:v5.8.0, sebastian/lines-of-code:3.0.1, sebastian/complexity:4.0.1, sebastian/code-unit-reverse-lookup:4.0.1, phpunit/php-code-coverage:11.0.12, phar-io/version:3.2.1, phar-io/manifest:2.0.4, myclabs/deep-copy:1.13.4, phpunit/phpunit:11.5.56, jean85/pretty-package-versions:2.1.1, fidry/cpu-core-counter:1.3.0, brianium/paratest:v7.8.5, doctrine/inflector:2.1.0, doctrine/lexer:3.0.1, dragonmantank/cron-expression:v3.6.0, fakerphp/faker:v1.24.1, symfony/http-foundation:v7.4.16, fruitcake/php-cors:v1.4.0, symfony/polyfill-php80:v1.37.0, psr/http-message:2.0, psr/http-client:1.0.3, ralouphie/getallheaders:3.0.3, psr/http-factory:1.1.0, guzzlehttp/psr7:2.13.0, guzzlehttp/promises:2.5.2, guzzlehttp/guzzle:7.15.3, guzzlehttp/uri-template:v1.0.10, voku/portable-ascii:2.1.1, phpoption/phpoption:1.9.5, graham-campbell/result-type:v1.1.4, vlucas/phpdotenv:v5.6.4, symfony/css-selector:v7.4.9, tijsverkoyen/css-to-inline-styles:v2.4.0, symfony/var-dumper:v7.4.15, symfony/polyfill-uuid:v1.37.0, symfony/uid:v7.4.9, symfony/routing:v7.4.15, symfony/polyfill-php85:v1.41.0, symfony/polyfill-php84:v1.38.1, symfony/polyfill-php83:v1.41.0, symfony/polyfill-intl-idn:v1.38.1, symfony/mime:v7.4.16, psr/event-dispatcher:1.0.0, symfony/event-dispatcher-contracts:v3.7.1, symfony/event-dispatcher:v7.4.15, psr/log:3.0.2, egulias/email-validator:4.0.4, symfony/mailer:v7.4.15, symfony/error-handler:v7.4.15, symfony/http-kernel:v7.4.16, symfony/finder:v7.4.14, ramsey/collection:2.1.1, brick/math:0.14.8, ramsey/uuid:4.9.3, psr/simple-cache:3.0.0, nunomaduro/termwind:v2.4.0, symfony/translation-contracts:v3.7.1, symfony/translation:v7.4.16, psr/clock:1.0.0, symfony/clock:v7.4.8, carbonphp/carbon-doctrine-types:3.2.0, nesbot/carbon:3.13.2, monolog/monolog:3.10.0, league/uri-interfaces:7.8.1, league/uri:7.8.1, league/mime-type-detection:1.17.0, league/flysystem-local:3.31.0, league/flysystem:3.35.2, nette/utils:v4.1.5, nette/schema:v1.3.5, dflydev/dot-access-data:v3.0.3, league/config:v1.2.0, league/commonmark:2.9.2, laravel/serializable-closure:v2.0.15, laravel/prompts:v0.3.22, laravel/framework:v12.65.0, laravel/breeze:v2.4.2, laravel/pail:v1.2.7, laravel/pint:v1.30.4, psy/psysh:v0.12.24, laravel/tinker:v3.0.2, hamcrest/hamcrest-php:v2.1.1, mockery/mockery:1.6.12, filp/whoops:2.18.4, nunomaduro/collision:v8.9.5, webmozart/assert:2.4.1, phpstan/phpdoc-parser:2.3.3, phpdocumentor/reflection-common:2.2.0, doctrine/deprecations:1.1.6, phpdocumentor/type-resolver:2.0.0, phpdocumentor/reflection-docblock:6.0.3, ta-tikoma/phpunit-architecture-test:0.8.7, pestphp/pest-plugin-arch:v3.1.1, pestphp/pest-plugin-mutate:v3.0.5, pestphp/pest:v3.8.7, pestphp/pest-plugin-laravel:v3.2.0
+  - Downloading pestphp/pest-plugin (v3.0.0)
+Downloading https://api.github.com/repos/pestphp/pest-plugin/zipball/e79b26c65bc11c41093b10150c1341cc5cdbea83
+  - Downloading symfony/process (v7.4.13)
+Downloading https://api.github.com/repos/symfony/process/zipball/f5804be144caceb570f6747519999636b664f24c
+  - Downloading symfony/polyfill-mbstring (v1.38.2)
+Downloading https://api.github.com/repos/symfony/polyfill-mbstring/zipball/d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6
+  - Downloading symfony/polyfill-intl-normalizer (v1.38.0)
+Downloading https://api.github.com/repos/symfony/polyfill-intl-normalizer/zipball/2d446c214bdbe5b71bde5011b060a05fece3ae6b
+  - Downloading symfony/polyfill-intl-grapheme (v1.41.0)
+Downloading https://api.github.com/repos/symfony/polyfill-intl-grapheme/zipball/bb899c1db0aa8127dc3afe8cda4a67eb24915f8d
+  - Downloading symfony/polyfill-ctype (v1.37.0)
+Downloading https://api.github.com/repos/symfony/polyfill-ctype/zipball/141046a8f9477948ff284fa65be2095baafb94f2
+  - Downloading symfony/deprecation-contracts (v3.7.1)
+Downloading https://api.github.com/repos/symfony/deprecation-contracts/zipball/f3202fa1b5097b0af062dc978b32ecf63404e31d
+  - Downloading symfony/string (v7.4.15)
+Downloading https://api.github.com/repos/symfony/string/zipball/e394af32256bf9e7bf80849d95e589167c10097b
+  - Downloading psr/container (2.0.2)
+Downloading https://api.github.com/repos/php-fig/container/zipball/c71ecc56dfe541dbd90c5360474fbc405f8d5963
+  - Downloading symfony/service-contracts (v3.7.1)
+Downloading https://api.github.com/repos/symfony/service-contracts/zipball/c0a284bab1ed8aa0417e3d69250ab437739563a0
+  - Downloading symfony/console (v7.4.16)
+Downloading https://api.github.com/repos/symfony/console/zipball/f4c69c9aed03abf933b294257d618bdd9b30a06d
+  - Downloading sebastian/environment (7.2.1)
+Downloading https://api.github.com/repos/sebastianbergmann/environment/zipball/a5c75038693ad2e8d4b6c15ba2403532647830c4
+  - Downloading staabm/side-effects-detector (1.0.5)
+  - Downloading sebastian/version (5.0.2)
+  - Downloading sebastian/type (5.1.3)
+  - Downloading sebastian/recursion-context (6.0.3)
+  - Downloading sebastian/object-reflector (4.0.1)
+  - Downloading sebastian/object-enumerator (6.0.1)
+  - Downloading sebastian/global-state (7.0.2)
+  - Downloading sebastian/exporter (6.3.2)
+  - Downloading sebastian/diff (6.0.2)
+  - Downloading sebastian/comparator (6.3.3)
+  - Downloading sebastian/code-unit (3.0.3)
+  - Downloading sebastian/cli-parser (3.0.2)
+  - Downloading phpunit/php-timer (7.0.1)
+  - Downloading phpunit/php-text-template (4.0.1)
+  - Downloading phpunit/php-invoker (5.0.1)
+  - Downloading phpunit/php-file-iterator (5.1.1)
+  - Downloading theseer/tokenizer (1.3.1)
+  - Downloading nikic/php-parser (v5.8.0)
+  - Downloading sebastian/lines-of-code (3.0.1)
+  - Downloading sebastian/complexity (4.0.1)
+  - Downloading sebastian/code-unit-reverse-lookup (4.0.1)
+  - Downloading phpunit/php-code-coverage (11.0.12)
+  - Downloading phar-io/version (3.2.1)
+  - Downloading phar-io/manifest (2.0.4)
+  - Downloading myclabs/deep-copy (1.13.4)
+  - Downloading phpunit/phpunit (11.5.56)
+  - Downloading jean85/pretty-package-versions (2.1.1)
+  - Downloading fidry/cpu-core-counter (1.3.0)
+  - Downloading brianium/paratest (v7.8.5)
+  - Downloading doctrine/inflector (2.1.0)
+  - Downloading doctrine/lexer (3.0.1)
+  - Downloading dragonmantank/cron-expression (v3.6.0)
+  - Downloading fakerphp/faker (v1.24.1)
+  - Downloading symfony/http-foundation (v7.4.16)
+  - Downloading fruitcake/php-cors (v1.4.0)
+  - Downloading symfony/polyfill-php80 (v1.37.0)
+  - Downloading psr/http-message (2.0)
+  - Downloading psr/http-client (1.0.3)
+  - Downloading ralouphie/getallheaders (3.0.3)
+  - Downloading psr/http-factory (1.1.0)
+  - Downloading guzzlehttp/psr7 (2.13.0)
+  - Downloading guzzlehttp/promises (2.5.2)
+  - Downloading guzzlehttp/guzzle (7.15.3)
+  - Downloading guzzlehttp/uri-template (v1.0.10)
+  - Downloading voku/portable-ascii (2.1.1)
+  - Downloading phpoption/phpoption (1.9.5)
+  - Downloading graham-campbell/result-type (v1.1.4)
+  - Downloading vlucas/phpdotenv (v5.6.4)
+  - Downloading symfony/css-selector (v7.4.9)
+  - Downloading tijsverkoyen/css-to-inline-styles (v2.4.0)
+  - Downloading symfony/var-dumper (v7.4.15)
+  - Downloading symfony/polyfill-uuid (v1.37.0)
+  - Downloading symfony/uid (v7.4.9)
+  - Downloading symfony/routing (v7.4.15)
+  - Downloading symfony/polyfill-php85 (v1.41.0)
+  - Downloading symfony/polyfill-php84 (v1.38.1)
+  - Downloading symfony/polyfill-php83 (v1.41.0)
+  - Downloading symfony/polyfill-intl-idn (v1.38.1)
+  - Downloading symfony/mime (v7.4.16)
+  - Downloading psr/event-dispatcher (1.0.0)
+  - Downloading symfony/event-dispatcher-contracts (v3.7.1)
+  - Downloading symfony/event-dispatcher (v7.4.15)
+  - Downloading psr/log (3.0.2)
+  - Downloading egulias/email-validator (4.0.4)
+  - Downloading symfony/mailer (v7.4.15)
+  - Downloading symfony/error-handler (v7.4.15)
+  - Downloading symfony/http-kernel (v7.4.16)
+  - Downloading symfony/finder (v7.4.14)
+  - Downloading ramsey/collection (2.1.1)
+  - Downloading brick/math (0.14.8)
+  - Downloading ramsey/uuid (4.9.3)
+  - Downloading psr/simple-cache (3.0.0)
+  - Downloading nunomaduro/termwind (v2.4.0)
+  - Downloading symfony/translation-contracts (v3.7.1)
+  - Downloading symfony/translation (v7.4.16)
+  - Downloading psr/clock (1.0.0)
+  - Downloading symfony/clock (v7.4.8)
+  - Downloading carbonphp/carbon-doctrine-types (3.2.0)
+  - Downloading nesbot/carbon (3.13.2)
+  - Downloading monolog/monolog (3.10.0)
+  - Downloading league/uri-interfaces (7.8.1)
+  - Downloading league/uri (7.8.1)
+  - Downloading league/mime-type-detection (1.17.0)
+  - Downloading league/flysystem-local (3.31.0)
+  - Downloading league/flysystem (3.35.2)
+  - Downloading nette/utils (v4.1.5)
+  - Downloading nette/schema (v1.3.5)
+  - Downloading dflydev/dot-access-data (v3.0.3)
+  - Downloading league/config (v1.2.0)
+  - Downloading league/commonmark (2.9.2)
+  - Downloading laravel/serializable-closure (v2.0.15)
+  - Downloading laravel/prompts (v0.3.22)
+  - Downloading laravel/framework (v12.65.0)
+  - Downloading laravel/breeze (v2.4.2)
+  - Downloading laravel/pail (v1.2.7)
+  - Downloading laravel/pint (v1.30.4)
+  - Downloading psy/psysh (v0.12.24)
+  - Downloading laravel/tinker (v3.0.2)
+  - Downloading hamcrest/hamcrest-php (v2.1.1)
+  - Downloading mockery/mockery (1.6.12)
+  - Downloading filp/whoops (2.18.4)
+  - Downloading nunomaduro/collision (v8.9.5)
+  - Downloading webmozart/assert (2.4.1)
+  - Downloading phpstan/phpdoc-parser (2.3.3)
+  - Downloading phpdocumentor/reflection-common (2.2.0)
+  - Downloading doctrine/deprecations (1.1.6)
+  - Downloading phpdocumentor/type-resolver (2.0.0)
+  - Downloading phpdocumentor/reflection-docblock (6.0.3)
+  - Downloading ta-tikoma/phpunit-architecture-test (0.8.7)
+  - Downloading pestphp/pest-plugin-arch (v3.1.1)
+  - Downloading pestphp/pest-plugin-mutate (v3.0.5)
+  - Downloading pestphp/pest (v3.8.7)
+  - Downloading pestphp/pest-plugin-laravel (v3.2.0)
+[302] https://api.github.com/repos/symfony/process/zipball/f5804be144caceb570f6747519999636b664f24c
+Following redirect (1) https://codeload.github.com/symfony/process/legacy.zip/f5804be144caceb570f6747519999636b664f24c
+[302] https://api.github.com/repos/symfony/polyfill-mbstring/zipball/d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6
+Following redirect (1) https://codeload.github.com/symfony/polyfill-mbstring/legacy.zip/d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6
+[302] https://api.github.com/repos/symfony/polyfill-intl-grapheme/zipball/bb899c1db0aa8127dc3afe8cda4a67eb24915f8d
+Following redirect (1) https://codeload.github.com/symfony/polyfill-intl-grapheme/legacy.zip/bb899c1db0aa8127dc3afe8cda4a67eb24915f8d
+[302] https://api.github.com/repos/symfony/polyfill-ctype/zipball/141046a8f9477948ff284fa65be2095baafb94f2
+Following redirect (1) https://codeload.github.com/symfony/polyfill-ctype/legacy.zip/141046a8f9477948ff284fa65be2095baafb94f2
+[302] https://api.github.com/repos/symfony/deprecation-contracts/zipball/f3202fa1b5097b0af062dc978b32ecf63404e31d
+Following redirect (1) https://codeload.github.com/symfony/deprecation-contracts/legacy.zip/f3202fa1b5097b0af062dc978b32ecf63404e31d
+[302] https://api.github.com/repos/php-fig/container/zipball/c71ecc56dfe541dbd90c5360474fbc405f8d5963
+Following redirect (1) https://codeload.github.com/php-fig/container/legacy.zip/c71ecc56dfe541dbd90c5360474fbc405f8d5963
+[302] https://api.github.com/repos/symfony/service-contracts/zipball/c0a284bab1ed8aa0417e3d69250ab437739563a0
+Following redirect (1) https://codeload.github.com/symfony/service-contracts/legacy.zip/c0a284bab1ed8aa0417e3d69250ab437739563a0
+[302] https://api.github.com/repos/symfony/console/zipball/f4c69c9aed03abf933b294257d618bdd9b30a06d
+Following redirect (1) https://codeload.github.com/symfony/console/legacy.zip/f4c69c9aed03abf933b294257d618bdd9b30a06d
+[302] https://api.github.com/repos/symfony/string/zipball/e394af32256bf9e7bf80849d95e589167c10097b
+Following redirect (1) https://codeload.github.com/symfony/string/legacy.zip/e394af32256bf9e7bf80849d95e589167c10097b
+[302] https://api.github.com/repos/symfony/polyfill-intl-normalizer/zipball/2d446c214bdbe5b71bde5011b060a05fece3ae6b
+Following redirect (1) https://codeload.github.com/symfony/polyfill-intl-normalizer/legacy.zip/2d446c214bdbe5b71bde5011b060a05fece3ae6b
+[302] https://api.github.com/repos/pestphp/pest-plugin/zipball/e79b26c65bc11c41093b10150c1341cc5cdbea83
+Following redirect (1) https://codeload.github.com/pestphp/pest-plugin/legacy.zip/e79b26c65bc11c41093b10150c1341cc5cdbea83
+[302] https://api.github.com/repos/sebastianbergmann/environment/zipball/a5c75038693ad2e8d4b6c15ba2403532647830c4
+Following redirect (1) https://codeload.github.com/sebastianbergmann/environment/legacy.zip/a5c75038693ad2e8d4b6c15ba2403532647830c4
+[200] https://codeload.github.com/symfony/polyfill-intl-grapheme/legacy.zip/bb899c1db0aa8127dc3afe8cda4a67eb24915f8d
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/polyfill-intl-grapheme/b5c5e673877febc30eddd5af03da89f6693736bb.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-68623e01b97de4474911bbc2db3b8668.zip
+Downloading https://api.github.com/repos/staabm/side-effects-detector/zipball/d8334211a140ce329c13726d4a715adbddd0a163
+[200] https://codeload.github.com/php-fig/container/legacy.zip/c71ecc56dfe541dbd90c5360474fbc405f8d5963
+Writing D:\xampp\htdocs\TA\.composer-cache/files/psr/container/a0a43e15cb16e3ab95a991e1bffc813474b15cdf.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-8b96610d0b7af0c584fee92772f23157.zip
+Downloading https://api.github.com/repos/sebastianbergmann/version/zipball/c687e3387b99f5b03b6caa64c74b63e2936ff874
+[200] https://codeload.github.com/symfony/polyfill-mbstring/legacy.zip/d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/polyfill-mbstring/7e0e0f8a4da61beb647238b36e5407dfcccee285.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-377eda1e011d5077fc9b07a02d50f9aa.zip
+Downloading https://api.github.com/repos/sebastianbergmann/type/zipball/f77d2d4e78738c98d9a68d2596fe5e8fa380f449
+[302] https://api.github.com/repos/staabm/side-effects-detector/zipball/d8334211a140ce329c13726d4a715adbddd0a163
+Following redirect (1) https://codeload.github.com/staabm/side-effects-detector/legacy.zip/d8334211a140ce329c13726d4a715adbddd0a163
+[200] https://codeload.github.com/symfony/polyfill-ctype/legacy.zip/141046a8f9477948ff284fa65be2095baafb94f2
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/polyfill-ctype/073aefdee0b8090e5fd5ba584972967d92c8a9f4.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-ae7dd63b998214160f99a3c6048ea54f.zip
+[200] https://codeload.github.com/symfony/deprecation-contracts/legacy.zip/f3202fa1b5097b0af062dc978b32ecf63404e31d
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/deprecation-contracts/4b38c947e19afd276ca4427b06df9c85c6876740.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-628fce5ab452f0b7446a58fa515208e8.zip
+Downloading https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/f6458abbf32a6c8174f8f26261475dc133b3d9dc
+Downloading https://api.github.com/repos/sebastianbergmann/object-reflector/zipball/6e1a43b411b2ad34146dee7524cb13a068bb35f9
+[200] https://codeload.github.com/symfony/service-contracts/legacy.zip/c0a284bab1ed8aa0417e3d69250ab437739563a0
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/service-contracts/72a9027702cfd5113dfbf9ebe31f097bd5bcbf12.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-8dfec7477b5b50df4f8c22936353b33b.zip
+Downloading https://api.github.com/repos/sebastianbergmann/object-enumerator/zipball/f5b498e631a74204185071eb41f33f38d64608aa
+[302] https://api.github.com/repos/sebastianbergmann/version/zipball/c687e3387b99f5b03b6caa64c74b63e2936ff874
+Following redirect (1) https://codeload.github.com/sebastianbergmann/version/legacy.zip/c687e3387b99f5b03b6caa64c74b63e2936ff874
+[302] https://api.github.com/repos/sebastianbergmann/type/zipball/f77d2d4e78738c98d9a68d2596fe5e8fa380f449
+Following redirect (1) https://codeload.github.com/sebastianbergmann/type/legacy.zip/f77d2d4e78738c98d9a68d2596fe5e8fa380f449
+[302] https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/f6458abbf32a6c8174f8f26261475dc133b3d9dc
+Following redirect (1) https://codeload.github.com/sebastianbergmann/recursion-context/legacy.zip/f6458abbf32a6c8174f8f26261475dc133b3d9dc
+[302] https://api.github.com/repos/sebastianbergmann/object-reflector/zipball/6e1a43b411b2ad34146dee7524cb13a068bb35f9
+Following redirect (1) https://codeload.github.com/sebastianbergmann/object-reflector/legacy.zip/6e1a43b411b2ad34146dee7524cb13a068bb35f9
+[200] https://codeload.github.com/symfony/process/legacy.zip/f5804be144caceb570f6747519999636b664f24c
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/process/27c102cf2d82dc10eef14bf4f14cd86966f5d25f.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-006232050cd6044e4d3cb7401b322f03.zip
+[200] https://codeload.github.com/pestphp/pest-plugin/legacy.zip/e79b26c65bc11c41093b10150c1341cc5cdbea83
+Writing D:\xampp\htdocs\TA\.composer-cache/files/pestphp/pest-plugin/fb54d7d7aa6248a42f2c5bbb8733627970bcdb0e.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-d0a67ce3c80852808b9950ff0d161ef1.zip
+Downloading https://api.github.com/repos/sebastianbergmann/global-state/zipball/3be331570a721f9a4b5917f4209773de17f747d7
+Downloading https://api.github.com/repos/sebastianbergmann/exporter/zipball/70a298763b40b213ec087c51c739efcaa90bcd74
+[302] https://api.github.com/repos/sebastianbergmann/object-enumerator/zipball/f5b498e631a74204185071eb41f33f38d64608aa
+Following redirect (1) https://codeload.github.com/sebastianbergmann/object-enumerator/legacy.zip/f5b498e631a74204185071eb41f33f38d64608aa
+[200] https://codeload.github.com/symfony/polyfill-intl-normalizer/legacy.zip/2d446c214bdbe5b71bde5011b060a05fece3ae6b
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/polyfill-intl-normalizer/62dc16c59f281814a2eefdeb26c97207b5e7b2ff.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-6e6e4f45c59a2d510d727c357cf73e54.zip
+Downloading https://api.github.com/repos/sebastianbergmann/diff/zipball/b4ccd857127db5d41a5b676f24b51371d76d8544
+[302] https://api.github.com/repos/sebastianbergmann/exporter/zipball/70a298763b40b213ec087c51c739efcaa90bcd74
+Following redirect (1) https://codeload.github.com/sebastianbergmann/exporter/legacy.zip/70a298763b40b213ec087c51c739efcaa90bcd74
+[302] https://api.github.com/repos/sebastianbergmann/global-state/zipball/3be331570a721f9a4b5917f4209773de17f747d7
+Following redirect (1) https://codeload.github.com/sebastianbergmann/global-state/legacy.zip/3be331570a721f9a4b5917f4209773de17f747d7
+[200] https://codeload.github.com/symfony/string/legacy.zip/e394af32256bf9e7bf80849d95e589167c10097b
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/string/5b3148bc1aa329bdc2d8bf1d00ad87ce573f1b54.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-a8cd5b2434e028115218fd30d97b62fe.zip
+Downloading https://api.github.com/repos/sebastianbergmann/comparator/zipball/2c95e1e86cb8dd41beb8d502057d1081ccc8eca9
+[302] https://api.github.com/repos/sebastianbergmann/diff/zipball/b4ccd857127db5d41a5b676f24b51371d76d8544
+Following redirect (1) https://codeload.github.com/sebastianbergmann/diff/legacy.zip/b4ccd857127db5d41a5b676f24b51371d76d8544
+[200] https://codeload.github.com/sebastianbergmann/environment/legacy.zip/a5c75038693ad2e8d4b6c15ba2403532647830c4
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/environment/cf5ab7f5fe47d4e3f2f06963fc54f445437e07b5.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-00e9dd0fb1d72a2dffba99c32f0830f5.zip
+Downloading https://api.github.com/repos/sebastianbergmann/code-unit/zipball/54391c61e4af8078e5b276ab082b6d3c54c9ad64
+[200] https://codeload.github.com/staabm/side-effects-detector/legacy.zip/d8334211a140ce329c13726d4a715adbddd0a163
+Writing D:\xampp\htdocs\TA\.composer-cache/files/staabm/side-effects-detector/1bf967123c8eab6ad3b7d10ead807723f1487787.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-daf18c9bc01dbdd7ef1c6788a2bfaaf7.zip
+Downloading https://api.github.com/repos/sebastianbergmann/cli-parser/zipball/15c5dd40dc4f38794d383bb95465193f5e0ae180
+[302] https://api.github.com/repos/sebastianbergmann/code-unit/zipball/54391c61e4af8078e5b276ab082b6d3c54c9ad64
+Following redirect (1) https://codeload.github.com/sebastianbergmann/code-unit/legacy.zip/54391c61e4af8078e5b276ab082b6d3c54c9ad64
+[200] https://codeload.github.com/sebastianbergmann/version/legacy.zip/c687e3387b99f5b03b6caa64c74b63e2936ff874
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/version/9ddbebb2770481511eebf896351b698dbecd27a2.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-d0aef7a3aea28b7dc7952335cdb10767.zip
+[302] https://api.github.com/repos/sebastianbergmann/comparator/zipball/2c95e1e86cb8dd41beb8d502057d1081ccc8eca9
+Following redirect (1) https://codeload.github.com/sebastianbergmann/comparator/legacy.zip/2c95e1e86cb8dd41beb8d502057d1081ccc8eca9
+Downloading https://api.github.com/repos/sebastianbergmann/php-timer/zipball/3b415def83fbcb41f991d9ebf16ae4ad8b7837b3
+[200] https://codeload.github.com/sebastianbergmann/type/legacy.zip/f77d2d4e78738c98d9a68d2596fe5e8fa380f449
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/type/c6434468ffbe290c2d799c4685a8a43b9eca5810.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-983140f4f7550cc4dae39a977624765a.zip
+[302] https://api.github.com/repos/sebastianbergmann/cli-parser/zipball/15c5dd40dc4f38794d383bb95465193f5e0ae180
+Following redirect (1) https://codeload.github.com/sebastianbergmann/cli-parser/legacy.zip/15c5dd40dc4f38794d383bb95465193f5e0ae180
+Downloading https://api.github.com/repos/sebastianbergmann/php-text-template/zipball/3e0404dc6b300e6bf56415467ebcb3fe4f33e964
+[200] https://codeload.github.com/sebastianbergmann/recursion-context/legacy.zip/f6458abbf32a6c8174f8f26261475dc133b3d9dc
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/recursion-context/46e9bd9ce336eb48003f49f17c801f4e9c0041d7.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-c863f3c1ba02639e12ec07724dfba53d.zip
+Downloading https://api.github.com/repos/sebastianbergmann/php-invoker/zipball/c1ca3814734c07492b3d4c5f794f4b0995333da2
+[302] https://api.github.com/repos/sebastianbergmann/php-timer/zipball/3b415def83fbcb41f991d9ebf16ae4ad8b7837b3
+Following redirect (1) https://codeload.github.com/sebastianbergmann/php-timer/legacy.zip/3b415def83fbcb41f991d9ebf16ae4ad8b7837b3
+[200] https://codeload.github.com/sebastianbergmann/exporter/legacy.zip/70a298763b40b213ec087c51c739efcaa90bcd74
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/exporter/ae15d093bd539f8c9df1e68841b0091ef1aefea5.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-b3af7d5c0bc815420ba4562a54d7a9fc.zip
+Downloading https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/2f3a64888c814fc235386b7387dd5b5ed92ad903
+[200] https://codeload.github.com/sebastianbergmann/object-reflector/legacy.zip/6e1a43b411b2ad34146dee7524cb13a068bb35f9
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/object-reflector/b2aeb04d3fb5de6adb035b4a337b85f005260f1e.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-efff55bddc2f9b1229c09dfee3dff4eb.zip
+Downloading https://api.github.com/repos/theseer/tokenizer/zipball/b7489ce515e168639d17feec34b8847c326b0b3c
+[200] https://codeload.github.com/sebastianbergmann/global-state/legacy.zip/3be331570a721f9a4b5917f4209773de17f747d7
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/global-state/b54b251ba4c376fe9a45e0fc562f49a74f58ef37.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-781f31ebb85474133ed88528b5b6163a.zip
+Downloading https://api.github.com/repos/nikic/PHP-Parser/zipball/044a6a392ff8ad0d61f14370a5fbbd0a0107152f
+[200] https://codeload.github.com/sebastianbergmann/object-enumerator/legacy.zip/f5b498e631a74204185071eb41f33f38d64608aa
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/object-enumerator/73bb37c12489ebeda374915dc48be1b969d6fc08.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-042ed1717492db7e2ccea2872c36dce9.zip
+Downloading https://api.github.com/repos/sebastianbergmann/lines-of-code/zipball/d36ad0d782e5756913e42ad87cb2890f4ffe467a
+[302] https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/2f3a64888c814fc235386b7387dd5b5ed92ad903
+Following redirect (1) https://codeload.github.com/sebastianbergmann/php-file-iterator/legacy.zip/2f3a64888c814fc235386b7387dd5b5ed92ad903
+[302] https://api.github.com/repos/theseer/tokenizer/zipball/b7489ce515e168639d17feec34b8847c326b0b3c
+Following redirect (1) https://codeload.github.com/theseer/tokenizer/legacy.zip/b7489ce515e168639d17feec34b8847c326b0b3c
+[302] https://api.github.com/repos/nikic/PHP-Parser/zipball/044a6a392ff8ad0d61f14370a5fbbd0a0107152f
+Following redirect (1) https://codeload.github.com/nikic/PHP-Parser/legacy.zip/044a6a392ff8ad0d61f14370a5fbbd0a0107152f
+[200] https://codeload.github.com/sebastianbergmann/diff/legacy.zip/b4ccd857127db5d41a5b676f24b51371d76d8544
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/diff/4d29218c6f97167a77d625595048d51bd7bd6db7.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-bdfca8bc6c56e52700f24848fdd6961b.zip
+Downloading https://api.github.com/repos/sebastianbergmann/complexity/zipball/ee41d384ab1906c68852636b6de493846e13e5a0
+[302] https://api.github.com/repos/sebastianbergmann/php-text-template/zipball/3e0404dc6b300e6bf56415467ebcb3fe4f33e964
+Following redirect (1) https://codeload.github.com/sebastianbergmann/php-text-template/legacy.zip/3e0404dc6b300e6bf56415467ebcb3fe4f33e964
+[302] https://api.github.com/repos/sebastianbergmann/php-invoker/zipball/c1ca3814734c07492b3d4c5f794f4b0995333da2
+Following redirect (1) https://codeload.github.com/sebastianbergmann/php-invoker/legacy.zip/c1ca3814734c07492b3d4c5f794f4b0995333da2
+[302] https://api.github.com/repos/sebastianbergmann/complexity/zipball/ee41d384ab1906c68852636b6de493846e13e5a0
+Following redirect (1) https://codeload.github.com/sebastianbergmann/complexity/legacy.zip/ee41d384ab1906c68852636b6de493846e13e5a0
+[302] https://api.github.com/repos/sebastianbergmann/lines-of-code/zipball/d36ad0d782e5756913e42ad87cb2890f4ffe467a
+Following redirect (1) https://codeload.github.com/sebastianbergmann/lines-of-code/legacy.zip/d36ad0d782e5756913e42ad87cb2890f4ffe467a
+[200] https://codeload.github.com/sebastianbergmann/code-unit/legacy.zip/54391c61e4af8078e5b276ab082b6d3c54c9ad64
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/code-unit/947384bfe4963b28ba6df88b7f8535d68314519a.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-787cb6fe571ac0082d7a1009202bf4ba.zip
+Downloading https://api.github.com/repos/sebastianbergmann/code-unit-reverse-lookup/zipball/183a9b2632194febd219bb9246eee421dad8d45e
+[200] https://codeload.github.com/sebastianbergmann/comparator/legacy.zip/2c95e1e86cb8dd41beb8d502057d1081ccc8eca9
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/comparator/cbe10657e101ada0c28206e919bec9a38f848d8d.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-0f020eb368aa5d78623b86e7f2acdffe.zip
+Downloading https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2c1ed04922802c15e1de5d7447b4856de949cf56
+[200] https://codeload.github.com/sebastianbergmann/cli-parser/legacy.zip/15c5dd40dc4f38794d383bb95465193f5e0ae180
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/cli-parser/7917b42dccf77da5de05886328cbe90c9c6e9fe1.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-0eee818b082859f02951a26e19ec5877.zip
+Downloading https://api.github.com/repos/phar-io/version/zipball/4f7fd7836c6f332bb2933569e566a0d6c4cbed74
+[302] https://api.github.com/repos/sebastianbergmann/code-unit-reverse-lookup/zipball/183a9b2632194febd219bb9246eee421dad8d45e
+Following redirect (1) https://codeload.github.com/sebastianbergmann/code-unit-reverse-lookup/legacy.zip/183a9b2632194febd219bb9246eee421dad8d45e
+[200] https://codeload.github.com/sebastianbergmann/php-timer/legacy.zip/3b415def83fbcb41f991d9ebf16ae4ad8b7837b3
+Writing D:\xampp\htdocs\TA\.composer-cache/files/phpunit/php-timer/2645f4227496336a2aeb8bec0d8e3f16e20fd3f9.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-81e855348ef88ab4970dbae1a9de51a1.zip
+Downloading https://api.github.com/repos/phar-io/manifest/zipball/54750ef60c58e43759730615a392c31c80e23176
+[200] https://codeload.github.com/sebastianbergmann/php-file-iterator/legacy.zip/2f3a64888c814fc235386b7387dd5b5ed92ad903
+Writing D:\xampp\htdocs\TA\.composer-cache/files/phpunit/php-file-iterator/422245dcbd611339716ab749b013738aa6c8a17c.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-b14afb97599368cbeccd176b20254d05.zip
+Downloading https://api.github.com/repos/myclabs/DeepCopy/zipball/07d290f0c47959fd5eed98c95ee5602db07e0b6a
+[200] https://codeload.github.com/theseer/tokenizer/legacy.zip/b7489ce515e168639d17feec34b8847c326b0b3c
+Writing D:\xampp\htdocs\TA\.composer-cache/files/theseer/tokenizer/447a6cd5e755ca245b2193551de2428ee70ed16c.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-13b5ac14169f10bbcad1e2372195086c.zip
+Downloading https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5f83edffa6967c3db468d48a695ec7bcb02e9256
+[302] https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2c1ed04922802c15e1de5d7447b4856de949cf56
+Following redirect (1) https://codeload.github.com/sebastianbergmann/php-code-coverage/legacy.zip/2c1ed04922802c15e1de5d7447b4856de949cf56
+[302] https://api.github.com/repos/phar-io/version/zipball/4f7fd7836c6f332bb2933569e566a0d6c4cbed74
+Following redirect (1) https://codeload.github.com/phar-io/version/legacy.zip/4f7fd7836c6f332bb2933569e566a0d6c4cbed74
+[302] https://api.github.com/repos/phar-io/manifest/zipball/54750ef60c58e43759730615a392c31c80e23176
+Following redirect (1) https://codeload.github.com/phar-io/manifest/legacy.zip/54750ef60c58e43759730615a392c31c80e23176
+[200] https://codeload.github.com/symfony/console/legacy.zip/f4c69c9aed03abf933b294257d618bdd9b30a06d
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/console/7e54f61bb34f40605acc2a2f48588370eb3b52fd.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-f6e9863df072c86cfc733b62984d88ba.zip
+[302] https://api.github.com/repos/myclabs/DeepCopy/zipball/07d290f0c47959fd5eed98c95ee5602db07e0b6a
+Following redirect (1) https://codeload.github.com/myclabs/DeepCopy/legacy.zip/07d290f0c47959fd5eed98c95ee5602db07e0b6a
+Downloading https://api.github.com/repos/Jean85/pretty-package-versions/zipball/4d7aa5dab42e2a76d99559706022885de0e18e1a
+[302] https://api.github.com/repos/Jean85/pretty-package-versions/zipball/4d7aa5dab42e2a76d99559706022885de0e18e1a
+Following redirect (1) https://codeload.github.com/Jean85/pretty-package-versions/legacy.zip/4d7aa5dab42e2a76d99559706022885de0e18e1a
+[302] https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5f83edffa6967c3db468d48a695ec7bcb02e9256
+Following redirect (1) https://codeload.github.com/sebastianbergmann/phpunit/legacy.zip/5f83edffa6967c3db468d48a695ec7bcb02e9256
+[200] https://codeload.github.com/nikic/PHP-Parser/legacy.zip/044a6a392ff8ad0d61f14370a5fbbd0a0107152f
+Writing D:\xampp\htdocs\TA\.composer-cache/files/nikic/php-parser/da1fb1eada44974cbace5b3541c9c3b8c325ee62.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-341be2c4ba667180fb047f238c9ff23f.zip
+Downloading https://api.github.com/repos/theofidry/cpu-core-counter/zipball/db9508f7b1474469d9d3c53b86f817e344732678
+[200] https://codeload.github.com/sebastianbergmann/php-text-template/legacy.zip/3e0404dc6b300e6bf56415467ebcb3fe4f33e964
+Writing D:\xampp\htdocs\TA\.composer-cache/files/phpunit/php-text-template/f890fdccec46940b4633ad050967fc9e1ba119d4.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-af787d5138a65a95664246bd707cce9a.zip
+[200] https://codeload.github.com/sebastianbergmann/php-invoker/legacy.zip/c1ca3814734c07492b3d4c5f794f4b0995333da2
+Writing D:\xampp\htdocs\TA\.composer-cache/files/phpunit/php-invoker/fa21284bd3106889eb5c308e4f8977dcef31b122.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-ad2ecdf45f00cc41f3e0e943600b199a.zip
+Downloading https://api.github.com/repos/paratestphp/paratest/zipball/9b324c8fc319cf9728b581c7a90e1c8f6361c5e5
+Downloading https://api.github.com/repos/doctrine/inflector/zipball/6d6c96277ea252fc1304627204c3d5e6e15faa3b
+[200] https://codeload.github.com/sebastianbergmann/lines-of-code/legacy.zip/d36ad0d782e5756913e42ad87cb2890f4ffe467a
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/lines-of-code/40e8c68a54c248cd88c0c780f1bcee0e988b9921.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-53c93b8c1c4ec8268561dd1fa52f511c.zip
+Downloading https://api.github.com/repos/doctrine/lexer/zipball/31ad66abc0fc9e1a1f2d9bc6a42668d2fbbcd6dd
+[302] https://api.github.com/repos/theofidry/cpu-core-counter/zipball/db9508f7b1474469d9d3c53b86f817e344732678
+Following redirect (1) https://codeload.github.com/theofidry/cpu-core-counter/legacy.zip/db9508f7b1474469d9d3c53b86f817e344732678
+[200] https://codeload.github.com/sebastianbergmann/complexity/legacy.zip/ee41d384ab1906c68852636b6de493846e13e5a0
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/complexity/b30b4cd96bb79d012e4c35ce2e0897e9fa3a4fb2.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-d85b79bf3acc29d61e38e1399ecdae47.zip
+[200] https://codeload.github.com/sebastianbergmann/code-unit-reverse-lookup/legacy.zip/183a9b2632194febd219bb9246eee421dad8d45e
+Writing D:\xampp\htdocs\TA\.composer-cache/files/sebastian/code-unit-reverse-lookup/e647f1c3c3ac8eea993465f59c793cde56424acd.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-83945b14ed9fe3eb1902f3865a8f293a.zip
+Downloading https://api.github.com/repos/dragonmantank/cron-expression/zipball/d61a8a9604ec1f8c3d150d09db6ce98b32675013
+Downloading https://api.github.com/repos/FakerPHP/Faker/zipball/e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5
+[302] https://api.github.com/repos/doctrine/inflector/zipball/6d6c96277ea252fc1304627204c3d5e6e15faa3b
+Following redirect (1) https://codeload.github.com/doctrine/inflector/legacy.zip/6d6c96277ea252fc1304627204c3d5e6e15faa3b
+[302] https://api.github.com/repos/doctrine/lexer/zipball/31ad66abc0fc9e1a1f2d9bc6a42668d2fbbcd6dd
+Following redirect (1) https://codeload.github.com/doctrine/lexer/legacy.zip/31ad66abc0fc9e1a1f2d9bc6a42668d2fbbcd6dd
+[302] https://api.github.com/repos/dragonmantank/cron-expression/zipball/d61a8a9604ec1f8c3d150d09db6ce98b32675013
+Following redirect (1) https://codeload.github.com/dragonmantank/cron-expression/legacy.zip/d61a8a9604ec1f8c3d150d09db6ce98b32675013
+[302] https://api.github.com/repos/FakerPHP/Faker/zipball/e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5
+Following redirect (1) https://codeload.github.com/FakerPHP/Faker/legacy.zip/e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5
+[302] https://api.github.com/repos/paratestphp/paratest/zipball/9b324c8fc319cf9728b581c7a90e1c8f6361c5e5
+Following redirect (1) https://codeload.github.com/paratestphp/paratest/legacy.zip/9b324c8fc319cf9728b581c7a90e1c8f6361c5e5
+[200] https://codeload.github.com/Jean85/pretty-package-versions/legacy.zip/4d7aa5dab42e2a76d99559706022885de0e18e1a
+Writing D:\xampp\htdocs\TA\.composer-cache/files/jean85/pretty-package-versions/ae474ca8a802a5331cabaf7a0dd20d7ae1c3af8e.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-9260a0c35ad784b5c201399fed6d84e0.zip
+Downloading https://api.github.com/repos/symfony/http-foundation/zipball/b676451bb638e99a7d34d8a2be90406822e301eb
+[302] https://api.github.com/repos/symfony/http-foundation/zipball/b676451bb638e99a7d34d8a2be90406822e301eb
+Following redirect (1) https://codeload.github.com/symfony/http-foundation/legacy.zip/b676451bb638e99a7d34d8a2be90406822e301eb
+[200] https://codeload.github.com/phar-io/version/legacy.zip/4f7fd7836c6f332bb2933569e566a0d6c4cbed74
+Writing D:\xampp\htdocs\TA\.composer-cache/files/phar-io/version/1495d1d88b1ae7e031b437037ce96298d897a969.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-8a262bb9d19a515cff5b0bfe6aa8bf67.zip
+[200] https://codeload.github.com/phar-io/manifest/legacy.zip/54750ef60c58e43759730615a392c31c80e23176
+Writing D:\xampp\htdocs\TA\.composer-cache/files/phar-io/manifest/76bff606ca30e559b645a1f35d005f1f29c3c86e.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-844288fe3307ecdcd237d36e210d1e10.zip
+Downloading https://api.github.com/repos/fruitcake/php-cors/zipball/38aaa6c3fd4c157ffe2a4d10aa8b9b16ba8de379
+Downloading https://api.github.com/repos/symfony/polyfill-php80/zipball/dfb55726c3a76ea3b6459fcfda1ec2d80a682411
+[200] https://codeload.github.com/myclabs/DeepCopy/legacy.zip/07d290f0c47959fd5eed98c95ee5602db07e0b6a
+Writing D:\xampp\htdocs\TA\.composer-cache/files/myclabs/deep-copy/ee382bea4b497f734eb64325af8725e5f3ffc151.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-5ff319bc7382067f9b4544555c568cd6.zip
+Downloading https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71
+[302] https://api.github.com/repos/fruitcake/php-cors/zipball/38aaa6c3fd4c157ffe2a4d10aa8b9b16ba8de379
+Following redirect (1) https://codeload.github.com/fruitcake/php-cors/legacy.zip/38aaa6c3fd4c157ffe2a4d10aa8b9b16ba8de379
+[302] https://api.github.com/repos/symfony/polyfill-php80/zipball/dfb55726c3a76ea3b6459fcfda1ec2d80a682411
+Following redirect (1) https://codeload.github.com/symfony/polyfill-php80/legacy.zip/dfb55726c3a76ea3b6459fcfda1ec2d80a682411
+[302] https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71
+Following redirect (1) https://codeload.github.com/php-fig/http-message/legacy.zip/402d35bcb92c70c026d1a6a9883f06b2ead23d71
+[200] https://codeload.github.com/sebastianbergmann/php-code-coverage/legacy.zip/2c1ed04922802c15e1de5d7447b4856de949cf56
+Writing D:\xampp\htdocs\TA\.composer-cache/files/phpunit/php-code-coverage/2d517a1e0d9b179c305c1a4d910e0a4b159cebcb.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-67252ebd72392263bfc7a361825fb2c5.zip
+Downloading https://api.github.com/repos/php-fig/http-client/zipball/bb5906edc1c324c9a05aa0873d40117941e5fa90
+[302] https://api.github.com/repos/php-fig/http-client/zipball/bb5906edc1c324c9a05aa0873d40117941e5fa90
+Following redirect (1) https://codeload.github.com/php-fig/http-client/legacy.zip/bb5906edc1c324c9a05aa0873d40117941e5fa90
+[200] https://codeload.github.com/doctrine/lexer/legacy.zip/31ad66abc0fc9e1a1f2d9bc6a42668d2fbbcd6dd
+Writing D:\xampp\htdocs\TA\.composer-cache/files/doctrine/lexer/16a5c8a6d88bc11d6da175a7b0ff18e504449819.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-cd3ca656be46af4b705394159377fefa.zip
+Downloading https://api.github.com/repos/ralouphie/getallheaders/zipball/120b605dfeb996808c31b6477290a714d356e822
+[302] https://api.github.com/repos/ralouphie/getallheaders/zipball/120b605dfeb996808c31b6477290a714d356e822
+Following redirect (1) https://codeload.github.com/ralouphie/getallheaders/legacy.zip/120b605dfeb996808c31b6477290a714d356e822
+[200] https://codeload.github.com/dragonmantank/cron-expression/legacy.zip/d61a8a9604ec1f8c3d150d09db6ce98b32675013
+Writing D:\xampp\htdocs\TA\.composer-cache/files/dragonmantank/cron-expression/369da4997665b95f57c6c937d6ebdb4b77740272.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-35cd601d81284179cf6f243ad55a92b2.zip
+Downloading https://api.github.com/repos/php-fig/http-factory/zipball/2b4765fddfe3b508ac62f829e852b1501d3f6e8a
+[302] https://api.github.com/repos/php-fig/http-factory/zipball/2b4765fddfe3b508ac62f829e852b1501d3f6e8a
+Following redirect (1) https://codeload.github.com/php-fig/http-factory/legacy.zip/2b4765fddfe3b508ac62f829e852b1501d3f6e8a
+[200] https://codeload.github.com/doctrine/inflector/legacy.zip/6d6c96277ea252fc1304627204c3d5e6e15faa3b
+Writing D:\xampp\htdocs\TA\.composer-cache/files/doctrine/inflector/656b3f4af0ba8dadbb18bcbf1e825741bfba578b.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-d37f795ab0dce99f58de244d99faa66a.zip
+Downloading https://api.github.com/repos/guzzle/psr7/zipball/dad89620b7a6edb60c15858442eb2e408b45d8f4
+[302] https://api.github.com/repos/guzzle/psr7/zipball/dad89620b7a6edb60c15858442eb2e408b45d8f4
+Following redirect (1) https://codeload.github.com/guzzle/psr7/legacy.zip/dad89620b7a6edb60c15858442eb2e408b45d8f4
+[200] https://codeload.github.com/paratestphp/paratest/legacy.zip/9b324c8fc319cf9728b581c7a90e1c8f6361c5e5
+Writing D:\xampp\htdocs\TA\.composer-cache/files/brianium/paratest/c03367b76bb3b1d0fadd7f138b03037619f4a6c3.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-ae9ad86d406b8077f0d30a7c6ae9e6c4.zip
+Downloading https://api.github.com/repos/guzzle/promises/zipball/2823687acff28b2dbe67b2508a6b300e2c3fa4ce
+[302] https://api.github.com/repos/guzzle/promises/zipball/2823687acff28b2dbe67b2508a6b300e2c3fa4ce
+Following redirect (1) https://codeload.github.com/guzzle/promises/legacy.zip/2823687acff28b2dbe67b2508a6b300e2c3fa4ce
+[200] https://codeload.github.com/theofidry/cpu-core-counter/legacy.zip/db9508f7b1474469d9d3c53b86f817e344732678
+Writing D:\xampp\htdocs\TA\.composer-cache/files/fidry/cpu-core-counter/6c1b2f870b6195cfd75df0a853cb05025c567f72.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-15423c17b2e7e57d6a2f29e5bcdda570.zip
+Downloading https://api.github.com/repos/guzzle/guzzle/zipball/ae311b8f045ea93ce7b1c9cdb7cec06c53f944bc
+[302] https://api.github.com/repos/guzzle/guzzle/zipball/ae311b8f045ea93ce7b1c9cdb7cec06c53f944bc
+Following redirect (1) https://codeload.github.com/guzzle/guzzle/legacy.zip/ae311b8f045ea93ce7b1c9cdb7cec06c53f944bc
+[200] https://codeload.github.com/fruitcake/php-cors/legacy.zip/38aaa6c3fd4c157ffe2a4d10aa8b9b16ba8de379
+Writing D:\xampp\htdocs\TA\.composer-cache/files/fruitcake/php-cors/1158044facb9562b3a6cfc303879b660296f1c0c.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-f48873add4f3bce35539c31ac63668c6.zip
+[200] https://codeload.github.com/symfony/polyfill-php80/legacy.zip/dfb55726c3a76ea3b6459fcfda1ec2d80a682411
+Writing D:\xampp\htdocs\TA\.composer-cache/files/symfony/polyfill-php80/5726adf1d98471038cbeae462d6f49a7eaeefabf.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-b396aa9ed14c6605bff15d9fa7052fd1.zip
+[200] https://codeload.github.com/php-fig/http-client/legacy.zip/bb5906edc1c324c9a05aa0873d40117941e5fa90
+Writing D:\xampp\htdocs\TA\.composer-cache/files/psr/http-client/8a0eb9bbf4ceddbff9fd328c582c07269c8888ab.zip into cache from D:\xampp\htdocs\TA/vendor/composer/tmp-0809ef2ce1c35e5aefaa2ed1315b5e4c.zip
+Downloading https://api.github.com/repos/guzzle/uri-template/zipball/f6c24c21f42b990e9a58912b332d0874df6ba839
+Downloading https://api.github.com/repos/voku/portable-ascii/zipball/8e1051fe39379367aecf014f41744ce7539a856f
+Downloading https://api.github.com/repos/schmittjoh/php-option/zipball/75365b91986c2405cf5e1e012c5595cd487a98be
+[302] https://api.github.com/repos/guzzle/uri-template/zipball/f6c24c21f42b990e9a58912b332d0874df6ba839
+Following redirect (1) https://codeload.github.com/guzzle/uri-template/legacy.zip/f6c24c21f42b990e9a58912b332d0874df6ba839
+[302] https://api.github.com/repos/voku/portable-ascii/zipball/8e1051fe39379367aecf014f41744ce7539a856f
+Following redirect (1) https://codeload.github.com/voku/portable-ascii/legacy.zip/8e1051fe39379367aecf014f41744ce7539a856f
+[302] https://api.github.com/repos/schmittjoh/php-option/zipball/75365b91986c2405cf5e1e012c5595cd487a98be
+Following redirect (1) https://codeload.github.com/schmittjoh/php-option/legacy.zip/75365b91986c2405cf5e1e012c5595cd487a98be
