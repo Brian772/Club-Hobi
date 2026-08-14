@@ -528,6 +528,14 @@ body {
     border-radius: 50%;
 }
 
+#avatar-preview-wrap{
+    position: relative; /* Menahan #avatar-preview agar tidak meluap keluar */
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
 .upload-icon {
     width: 108px;
     height: 108px;

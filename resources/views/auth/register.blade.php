@@ -28,7 +28,7 @@
           <div class="form-group">
             <x-input-label for="email" :value="__('Email')" />
             <input type="email" id="email" name="email" value="{{ old('email') }}"
-              placeholder="Example @ example.com" required autofocus>
+              placeholder="EmailAnda@example.com" required autofocus>
             @error('email')
               <small class="error-text">{{ $message }}</small>
             @enderror

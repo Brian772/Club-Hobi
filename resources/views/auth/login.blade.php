@@ -12,6 +12,18 @@
         Welcome Back To Orbii
       </h1>
 
+      @if (session('warning'))
+    <div class="p-3 mb-4 text-sm text-amber-800 bg-amber-100 rounded-lg" role="alert">
+      {{ session('warning') }}
+    </div>
+    @endif
+
+    @if (session('success'))
+      <div class="p-3 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
+      {{ session('success') }}
+      </div>
+    @endif
+
       <form method="POST" action="{{ route('login.authenticate') }}" class="form">
         @csrf
         <div class="form-group">
