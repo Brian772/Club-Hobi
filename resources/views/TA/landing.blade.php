@@ -128,6 +128,7 @@
                     <img src="{{ asset('image/rafiki.png') }}" alt="Forum Discussion">
                 </div>
                 <div class="card feature reverse">
+                    
                     <div>
                         <h3>Create & Share Posts</h3>
                         <p>Bagikan cerita, tips, dokumentasi kegiatan, atau informasi terbaru kepada seluruh anggota klub.</p>

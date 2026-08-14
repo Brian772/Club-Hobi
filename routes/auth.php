@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('register/{step?}', [RegisteredUserController::class, 'create'])
     ->name('register');
 
+Route::post('register', [RegisteredUserController::class, 'store'])
+    ->name('register.store');
+
 // --- Login/Register dengan SSO ---
 Route::get('auth/google', function () {
     abort(501, 'Login dengan Google belum diimplementasikan.');
