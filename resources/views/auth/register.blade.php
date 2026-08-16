@@ -62,6 +62,13 @@
           <x-secondary-button type="submit">
             Next
           </x-secondary-button>
+
+          <p class="register-text">
+          Have an Account?
+          <a href="{{ route('login') }}">
+            Login here
+          </a>
+        </p>
         </form>
 
         <div class="divider">

@@ -6,7 +6,7 @@ use App\Http\Controllers\DashboardController;
 
 // Halaman utama (Welcome Page)
 Route::get('/', function () {
-    return view('welcome');
+    return view('landing');
 })->name('home');
 
 // Halaman Dashboard (hanya bisa diakses jika sudah login)

@@ -120,9 +120,10 @@
             font-size: 0.85rem; 
         }
     </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @yield('styles')
 </head>
-<body>
+<body class="bg-canvas-soft">
     @auth
     <nav>
         <div>
@@ -137,7 +138,8 @@
     </nav>
     @endauth
 
-    <div class="flex flex-col justify-center p-[24px] md:p-[32px] min-h-dvh @if(Route::is('login') || Route::is('register')) @endif">
+    @if(Route::is('login') || Route::is('register'))
+        <div class="flex flex-col p-[24px] md:p-[32px] min-h-dvh justify-center">
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
@@ -147,5 +149,12 @@
 
         @yield('content')
     </div>
+    @else
+        <main class="p-[24px] md:p-[32px] min-h-dvh">
+            @yield('content')
+        </main>
+    @endif
+
+    
 </body>
 </html>

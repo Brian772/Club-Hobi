@@ -34,6 +34,12 @@
         <x-secondary-button type="submit" class="mt-[24px]">
           Login
         </x-secondary-button>
+        <p class="register-text">
+          Don't have an account yet?
+          <a href="{{ route('register') }}">
+            Register now
+          </a>
+        </p>
       </form>
 
       <div class="divider">
@@ -51,13 +57,6 @@
           <span>Continue With Facebook</span>
         </a>
       </div>
-
-      <p class="register-text">
-        Don't have an account yet?
-        <a href="{{ route('register') }}">
-          Register now
-        </a>
-      </p>
     </div>
 
     <div class="flex order-1 md:order-2 md:max-w-[400px] justify-center w-full">
