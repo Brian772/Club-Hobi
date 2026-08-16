@@ -61,9 +61,9 @@ class RegisteredUserController extends Controller
          */
         $categories = $step === 3
             ? DB::table('clubs')
-                ->whereNotNull('category')
-                ->distinct()
-                ->pluck('category')
+            ->whereNotNull('category')
+            ->distinct()
+            ->pluck('category')
             : collect();
 
         return view(

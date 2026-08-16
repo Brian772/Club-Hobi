@@ -8,9 +8,19 @@
 <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
 @section('content')
-@php
-    $categories = $categories ?? ['Music', 'Hiking', 'Fishing', 'Gaming', 'Football', 'Reading', 'Traveling', 'Swimming', 'Photography'];
-@endphp
+  @php
+    $categories = $categories ?? [
+        'Music',
+        'Hiking',
+        'Fishing',
+        'Gaming',
+        'Football',
+        'Reading',
+        'Traveling',
+        'Swimming',
+        'Photography',
+    ];
+  @endphp
 
   @if ($step == 1)
     <div class="flex flex-col md:flex-row items-center justify-center">
@@ -64,11 +74,11 @@
           </x-secondary-button>
 
           <p class="register-text">
-          Have an Account?
-          <a href="{{ route('login') }}">
-            Login here
-          </a>
-        </p>
+            Have an Account?
+            <a href="{{ route('login') }}">
+              Login here
+            </a>
+          </p>
         </form>
 
         <div class="divider">
@@ -108,17 +118,29 @@
           <span class="progress-item"></span>
         </div>
 
+        @php
+          $avatarPath = session('register.avatar_url');
+          $avatarPreviewUrl = null;
+
+          if ($avatarPath) {
+              $avatarPreviewUrl = str_starts_with($avatarPath, 'http')
+                  ? $avatarPath
+                  : \Illuminate\Support\Facades\Storage::disk('public')->url($avatarPath);
+          }
+        @endphp
+
         <form method="POST" action="{{ route('register.step2') }}" class="form profile-form"
           enctype="multipart/form-data">
           @csrf
 
           <div class="flex items-center justify-start mb-2 profile-upload">
-            <input type="file" id="avatar_url" name="avatar_url" accept=".jpg,.jpeg,.png" hidden>
+            {{-- <input type="file" id="avatar_url" name="avatar_url" accept=".jpg,.jpeg,.png" hidden> --}}
 
             <div class="flex flex-row justify-center mb-2">
-              <label for="avatar_url" class="" style="cursor:pointer;">
-                <span class="upload-icon" id="avatar-icon" aria-hidden="true"
-                  style="width:96px; height:96px; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden; margin:0 auto;">
+              <label for="avatar_url" class="w-[96px] h-[96px] cursor-pointer relative block">
+                <span
+                  class="upload-icon w-[96px] h-[96px] border border-solid rounded-full flex items-center justify-center overflow-hidden m-0"
+                  id="avatar-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M4 7.5C4 6.67 4.67 6 5.5 6H8L9.2 4.5H14.8L16 6H18.5C19.33 6 20 6.67 20 7.5V17.5C20 18.33 19.33 19 18.5 19H5.5C4.67 19 4 18.33 4 17.5V7.5Z"
@@ -128,10 +150,13 @@
                 </span>
 
                 <span id="avatar-preview-wrap"
-                  style="display:none; width:96px; height:96px; border-radius:50%; overflow:hidden; margin:0 auto;">
-                  <img id="avatar-preview" alt=""
-                    style="width:100%; height:100%; object-fit:cover; display:block;">
+                  class="{{ $avatarPreviewUrl ? '' : 'hidden' }} w-[96px] h-[96px] overflow-hidden m-0 rounded-full">
+                  <img id="avatar-preview" src="{{ $avatarPreviewUrl }}" alt="{{ session('register.name') }}"
+                    class="w-full h-full object-cover block">
                 </span>
+
+                <input type="file" id="avatar_url" name="avatar_url" accept="image/*" class="hidden">
+              </label>
             </div>
 
             </label>

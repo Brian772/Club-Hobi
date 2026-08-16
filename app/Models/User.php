@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -40,6 +42,33 @@ class User extends Authenticatable
     protected $casts = [
         'suspended_until' => 'datetime',
     ];
+
+    protected $appends = ['avatar_full_url'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->id)) {
+                $user->id = Str::uuid();
+            }
+        });
+    }
+
+    public function getAvatarFullUrlAttribute(): ?string
+    {
+        $avatar = (string) ($this->avatar_url ?? '');
+        if (!$avatar === '') {
+            return null;
+        }
+
+        if (str_starts_with($this->avatar_url, 'http://') || str_starts_with($this->avatar_url, 'https://')) {
+            return $this->avatar_url;
+        }
+
+        return Storage::disk('public')->url($this->avatar_url);
+    }
 
     public function getAuthPassword(): string
     {

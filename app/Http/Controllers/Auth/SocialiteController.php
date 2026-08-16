@@ -19,6 +19,12 @@ class SocialiteController extends Controller
             return redirect()->route('login')->withErrors(['error' => 'Unsupported provider']);
         }
 
+        if ($provider === 'google') {
+            /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
+            $driver = Socialite::driver('google');
+            return $driver->with(['prompt' => 'select_account'])->redirect();
+        }
+
         return Socialite::driver($provider)->redirect();
     }
 
