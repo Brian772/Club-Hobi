@@ -19,14 +19,14 @@ class ClubFactory extends Factory
     public function definition(): array
     {
         $categories = [
-            'Olahraga & Kebugaran',
-            'Seni & Desain',
-            'Musik & Audio',
-            'Pemrograman & Teknologi',
-            'Fotografi & Videografi',
-            'Buku & Literasi',
-            'Game & E-Sports',
-            'Kuliner & Memasak'
+            'photography',
+            'fishing',
+            'hiking',
+            'reading',
+            'gaming',
+            'traveling',
+            'cooking',
+            'fitness',
         ];
         return [
             'id' =>(string) Str::uuid(),

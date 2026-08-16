@@ -58,4 +58,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware('auth')->group(function() {
+    Route::get('/clubs', [App\Http\Controllers\Club\clubController::class, 'index'])->name('clubs.index');
+    Route::get('/clubs/{id}', [App\Http\Controllers\Club\clubController::class, 'show'])->name('clubs.show');
+    Route::post('/clubs/{id}/join', [App\Http\Controllers\Club\clubController::class, 'join'])->name('clubs.join');
+    Route::post('/clubs/{id}/leave', [App\Http\Controllers\Club\clubController::class, 'leave'])->name('clubs.leave');  
+    Route::delete('/clubs/{id}/member/{userId}', [App\Http\Controllers\Club\clubController::class, 'kickMember'])->name('clubs.kick');
+    Route::put('/clubs/{id}', [App\Http\Controllers\Club\clubController::class, 'update'])->name('clubs.update');
+});
+
 require __DIR__ . '/auth.php';

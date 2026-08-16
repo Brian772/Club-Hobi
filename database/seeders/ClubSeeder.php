@@ -26,9 +26,7 @@ class ClubSeeder extends Seeder
             $randomClubs = Club::factory(5)->create();
 
             foreach ($randomClubs as $club) {
-
                 $memberUsers = $users->random(rand(3, min(5, $users->count())));
-
                 foreach ($memberUsers as $user) {
                     DB::table('club_members')->insert([
                         'id' => (string) Str::uuid(),
