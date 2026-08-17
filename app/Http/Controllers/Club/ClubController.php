@@ -12,9 +12,27 @@ class ClubController extends Controller
 {
     public function index()
     {
-        $clubs = Club::withCount('members')->get();
+        $user = Auth::user();
 
-        return view('clubs.index', compact('clubs'));
+        $userInterest = array_map('trim', $user->interest_array);
+
+        $recomendedClubs = collect();
+
+        if (!empty($userInterest)) {
+            $recomendedClubs = Club::withCount('members')
+            ->whereIn('category', $userInterest)
+            ->get();
+        }
+
+        $recomendedIds = $recomendedClubs->pluck('id');
+
+        $clubs = Club::withCount('members')
+        ->whereNotIn('id', $recomendedIds)
+        ->paginate(10);
+
+        $isEmpty = $clubs->isEmpty() && $recomendedClubs->isEmpty();
+
+        return view('clubs.index', compact('recomendedClubs', 'clubs', 'isEmpty'));
     }
 
     public function show($id)
@@ -38,7 +56,7 @@ class ClubController extends Controller
             ->where('user_id', $userId)
             ->exists();
 
-        if(!$alreadyJoined) {
+        if (!$alreadyJoined) {
             ClubMember::create([
                 'club_id' => $id,
                 'user_id' => $userId,
@@ -62,7 +80,7 @@ class ClubController extends Controller
 
     public function kickMember(Request $request, $clubId, $userId)
     {
-        if(Auth::user()->role_global !== 'admin') {
+        if (Auth::user()->role_global !== 'admin') {
             return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melakukan tindakan ini.');
         }
 
@@ -75,7 +93,7 @@ class ClubController extends Controller
 
     public function update(Request $request, $id)
     {
-        if(Auth::user()->role_global !== 'admin') {
+        if (Auth::user()->role_global !== 'admin') {
             return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melakukan tindakan ini.');
         }
 

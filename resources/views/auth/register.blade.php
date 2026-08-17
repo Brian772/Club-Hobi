@@ -8,19 +8,6 @@
 <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
 @section('content')
-  @php
-    $categories = $categories ?? [
-        'Music',
-        'Hiking',
-        'Fishing',
-        'Gaming',
-        'Football',
-        'Reading',
-        'Traveling',
-        'Swimming',
-        'Photography',
-    ];
-  @endphp
 
   @if ($step == 1)
     <div class="flex flex-col md:flex-row items-center justify-center">
@@ -62,7 +49,7 @@
               required>
           </div>
 
-          <div class="remember-me my-2 mt-[24px]">
+          <div class="remember-me my-2 mt-6">
             <label>
               <input type="checkbox" name="remember" class="rounded-sm border-ink-faint">
               <span class="text-ink-muted text-caption">I agree to the Terms &amp; Conditions and Privacy Policy</span>

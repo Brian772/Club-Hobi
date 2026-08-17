@@ -193,15 +193,12 @@ class RegisteredUserController extends Controller
             'avatar_url'    => session('register.avatar_url'),
             'email'         => $email,
             'password_hash' => session('register.password'),
+            'interests'      => implode(', ', $validated['hobbies'] ?? []),
             'role_global'   => 'member',
             'status'        => 'active',
         ]);
 
         event(new Registered($user));
-
-        if (!empty($validated['hobbies'])) {
-            session(['user_hobbies' => $validated['hobbies']]);
-        }
 
         // 4. Auto Login & Redirect ke Dashboard
         Auth::login($user);

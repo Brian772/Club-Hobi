@@ -27,6 +27,7 @@ class User extends Authenticatable
         'provider_id',
         'avatar_url',
         'bio',
+        'interests',
         'role_global',
         'status',
         'suspended_until',
@@ -77,7 +78,19 @@ class User extends Authenticatable
 
     public function setPasswordAttribute($value): void
     {
-        $this->attributes['password'] = $value;
         $this->attributes['password_hash'] = $value;
+    }
+
+    public function getInterestArrayAttribute(): array
+    {
+        if (empty($this->interests)) {
+            return [];
+        }
+
+        return collect(explode(', ',  $this->interests))
+            ->map(fn($item) => trim($item))
+            ->filter()
+            ->values()
+            ->toArray();
     }
 }

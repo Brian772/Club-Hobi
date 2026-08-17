@@ -3,15 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ClubMember extends Model
+class Post extends Model
 {
-    use HasUuids;
-
-    public $timestamps = false;
-    protected $guarded = [];
+    use HasFactory, HasUuids;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -19,11 +18,14 @@ class ClubMember extends Model
     protected $fillable = [
         'club_id',
         'user_id',
-        'joined_at',
+        'title',
+        'content',
+        'media_url',
+        'is_announcement',
     ];
 
     protected $casts = [
-        'joined_at' => 'datetime',
+        'is_announcement' => 'boolean',
     ];
 
     public function club(): BelongsTo
@@ -34,5 +36,10 @@ class ClubMember extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'post_id');
     }
 }

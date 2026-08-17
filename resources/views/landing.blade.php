@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
+@php
+
+@endphp
+
 @section('styles')
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
 @endsection
 
 @section('content')
@@ -75,18 +78,18 @@
 
 
   {{-- How It Works --}}
-  <section class="mt-[64px] w-full">
+  <section class="mt-16 w-full">
     {{-- title --}}
     <div class="mb-4">
       <h2 class="text-heading-2 font-bold">How It Works</h2>
       <p class="text-caption text-ink-muted">5 langkah mudah untuk mulai bergabung</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-[24px]">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       {{-- Create --}}
       <div class="flex flex-col mt-4 gap-2">
         <h2
-          class="text-white bg-primary text-heading-2 font-bold w-[42px] h-[42px] flex items-center justify-center rounded-full">
+          class="text-white bg-primary text-heading-2 font-bold w-[32px] h-[32px] flex items-center justify-center rounded-full">
           1</h2>
         <h2 class="text-heading-2 font-bold">Create</h2>
         <p class="text-caption text-ink-muted">Daftar dalam hitungan menit menggunakan email atau akun Google, lalu
@@ -96,7 +99,7 @@
       {{-- Complete Your Profile --}}
       <div class="flex flex-col mt-4 gap-2">
         <h2
-          class="text-white bg-primary text-heading-2 font-bold w-[42px] h-[42px] flex items-center justify-center rounded-full">
+          class="text-white bg-primary text-heading-2 font-bold w-[32px] h-[32px] flex items-center justify-center rounded-full">
           2</h2>
         <h2 class="text-heading-2 font-bold">Complete Your Profile</h2>
         <p class="text-caption text-ink-muted">Tambahkan foto, bio, dan pilih minatmu agar anggota lain lebih mudah
@@ -106,7 +109,7 @@
       {{-- Choose Your Interests --}}
       <div class="flex flex-col mt-4 gap-2">
         <h2
-          class="text-white bg-primary text-heading-2 font-bold w-[42px] h-[42px] flex items-center justify-center rounded-full">
+          class="text-white bg-primary text-heading-2 font-bold w-[32px] h-[32px] flex items-center justify-center rounded-full">
           3</h2>
         <h2 class="text-heading-2 font-bold">Choose Your Interests</h2>
         <p class="text-caption text-ink-muted">Pilih hobi yang kamu sukai untuk mendapatkan rekomendasi klub yang paling
@@ -116,7 +119,7 @@
       {{-- Join Your Community --}}
       <div class="flex flex-col mt-4 gap-2">
         <h2
-          class="text-white bg-primary text-heading-2 font-bold w-[42px] h-[42px] flex items-center justify-center rounded-full">
+          class="text-white bg-primary text-heading-2 font-bold w-[32px] h-[32px] flex items-center justify-center rounded-full">
           4</h2>
         <h2 class="text-heading-2 font-bold">Join Your Community</h2>
         <p class="text-caption text-ink-muted">Bergabunglah dengan komunitas hobi yang paling sesuai dengan minat kamu
@@ -126,7 +129,7 @@
       {{-- Connect with Others --}}
       <div class="flex flex-col mt-4 gap-2">
         <h2
-          class="text-white bg-primary text-heading-2 font-bold w-[42px] h-[42px] flex items-center justify-center rounded-full">
+          class="text-white bg-primary text-heading-2 font-bold w-[32px] h-[32px] flex items-center justify-center rounded-full">
           5</h2>
         <h2 class="text-heading-2 font-bold">Connect with Others</h2>
         <p class="text-caption text-ink-muted">Buat hubungan baru dan berinteraksi dengan anggota komunitas hobi Anda
@@ -137,7 +140,7 @@
 
 
   {{-- Main Features --}}
-  <section class="mt-[64px] w-full min-h-dvh flex flex-col justify-center">
+  <section class="mt-16 w-full min-h-dvh flex flex-col justify-center">
     {{-- title --}}
     <div class="mb-4">
       <h2 class="text-heading-2 font-bold">Main Features</h2>
@@ -147,7 +150,7 @@
     <div class="flex flex-col gap-4 md:gap-6 w-full">
       {{-- Forum Discussion --}}
       <div
-        class="scale-card flex flex-row gap-2 p-[12px] bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
+        class="scale-card flex flex-row gap-2 p-3 bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
         <div class="order-1 flex flex-col gap-1 w-full">
           <h3 class="font-bold text-body-mid">Forum Discussion</h3>
           <p class="text-caption text-ink-muted">Diskusikan ide, ajukan pertanyaan, dan berbagi pengalaman bersama
@@ -155,12 +158,12 @@
             klub dalam forum yang terorganisir.</p>
         </div>
         <img src="{{ asset('images/illustration/discution.svg') }}" alt="Forum Discussion Illustration"
-          class="order-2 h-[150px]">
+          class="order-2 h-[150px]" width="150" height="150">
       </div>
 
       {{-- Create & Share Posts --}}
       <div
-        class="scale-card flex flex-row gap-2 p-[12px] bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
+        class="scale-card flex flex-row gap-2 p-3 bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
         <div class="order-2 flex flex-col gap-1 w-full">
           <h3 class="font-bold text-body-mid">Create & Share Posts</h3>
           <p class="text-caption text-ink-muted">Bagikan cerita, tips, dokumentasi kegiatan, atau informasi terbaru
@@ -168,12 +171,12 @@
             seluruh anggota klub.</p>
         </div>
         <img src="{{ asset('images/illustration/share.svg') }}" alt="Create & Share Posts Illustration"
-          class="order-1 h-[150px]">
+          class="order-1 h-[150px]" width="150" height="150">
       </div>
 
       {{-- Official Clubs Announcements --}}
       <div
-        class="scale-card flex flex-row gap-2 p-[12px] bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
+        class="scale-card flex flex-row gap-2 p-3 bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
         <div class="order-1 flex flex-col gap-1 w-full">
           <h3 class="font-bold text-body-mid">Official Clubs Announcements</h3>
           <p class="text-caption text-ink-muted">Pengurus klub dapat menyampaikan pengumuman penting agar seluruh
@@ -186,7 +189,7 @@
 
       {{-- Interactive Comments --}}
       <div
-        class="scale-card flex flex-row gap-2 p-[12px] bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
+        class="scale-card flex flex-row gap-2 p-3 bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
         <div class="order-2 flex flex-col gap-1 w-full">
           <h3 class="font-bold text-body-mid">Interactive Comments</h3>
           <p class="text-caption text-ink-muted">Berikan tanggapan, diskusikan ide, dan bangun percakapan langsung pada
@@ -198,7 +201,7 @@
 
       {{-- Direct Message --}}
       <div
-        class="scale-card flex flex-row gap-2 p-[12px] bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
+        class="scale-card flex flex-row gap-2 p-3 bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
         <div class="order-1 flex flex-col gap-1 w-full">
           <h3 class="font-bold text-body-mid">Direct Message</h3>
           <p class="text-caption text-ink-muted">Hubungi anggota lain secara pribadi untuk berdiskusi, bertanya, atau
@@ -210,7 +213,7 @@
 
       {{-- Safe Community --}}
       <div
-        class="scale-card flex flex-row gap-2 p-[12px] bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
+        class="scale-card flex flex-row gap-2 p-3 bg-canvas rounded-lg border-solid border-hairline border shrink-0 w-full">
         <div class="order-2 flex flex-col gap-1 w-full">
           <h3 class="font-bold text-body-mid">Safe Community</h3>
           <p class="text-caption text-ink-muted">Laporkan konten atau pengguna yang melanggar aturan agar komunitas
@@ -225,7 +228,7 @@
 
 
   {{-- Explore Hobbies --}}
-  <section class="mt-[64px] w-full">
+  <section class="mt-16 w-full">
     {{-- Title --}}
     <div class="mb-4">
       <h2 class="text-heading-2 font-bold">Explore Hobbies</h2>
@@ -233,44 +236,44 @@
     </div>
 
     {{-- Club Cards --}}
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-[32px] w-full">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-8 w-full">
       <div
-        class="bg-canvas rounded-lg border border-solid border-hairline p-[12px] flex flex-col gap-2 items-start justify-center">
+        class="bg-canvas rounded-lg border border-solid border-hairline p-3 flex flex-col gap-2 items-start justify-center">
         <i class="fa-solid fa-music text-primary text-heading-2"></i>
         <h3 class="font-bold text-body-mid">Music</h3>
         <p class="text-caption text-ink-muted">769 Members</p>
       </div>
 
       <div
-        class="bg-canvas rounded-lg border border-solid border-hairline p-[12px] flex flex-col gap-2 items-start justify-center">
+        class="bg-canvas rounded-lg border border-solid border-hairline p-3 flex flex-col gap-2 items-start justify-center">
         <i class="fa-solid fa-mountain text-primary text-heading-2"></i>
         <h3 class="font-bold text-body-mid">Hiking</h3>
-        <p class="text-caption text-ink-muted">349 Members</p>
+        <p class="text-caption text-ink-muted">[32px]9 Members</p>
       </div>
 
       <div
-        class="bg-canvas rounded-lg border border-solid border-hairline p-[12px] flex flex-col gap-2 items-start justify-center">
+        class="bg-canvas rounded-lg border border-solid border-hairline p-3 flex flex-col gap-2 items-start justify-center">
         <i class="fa-solid fa-fish text-primary text-heading-2"></i>
         <h3 class="font-bold text-body-mid">Fishing</h3>
         <p class="text-caption text-ink-muted">1.2K Members</p>
       </div>
 
       <div
-        class="bg-canvas rounded-lg border border-solid border-hairline p-[12px] flex flex-col gap-2 items-start justify-center">
+        class="bg-canvas rounded-lg border border-solid border-hairline p-3 flex flex-col gap-2 items-start justify-center">
         <i class="fa-solid fa-camera text-primary text-heading-2"></i>
         <h3 class="font-bold text-body-mid">Photography</h3>
         <p class="text-caption text-ink-muted">1.5K Members</p>
       </div>
 
       <div
-        class="bg-canvas rounded-lg border border-solid border-hairline p-[12px] flex flex-col gap-2 items-start justify-center">
+        class="bg-canvas rounded-lg border border-solid border-hairline p-3 flex flex-col gap-2 items-start justify-center">
         <i class="fa-solid fa-futbol text-primary text-heading-2"></i>
         <h3 class="font-bold text-body-mid">Football</h3>
         <p class="text-caption text-ink-muted">2.1K Members</p>
       </div>
 
       <div
-        class="bg-canvas rounded-lg border border-solid border-hairline p-[12px] flex flex-col gap-2 items-start justify-center">
+        class="bg-canvas rounded-lg border border-solid border-hairline p-3 flex flex-col gap-2 items-start justify-center">
         <i class="fa-solid fa-book-open text-primary text-heading-2"></i>
         <h3 class="font-bold text-body-mid">Reading</h3>
         <p class="text-caption text-ink-muted">798K Members</p>
@@ -280,16 +283,16 @@
 
 
   {{-- CTA --}}
-  <section class="mt-[64px] w-full">
-    <div class="bg-primary-active rounded-lg p-[32px] flex flex-col gap-4 items-center justify-center">
+  <section class="mt-16 w-full">
+    <div class="bg-primary-active rounded-lg p-8 flex flex-col gap-4 items-center justify-center">
       <h2 class="text-white text-heading-2 sm:text-heading-1 font-bold">Ready to Join?</h2>
       <p class="text-white text-caption">Bergabunglah dengan komunitas hobi yang sesuai dengan minatmu dan temukan
         teman baru yang memiliki passion yang sama.</p>
       <a href="{{ route('register') }}"
-        class="text-primary bg-white text-body-md rounded-full border border-solid border-hairline w-full p-[10px] text-center">Get
+        class="text-primary bg-white text-body-md rounded-full border border-solid border-hairline w-full p-2.5 text-center">Get
         Started</a>
       <a href="{{ route('login') }}"
-        class="text-white text-body-md rounded-full border border-solid border-hairline w-full p-[10px] text-center">Login</a>
+        class="text-white text-body-md rounded-full border border-solid border-hairline w-full p-2.5 text-center">Login</a>
     </div>
   </section>
 @endsection

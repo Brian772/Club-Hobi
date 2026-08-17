@@ -8,8 +8,7 @@
         * { box-sizing: border-box; }
         body { 
             font-family: system-ui, -apple-system, sans-serif; 
-            background: #f4f5f7; 
-            margin: 0; 
+            background: #f4f5f7;
             color: #1f2937; 
             min-height: 100vh;
         }
@@ -139,7 +138,7 @@
     @endauth
 
     @if(Route::is('login') || Route::is('register'))
-        <div class="flex flex-col p-[24px] md:p-[32px] min-h-dvh justify-center">
+        <div class="flex flex-col p-6 md:p-8 min-h-dvh justify-center">
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
@@ -150,7 +149,7 @@
         @yield('content')
     </div>
     @else
-        <main class="p-[24px] md:p-[32px] min-h-dvh">
+        <main class="p-6 md:p-8 min-h-dvh">
             @yield('content')
         </main>
     @endif

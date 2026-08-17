@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Club extends Model
 {
@@ -21,4 +22,16 @@ class Club extends Model
         'cover_url',
         'category',
     ];
+
+    public function members(): HasMany {
+        return $this->hasMany(ClubMember::class, 'club_id');
+    }
+
+    public function posts(): HasMany {
+        return $this->hasMany(Post::class, 'club_id');
+    }
+
+    public function files(): HasMany {
+        return $this->hasMany(ClubFiles::class, 'club_id');
+    }
 }

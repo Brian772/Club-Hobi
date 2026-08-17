@@ -7,7 +7,7 @@
     </div>
 
     <div class="w-fit my-8">
-      <a href="{{ route('register') }}" class="bg-primary text-white text-body-md rounded-full border border-solid border-hairline w-full px-[24px] py-[12px] text-center">Get Started</a>
+      <a href="{{ route('register') }}" class="bg-primary text-white text-body-md rounded-full border border-solid border-hairline w-full px-6 py-3 text-center">Get Started</a>
     </div>
     <div class="flex flex-row w-fit justify-between gap-4 mt-2">
       <div>
@@ -29,6 +29,6 @@
     </div>
   </div>
   <div class="order-2 w-1/2 flex justify-center items-center ">
-    <img src="images/hero-illustration.svg" alt="Hero Illustration" class="max-w-[650px]">
+    <img src="images/hero-illustration.svg" alt="Hero Illustration" class="max-w-162.5">
   </div>
 </section>
