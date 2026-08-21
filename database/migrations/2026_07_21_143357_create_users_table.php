@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('password_hash')->nullable();
             $table->string('avatar_url')->nullable();
             $table->text('bio')->nullable();
+            $table->text('interests')->nullable();
             $table->enum('role_global', ['admin', 'member'])->default('member');
             $table->enum('status', ['active', 'suspended', 'banned'])->default('active');
             $table->timestamp('suspended_until')->nullable();

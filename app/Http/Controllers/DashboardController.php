@@ -3,14 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\View\View;
+use App\Models\Club;
+use App\Models\ClubMember;
+use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
-        return view('dashboard', [
-            'activeMenu' => 'dashboard'
-        ]);
+        $user = Auth::user();
+
+        $joinedClub = ClubMember::where('user_id', $user->id)->pluck('club_id')
+            ->take(3);
+
+        $feedPosts = Post::query()
+            ->with(['author', 'club'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        
+        return view('dashboard', compact('user', 'joinedClub', 'feedPosts'));
     }
 
     public function profile(): View

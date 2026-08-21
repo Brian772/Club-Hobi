@@ -34,6 +34,7 @@ class UserFactory extends Factory
             'role_global' => 'member',
             'status' => 'active',
             'suspended_until' => null,
+            'email_verified_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
         ];

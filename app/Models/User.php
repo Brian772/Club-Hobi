@@ -4,8 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -25,6 +28,7 @@ class User extends Authenticatable
         'provider_id',
         'avatar_url',
         'bio',
+        'interests',
         'role_global',
         'status',
         'suspended_until',
@@ -41,6 +45,38 @@ class User extends Authenticatable
         'suspended_until' => 'datetime',
     ];
 
+    protected $appends = ['avatar_full_url'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->id)) {
+                $user->id = Str::uuid();
+            }
+        });
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class)->latest('created_at');
+    }
+
+    public function getAvatarFullUrlAttribute(): ?string
+    {
+        $avatar = (string) ($this->avatar_url ?? '');
+        if (!$avatar === '') {
+            return null;
+        }
+
+        if (str_starts_with($this->avatar_url, 'http://') || str_starts_with($this->avatar_url, 'https://')) {
+            return $this->avatar_url;
+        }
+
+        return Storage::disk('public')->url($this->avatar_url);
+    }
+
     public function getAuthPassword(): string
     {
         return $this->password_hash ?? $this->password ?? '';
@@ -48,7 +84,19 @@ class User extends Authenticatable
 
     public function setPasswordAttribute($value): void
     {
-        $this->attributes['password'] = $value;
         $this->attributes['password_hash'] = $value;
+    }
+
+    public function getInterestArrayAttribute(): array
+    {
+        if (empty($this->interests)) {
+            return [];
+        }
+
+        return collect(explode(', ',  $this->interests))
+            ->map(fn($item) => trim($item))
+            ->filter()
+            ->values()
+            ->toArray();
     }
 }

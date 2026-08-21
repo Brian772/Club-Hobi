@@ -22,7 +22,7 @@ class VerifyEmailController extends Controller
         }
 
         return redirect()
-            ->intended(route('dashboard'))
+            ->intended(route('dashboard', absolute: false).'?verified=1')
             ->with('success', 'Email berhasil diverifikasi.');
     }
 }

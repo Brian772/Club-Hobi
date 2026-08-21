@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('club_file', function (Blueprint $table) {
+        Schema::create('club_files', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('club_id')->constrained('clubs')->onDelete('cascade');
             $table->foreignUuid('uploaded_by')->constrained('users')->onDelete('cascade');

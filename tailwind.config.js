@@ -32,7 +32,7 @@ export default {
                     DEFAULT: "#ffffff",
                     soft: "#f6f5f4",
                 },
-                outline: "#e6e6e6",
+                hairline: "#e6e6e6",
 
                 // Accents
                 accent: {
