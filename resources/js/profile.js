@@ -1,14 +1,19 @@
-document.getElementById("avatar_url").addEventListener("change", function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
+const avatarInput = document.getElementById("avatar_url");
+const avatarPreview = document.getElementById("avatar-preview");
+const avatarPreviewWrap = document.getElementById("avatar-preview-wrap");
+const avatarIcon = document.getElementById("avatar-icon");
 
-    const reader = new FileReader();
-    reader.onload = function (event) {
-        document.getElementById("avatar-preview").src = event.target.result;
-        document
-            .getElementById("avatar-preview-wrap")
-            .classList.remove("hidden");
-        document.getElementById("avatar-icon").classList.add("hidden");
-    };
-    reader.readAsDataURL(file);
-});
+if (avatarInput && avatarPreview && avatarPreviewWrap && avatarIcon) {
+    avatarInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            avatarPreview.src = event.target.result;
+            avatarPreviewWrap.classList.remove("hidden");
+            avatarIcon.classList.add("hidden");
+        };
+        reader.readAsDataURL(file);
+    });
+}

@@ -6,6 +6,5 @@ import './animations/scale'
 import './profile'
 
 window.Alpine = Alpine;
-
 Alpine.start();
 
