@@ -1,12 +1,12 @@
 <header
   class="sticky top-4 z-30 flex items-center justify-between gap-4 border border-hairline bg-canvas/40 backdrop-blur px-4 py-3 inset-x-4 rounded-lg lg:hidden">
-  <button @click="sidebarOpen = true" class="text-ink" aria-label="Buka menu">
+  <button @click="sidebarOpen = true" class="text-ink hover:bg-canvas" aria-label="Buka menu">
     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
     </svg>
   </button>
 
-  <button @click="notifOpen = true" class="relative text-neutral-700" aria-label="Buka notifikasi">
+  <button @click="notifOpen = true" class="relative text-ink hover:bg-canvas" aria-label="Buka notifikasi">
     <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 0 24 24">
       <path d="M0 0h24v24H0z" fill="none" />
       <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

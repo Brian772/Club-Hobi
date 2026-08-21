@@ -26,13 +26,15 @@ class ClubController extends Controller
 
         $recomendedIds = $recomendedClubs->pluck('id');
 
+        $JoinedClub = ClubMember::where('user_id', $user->id)->pluck('club_id');
+
         $clubs = Club::withCount('members')
         ->whereNotIn('id', $recomendedIds)
         ->paginate(10);
 
         $isEmpty = $clubs->isEmpty() && $recomendedClubs->isEmpty();
 
-        return view('clubs.index', compact('recomendedClubs', 'clubs', 'isEmpty'));
+        return view('clubs.index', compact('recomendedClubs', 'clubs', 'isEmpty', 'JoinedClub'));
     }
 
     public function show($id)
@@ -63,7 +65,6 @@ class ClubController extends Controller
                 'joined_at' => now(),
             ]);
         }
-
         return redirect()->back()->with('success', 'berhasil bergabung dengan klub!');
     }
 
