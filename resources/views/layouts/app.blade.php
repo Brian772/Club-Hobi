@@ -123,7 +123,7 @@
     @yield('styles')
 </head>
 <body>
-    @auth
+    <!-- @auth
     <nav>
         <div>
             <a href="{{ route('profile.dashboard') }}">Profil</a>
@@ -135,7 +135,7 @@
             <button type="submit">Keluar</button>
         </form>
     </nav>
-    @endauth
+    @endauth -->
 
     <div class="flex flex-col justify-center p-[24px] md:p-[32px] min-h-dvh @if(Route::is('login') || Route::is('register')) auth-page @endif">
         @if (session('success'))

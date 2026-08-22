@@ -661,6 +661,15 @@ body {
     margin-bottom: 2rem;
 }
 
+.hobby-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 240px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
 .hobby-option {
     position: relative;
     cursor: pointer;
