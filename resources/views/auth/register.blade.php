@@ -5,7 +5,6 @@
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 @endsection
-<link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
 @section('content')
 
@@ -23,13 +22,13 @@
           <span class="progress-item"></span>
         </div>
 
-        <form method="POST" action="{{ route('register.step1') }}" class="form">
+        <form method="POST" action="{{ route('register.step1') }}" data-turbo="false" class="form">
           @csrf
 
           <div class="form-group">
             <x-input-label for="email" :value="__('Email')" />
             <input type="email" id="email" name="email" value="{{ old('email') }}"
-              placeholder="Example @ example.com" required autofocus>
+              placeholder="EmailAnda@example.com" required autofocus>
             @error('email')
               <small class="error-text">{{ $message }}</small>
             @enderror
@@ -116,7 +115,7 @@
           }
         @endphp
 
-        <form method="POST" action="{{ route('register.step2') }}" class="form profile-form"
+        <form method="POST" action="{{ route('register.step2') }}" data-turbo="false" class="form profile-form"
           enctype="multipart/form-data">
           @csrf
 
@@ -229,7 +228,7 @@
           <span class="progress-item active"></span>
         </div>
 
-        <form method="POST" action="{{ route('register.step3') }}" class="form hobby-form">
+        <form method="POST" action="{{ route('register.step3') }}" data-turbo="false" class="form hobby-form">
           @csrf
 
           <div class="hobby-grid">

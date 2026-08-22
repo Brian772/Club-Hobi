@@ -12,7 +12,8 @@ class ClubMember extends Model
 
     public $timestamps = false;
     protected $guarded = [];
-
+    
+    protected $table = 'club_members';
     protected $keyType = 'string';
     public $incrementing = false;
 

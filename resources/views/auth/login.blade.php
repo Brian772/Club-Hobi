@@ -12,7 +12,19 @@
         Welcome Back To Orbii
       </h1>
 
-      <form method="POST" action="{{ route('login.authenticate') }}" class="form">
+      @if (session('warning'))
+    <div class="p-3 mb-4 text-sm text-amber-800 bg-amber-100 rounded-lg" role="alert">
+      {{ session('warning') }}
+    </div>
+    @endif
+
+    @if (session('success'))
+      <div class="p-3 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
+      {{ session('success') }}
+      </div>
+    @endif
+
+      <form method="POST" action="{{ route('login.authenticate') }}" data-turbo="false" class="form">
         @csrf
         <div class="form-group">
           <x-input-label for="email" :value="__('Email')" />

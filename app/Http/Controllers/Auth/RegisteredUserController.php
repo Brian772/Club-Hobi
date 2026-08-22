@@ -84,7 +84,7 @@ class RegisteredUserController extends Controller
             'email' => [
                 'required',
                 'string',
-                'email',
+                'email:rfc,dns',
                 'max:255',
                 Rule::unique(User::class, 'email'), // <--- Menolak email duplikat sejak awal
             ],
@@ -167,20 +167,7 @@ class RegisteredUserController extends Controller
             return redirect()->route('register', ['step' => 1]);
         }
 
-        // 1. Cek apakah user sudah terlanjur dibuat di database
-        $existingUser = User::where('email', $email)->first();
-
-        if ($existingUser) {
-            Auth::login($existingUser);
-            $request->session()->regenerate();
-            $request->session()->forget('register');
-
-            return redirect()
-                ->route('dashboard')
-                ->with('success', 'Selamat datang kembali, ' . $existingUser->name . '!');
-        }
-
-        // 2. Validasi pilihan hobi (dibuat opsional/nullable)
+        // 1 Validasi pilihan hobi (dibuat opsional/nullable)
         $validated = $request->validate([
             'hobbies'   => ['nullable', 'array'],
             'hobbies.*' => ['string'],
@@ -196,6 +183,7 @@ class RegisteredUserController extends Controller
             'interests'      => implode(', ', $validated['hobbies'] ?? []),
             'role_global'   => 'member',
             'status'        => 'active',
+            'email_verified_at' => now(),
         ]);
 
         event(new Registered($user));
@@ -206,7 +194,7 @@ class RegisteredUserController extends Controller
         $request->session()->forget('register');
 
         return redirect()
-            ->route('dashboard')
+            ->route('verification.notice')
             ->with('success', 'Registrasi berhasil! Selamat datang, ' . $user->name . '!');
     }
 }

@@ -18,19 +18,18 @@
     <h2 class="text-lg font-bold text-neutral-900">Club yang anda ikuti</h2>
     <a href="{{ route('clubs.index') }}" class="text-sm text-neutral-500 hover:text-neutral-800">Lihat selengkapnya →</a>
   </div>
-
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
     @if ($joinedClub->isNotEmpty())
       @foreach ($joinedClub as $club)
-        <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+        <a href="{{ route('clubs.show', $club->id) }}" class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
           <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-32 object-cover">
           <div class="p-4">
             <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
                   <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
-                  <p class="text-caption text-ink-muted mb-2">{{ $club->description }}</p>
+                  <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
           </div>
-        </div>
+        </a>
       @endforeach
     @else
       <section id="alreadyJoin" class="border-b border-hairline flex w-full">

@@ -26,7 +26,8 @@ class ClubController extends Controller
 
         $recomendedIds = $recomendedClubs->pluck('id');
 
-        $JoinedClub = ClubMember::where('user_id', $user->id)->pluck('club_id');
+        $joinedClub = ClubMember::where('user_id', $user->id)->pluck('club_id');
+        $joinedClub = Club::whereIn('id', $joinedClub)->withCount('members')->get();
 
         $clubs = Club::withCount('members')
         ->whereNotIn('id', $recomendedIds)
@@ -34,7 +35,7 @@ class ClubController extends Controller
 
         $isEmpty = $clubs->isEmpty() && $recomendedClubs->isEmpty();
 
-        return view('clubs.index', compact('recomendedClubs', 'clubs', 'isEmpty', 'JoinedClub'));
+        return view('clubs.index', compact('recomendedClubs', 'clubs', 'isEmpty', 'joinedClub'));
     }
 
     public function show($id)

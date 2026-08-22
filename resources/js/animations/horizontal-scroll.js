@@ -65,7 +65,7 @@ async function initHorizontalScroll() {
 }
 
 if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initHorizontalScroll);
+    document.addEventListener('turbo:load', initHorizontalScroll);
 } else {
     initHorizontalScroll();
 }

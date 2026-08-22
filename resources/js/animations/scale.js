@@ -26,7 +26,7 @@ function initScaleScroll(selector = ".scale-card") {
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => initScaleScroll());
+  document.addEventListener('turbo:load', () => initScaleScroll());
 } else {
   initScaleScroll();
 }

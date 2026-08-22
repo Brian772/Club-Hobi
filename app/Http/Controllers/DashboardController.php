@@ -17,15 +17,17 @@ class DashboardController extends Controller
         $joinedClub = ClubMember::where('user_id', $user->id)->pluck('club_id')
             ->take(3);
 
+        $joinedClub = Club::whereIn('id', $joinedClub)->withCount('members')->get();
+
         $feedPosts = Post::query()
             ->with(['author', 'club'])
             ->latest()
             ->take(10)
             ->get();
-
         
         return view('dashboard', compact('user', 'joinedClub', 'feedPosts'));
     }
+
 
     public function profile(): View
     {

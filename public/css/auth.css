@@ -1345,6 +1345,14 @@ body > .container {
     border-radius: 50%;
 }
 
+#avatar-preview-wrap{
+    position: relative; /* Menahan #avatar-preview agar tidak meluap keluar */
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
 .upload-icon {
     width: 108px;
     height: 108px;
@@ -1468,6 +1476,15 @@ body > .container {
     row-gap: 12px;
     justify-content: start;
     margin-bottom: 2rem;
+}
+
+.hobby-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 240px;
+    overflow-y: auto;
+    margin-bottom: 20px;
 }
 
 .hobby-option {

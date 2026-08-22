@@ -6,7 +6,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Settings\SettingsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -51,12 +51,29 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/comments', [PostController::class, 'storeComment'])->name('posts.comments.store');
 
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::patch('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile.update');
-    Route::patch('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password.update');
-    Route::delete('/settings/account', [SettingsController::class, 'destroyAccount'])->name('settings.account.destroy');
-
     Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [SettingsController::class, 'settings'])
+            ->name('index');
+        Route::get('/profile', [SettingsController::class, 'profilesettings'])
+            ->name('profile');
+        // Update Nama + Bio
+        Route::post('/profile/update', [SettingsController::class, 'updateProfile'])
+            ->name('profile.update');
+        // Ganti / Upload Foto
+        Route::post('/profile/avatar', [SettingsController::class, 'updateAvatar'])
+            ->name('profile.avatar');
+        // Hapus Foto
+        Route::delete('/profile/avatar', [SettingsController::class, 'deleteAvatar'])
+            ->name('profile.avatar.delete');
+        // Tambah Hobi
+        Route::post('/profile/hobby', [SettingsController::class, 'addHobby'])
+            ->name('profile.hobby.add');
+        Route::delete('/profile/hobby/{clubId}', [SettingsController::class, 'deleteHobby'])
+            ->name('profile.hobby.delete');
+        Route::get('/account', [SettingsController::class, 'accountsettings'])
+            ->name('account');
+    });
 });
 
 Route::middleware('auth')->group(function () {

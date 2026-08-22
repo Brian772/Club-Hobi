@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Club Hobi</title>
   <style>
     * {
@@ -164,7 +165,7 @@
 
 <body class="bg-canvas-soft">
 
-  @if (Route::is('login') || Route::is('register'))
+  @if (Route::is('login') || Route::is('register') || Route::is('home'))
     <div class="flex flex-col p-6 lg:p-8 min-h-dvh justify-center">
       @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -176,11 +177,11 @@
       @yield('content')
     </div>
   @else
-    <div x-data="{ sidebarOpen: false, notifOpen: false }" class="min-h-dvh p-[24px] flex flex-col lg:flex-row lg:p-[32px]">
+    <div x-data="{ sidebarOpen: false, notifOpen: false }" class="min-h-dvh p-[24px] flex flex-col lg:flex-row lg:p-[17px]">
 
       {{-- sidebar desktop --}}
       <aside
-        class="hidden lg:fixed lg:inset-y-4 lg:left-4 lg:rounded-lg lg:z-30 lg:flex lg:h-dvh lg:w-[240px] lg:overflow-hidden lg:border lg:border-hairline lg:bg-canvas">
+        class="hidden lg:fixed lg:inset-y-4 lg:left-4 lg:rounded-lg lg:z-30 lg:flex lg:h-[calc(100vh-2rem)] lg:shrink-0 lg:w-[240px] lg:overflow-hidden lg:border lg:border-hairline lg:bg-canvas">
         @include('layouts.partials.sidebar-content')
       </aside>
 
@@ -225,11 +226,11 @@
       </div>
 
       <div
-        class="flex-1 min-w-0 w-full flex flex-col rounded-lg inset-y-4 min-h-dvh lg:pl-[260px] transition-[padding] duration-200"
-        :class="notifOpen ? 'lg:pr-[25rem]' : 'lg:pr-0'">
+        class="flex-1 min-w-0 w-full flex flex-col rounded-lg inset-y-4 min-h-[calc(100vh-46px)] overflow-hidden lg:pl-[245px] transition-[padding] duration-200"
+        :class="notifOpen ? 'lg:pr-[24.3rem]' : 'lg:pr-0'">
         @include('layouts.partials.topbar')
 
-        <main class="p-6 lg:p-8">
+        <main class="p-6 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 h-max lg:border lg:border-hairline">
           @yield('content')
         </main>
       </div>
