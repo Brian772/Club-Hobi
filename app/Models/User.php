@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Club;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,12 +10,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, HasUuids, Notifiable;
+    use HasFactory, HasUuids, Notifiable, MustVerifyEmailTrait;
 
-    // Primary key bertipe string (uuid), bukan auto-increment
     protected $keyType = 'string';
     public $incrementing = false;
 
@@ -43,6 +45,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'suspended_until' => 'datetime',
+        'email_verified_at' => 'datetime',
     ];
 
     protected $appends = ['avatar_full_url'];
@@ -98,5 +101,15 @@ class User extends Authenticatable
             ->filter()
             ->values()
             ->toArray();
+    }
+    
+    public function clubs()
+    {
+        return $this->belongsToMany(
+            Club::class,
+            'club_members',
+            'user_id',
+            'club_id'
+        );
     }
 }

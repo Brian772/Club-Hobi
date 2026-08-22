@@ -5,7 +5,6 @@
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 @endsection
-<link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
 @section('content')
 
@@ -29,7 +28,7 @@
           <div class="form-group">
             <x-input-label for="email" :value="__('Email')" />
             <input type="email" id="email" name="email" value="{{ old('email') }}"
-              placeholder="Example @ example.com" required autofocus>
+              placeholder="EmailAnda@example.com" required autofocus>
             @error('email')
               <small class="error-text">{{ $message }}</small>
             @enderror
