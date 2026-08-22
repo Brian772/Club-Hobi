@@ -226,11 +226,11 @@
       </div>
 
       <div
-        class="flex-1 min-w-0 w-full flex flex-col rounded-lg inset-y-4 h-dvh overflow-hidden lg:pl-[245px] transition-[padding] duration-200"
+        class="flex-1 min-w-0 w-full flex flex-col rounded-lg inset-y-4 min-h-[calc(100vh-46px)] overflow-hidden lg:pl-[245px] transition-[padding] duration-200"
         :class="notifOpen ? 'lg:pr-[24.3rem]' : 'lg:pr-0'">
         @include('layouts.partials.topbar')
 
-        <main class="p-6 lg:p-8 bg-canvas rounded-lg flex-1 min-h-0 h-dvh border border-hairline">
+        <main class="p-6 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 h-max lg:border lg:border-hairline">
           @yield('content')
         </main>
       </div>

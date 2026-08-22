@@ -6,63 +6,7 @@
 @endsection
 
 @section('content')
-<div class="app-layout">
-    <aside class="sidebar">
-        <div class="brand">
-            <img src="{{ asset('images/logo.png') }}" alt="Orbii Logo">
-        </div>
-
-        <nav class="sidebar-menu">
-            <ul>
-                <li>
-                    <a href="{{ route('dashboard') }}"><i class="fa-solid fa-border-all"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#"><i class="fa-regular fa-bell"></i>
-                        <span>Notifikasi</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#"><i class="fa-regular fa-comment-dots"></i>
-                        <span>Pesan</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#"><i class="fa-regular fa-folder"></i>
-                        <span>Club</span>
-                    </a>
-                </li>
-
-                <li class="{{ request()->routeIs('settings.*') ? 'active' : '' }}">
-                    <a href="{{ route('settings.index') }}">
-                        <i class="fa-solid fa-gear"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="user-avatar">
-                @if ($user->avatar_url)
-                    <img src="{{ asset('storage/' . $user->avatar_url) }}" alt="Foto Profil">
-                @else
-                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                @endif
-            </div>
-
-            <span class="user-name">
-                <a href="{{ route('settings.profile') }}">{{ $user->name }}</a>
-            </span>
-        </div>
-    </aside>
-
-    <main class="main-content">
+    <div class="flex flex-col w-full">
         <div class="page-header">
             <a href="{{ route('settings.index') }}" class="back-link">
 
@@ -81,9 +25,9 @@
             <div class="form-group-item">
                 <label class="input-label">Email</label>
 
-                <div class="account-field-row">
-                    <div class="settings-group account-input-group">
-                        <input type="email" class="custom-input" value="{{ $user->email }}" readonly>
+                <div class="flex flex-col lg:flex-row gap-2 ">
+                    <div class="account-input-group">
+                        <input type="email" class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring focus-within:ring-blue-200 select-none cursor-default" value="{{ $user->email }}" readonly>
                     </div>
 
                     @if ($user->email_verified_at)
@@ -103,8 +47,8 @@
             <div class="form-group-item">
                 <label class="input-label">Password</label>
 
-                <div class="settings-group">
-                    <input type="password" class="custom-input" value="password" readonly>
+                <div class="settings-group cursor-default">
+                    <input type="password" class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring focus-within:ring-blue-200 select-none cursor-default" value="password" readonly>
                 </div>
             </div>
 
@@ -126,8 +70,7 @@
                 </button>
             </div>
         </div>
-    </main>
-</div>
+    </div>
 
 <div class="profile-modal-overlay" id="deleteAccountModal">
     <div class="profile-modal delete-account-modal">
@@ -162,12 +105,12 @@
                         Masukkan password untuk konfirmasi
                     </label>
 
-                    <div class="settings-group">
+                    <div class="mb-4">
                         <input
                             type="password"
                             name="password"
                             id="deleteAccountPassword"
-                            class="custom-input"
+                            class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring focus-within:ring-blue-200"
                             placeholder="Password"
                             autocomplete="current-password"
                         >

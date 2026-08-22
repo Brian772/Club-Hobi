@@ -6,7 +6,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Settings\SettingsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 

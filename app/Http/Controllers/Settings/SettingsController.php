@@ -16,8 +16,9 @@ class SettingsController extends Controller
      */
     public function settings()
     {
+        $user = Auth::user();
         return view('settings.setting', [
-        'user' => auth()->user()
+            'user' => $user,
         ]);
     }
 
@@ -31,8 +32,14 @@ class SettingsController extends Controller
         // Club yang sedang diikuti user
         $user->load('clubs');
 
-        // Semua club yang tersedia di database
-        $clubs = Club::orderBy('category')->get();
+        // Ambil satu club sebagai representasi untuk setiap kategori hobi.
+        $clubs = Club::query()
+            ->selectRaw('MIN(id) as id, category')
+            ->whereNotNull('category')
+            ->where('category', '<>', '')
+            ->groupBy('category')
+            ->orderBy('category')
+            ->get();
 
         return view('settings.profilesettings', compact('user', 'clubs'));
     }
@@ -42,21 +49,21 @@ class SettingsController extends Controller
      */
     public function updateProfile(Request $request)
     {
-    $user = Auth::user();
+        $user = Auth::user();
 
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'bio' => 'nullable|string|max:150',
-    ]);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'bio' => 'nullable|string|max:150',
+        ]);
 
-    $user->name = $validated['name'];
-    $user->bio = $validated['bio'] ?? null;
-    $user->save();
+        $user->name = $validated['name'];
+        $user->bio = $validated['bio'] ?? null;
+        $user->save();
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Profile berhasil disimpan.'
-    ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile berhasil disimpan.'
+        ]);
     }
     /**
      * Upload / ganti foto profile
@@ -118,10 +125,10 @@ class SettingsController extends Controller
 
         // Menambahkan club tanpa menghapus club yang sudah ada
         $user->clubs()->syncWithoutDetaching([
-        $request->club_id => [
-            'id' => (string) Str::uuid(),
-        ],
-    ]);
+            $request->club_id => [
+                'id' => (string) Str::uuid(),
+            ],
+        ]);
 
         return redirect()
             ->route('settings.profile')
@@ -129,19 +136,19 @@ class SettingsController extends Controller
     }
 
     /**
- * Hapus hobi / club dari profile user
- */
-public function deleteHobby($clubId)
-{
-    $user = Auth::user();
+     * Hapus hobi / club dari profile user
+     */
+    public function deleteHobby($clubId)
+    {
+        $user = Auth::user();
 
-    $user->clubs()->detach($clubId);
+        $user->clubs()->detach($clubId);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Hobi berhasil dihapus.'
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'Hobi berhasil dihapus.'
+        ]);
+    }
 
     /**
      * Halaman Account
