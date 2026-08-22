@@ -14,12 +14,12 @@
         <p class="text-caption text-ink-muted">Belum ada klub yang tersedia saat ini. Silakan cek kembali nanti.</p>
       </section>
     @else
-      @if ($JoinedClub->isNotEmpty())
+      @if ($joinedClub->isNotEmpty())
         <section id="alreadyJoin">
           <h2 class="text-2xl font-bold mb-4">Klub Anda</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
             :class="notifOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
-            @foreach ($recomendedClubs as $club)
+            @foreach ($joinedClub as $club)
               <div class="block border rounded-lg overvlow-hidden hover:shadow-lg transition-shadow duration-300">
                 @if ($club->cover_url)
                   <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover">
@@ -28,10 +28,10 @@
                 <div class="p-4">
                   <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
                   <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
-                  <p class="text-caption text-ink-muted mb-2">{{ $club->description }}</p>
+                  <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                 </div>
-                <div class="w-full px-4 py-2">
+                <div class="mt-auto w-full px-4 py-2">
                   <button class="w-full bg-primary text-white py-2" type="submit">
                     <a href="{{ route('clubs.show', $club->id) }}">Lihat Klub</a>
                   </button>
@@ -66,10 +66,10 @@
                 <div class="p-4">
                   <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
                   <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
-                  <p class="text-caption text-ink-muted mb-2">{{ $club->description }}</p>
+                  <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                 </div>
-                <div class="w-full px-4 py-2">
+                <div class="mt-auto w-full px-4 py-2">
                   <form action="{{ route('clubs.join', $club->id) }}" method="POST">
                     @csrf
                     <button class="w-full bg-primary text-white py-2" type="submit">Bergabung</button>

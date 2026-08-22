@@ -23,7 +23,7 @@
           <span class="progress-item"></span>
         </div>
 
-        <form method="POST" action="{{ route('register.step1') }}" class="form">
+        <form method="POST" action="{{ route('register.step1') }}" data-turbo="false" class="form">
           @csrf
 
           <div class="form-group">
@@ -116,7 +116,7 @@
           }
         @endphp
 
-        <form method="POST" action="{{ route('register.step2') }}" class="form profile-form"
+        <form method="POST" action="{{ route('register.step2') }}" data-turbo="false" class="form profile-form"
           enctype="multipart/form-data">
           @csrf
 
@@ -229,7 +229,7 @@
           <span class="progress-item active"></span>
         </div>
 
-        <form method="POST" action="{{ route('register.step3') }}" class="form hobby-form">
+        <form method="POST" action="{{ route('register.step3') }}" data-turbo="false" class="form hobby-form">
           @csrf
 
           <div class="hobby-grid">

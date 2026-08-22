@@ -1,10 +1,9 @@
-
-
+// import './bootstrap';
+import './elements/turbo-echo-stream-tag';
+import './libs';
+import './animations/scale';
+import './animations/horizontal-scroll';
 import Alpine from 'alpinejs';
-import './animations/horizontal-scroll'
-import './animations/scale'
-import './profile'
 
 window.Alpine = Alpine;
 Alpine.start();
-

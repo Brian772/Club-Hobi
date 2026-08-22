@@ -12,7 +12,7 @@
         Welcome Back To Orbii
       </h1>
 
-      <form method="POST" action="{{ route('login.authenticate') }}" class="form">
+      <form method="POST" action="{{ route('login.authenticate') }}" data-turbo="false" class="form">
         @csrf
         <div class="form-group">
           <x-input-label for="email" :value="__('Email')" />

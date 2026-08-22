@@ -18,7 +18,7 @@
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="translate-x-full"
     @keydown.escape.window="notifOpen = false"
-    class="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-xl flex flex-col"
+    class="fixed inset-y-0 right-0 w-full max-w-sm bg-canvas shadow-xl flex flex-col"
   >
     <div class="flex items-center justify-between px-6 py-5 border-b border-neutral-200">
       <button type="button" @click="notifOpen = false"
@@ -81,7 +81,7 @@
     x-transition:leave-start="translate-x-0 opacity-100"
     x-transition:leave-end="translate-x-full opacity-0"
     @keydown.escape.window="notifOpen = false"
-    class="hidden lg:flex fixed inset-y-4 right-4 z-40 h-screen w-[24rem] rounded-md bg-white border-l border-neutral-200 shadow-xl flex-col"
+    class="hidden lg:flex fixed inset-y-4 right-4 z-40 h-[calc(100vh-2rem)] shrink-0 w-[24rem] rounded-md bg-canvas border border-neutral-200 flex-col"
   >
     <div class="flex items-center justify-between px-6 py-5 border-b border-neutral-200">
       <button type="button" @click="notifOpen = false"
