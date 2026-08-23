@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-  <div x-data="{ joinClubModal: false }" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
     @if (session('success'))
       <div class="bg-accent-green/40 border-accent-green text-green-700 px-4 py-3 rounded relative" role="alert">
         <span class="block sm:inline">{{ session('success') }}</span>
@@ -15,14 +15,16 @@
       </section>
     @else
       @if ($joinedClub->isNotEmpty())
-        <section id="alreadyJoin">
+        <section id="alreadyJoin" class="pb-4 border-b border-hairline">
           <h2 class="text-2xl font-bold mb-4">Klub Anda</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
             :class="notifOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
             @foreach ($joinedClub as $club)
               <div class="block border rounded-lg overvlow-hidden hover:shadow-lg transition-shadow duration-300">
                 @if ($club->cover_url)
-                  <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover">
+                  {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
+                  <img src="https://picsum.photos/seed/{{ $club->id }}/400/300" alt="{{ $club->name }}"
+                    class="w-full h-48 object-cover">
                 @endif
 
                 <div class="p-4">
@@ -51,16 +53,18 @@
       @endif
 
       @if ($recomendedClubs->isNotEmpty())
-        <section class="mt-8 pb-4mb-12 border-b border-hairline">
+        <section class="mt-8 pb-4mb-12">
           <h2 class="text-2xl font-bold mb-4">Rekomendasi Klub</h2>
-          <p class="text-caption text-ink-muted">Berdasarkan Minat:
+          <p class="text-caption text-ink-muted mb-2">Berdasarkan Minat:
             {{ implode(', ', auth()->user()->interest_array ?? []) }}</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
             :class="notifOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
             @foreach ($recomendedClubs as $club)
               <div class="block border rounded-lg overvlow-hidden hover:shadow-lg transition-shadow duration-300">
                 @if ($club->cover_url)
-                  <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover">
+                  {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
+                  <img src="https://picsum.photos/seed/{{ $club->id }}/400/300" alt="{{ $club->name }}"
+                    class="w-full h-48 object-cover">
                 @endif
 
                 <div class="p-4">
@@ -78,11 +82,8 @@
               </div>
             @endforeach
           </div>
-          <div class="mt-6">
-            {{ $clubs->links() }}
-          </div>
         </section>
       @endif
-
     @endif
-  @endsection
+  </div>
+@endsection

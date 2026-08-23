@@ -1,5 +1,5 @@
 <header
-  class="sticky top-4 z-30 flex items-center justify-between gap-4 border border-hairline bg-canvas/40 backdrop-blur px-4 py-3 inset-x-4 rounded-lg lg:hidden">
+  class="fixed top-4 z-30 flex items-center justify-between gap-4 border border-hairline bg-canvas/40 backdrop-blur-md px-4 py-3 inset-x-4 rounded-lg lg:hidden">
   <button @click="sidebarOpen = true" class="text-ink hover:bg-canvas" aria-label="Buka menu">
     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />

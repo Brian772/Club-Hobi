@@ -14,6 +14,8 @@ class ClubController extends Controller
     {
         $user = Auth::user();
 
+        $allClubs = Club::withcount('members')->get();
+
         $userInterest = array_map('trim', $user->interest_array);
 
         $recomendedClubs = collect();
@@ -24,18 +26,21 @@ class ClubController extends Controller
             ->get();
         }
 
+        $recomendedClubs = $userInterest
+        ? $allClubs->whereIn('category', $userInterest)->values()
+        : collect();
+
         $recomendedIds = $recomendedClubs->pluck('id');
 
-        $joinedClub = ClubMember::where('user_id', $user->id)->pluck('club_id');
-        $joinedClub = Club::whereIn('id', $joinedClub)->withCount('members')->get();
+        $others = $allClubs->reject(fn($c) => $recomendedIds->contains($c->id))->values();
 
-        $clubs = Club::withCount('members')
-        ->whereNotIn('id', $recomendedIds)
-        ->paginate(10);
+        $joinedClub = Club::withCount('members')
+        ->whereHas('members', fn ($q) => $q->where('user_id', $user->id))
+        ->get();
 
-        $isEmpty = $clubs->isEmpty() && $recomendedClubs->isEmpty();
+        $isEmpty = $allClubs->isEmpty() && $recomendedClubs->isEmpty();
 
-        return view('clubs.index', compact('recomendedClubs', 'clubs', 'isEmpty', 'joinedClub'));
+        return view('clubs.index', compact('recomendedClubs', 'allClubs', 'isEmpty', 'joinedClub', 'others'));
     }
 
     public function show($id)

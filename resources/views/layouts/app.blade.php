@@ -208,8 +208,7 @@
           x-transition:leave-start="translate-x-0"
           x-transition:leave-end="-translate-x-full"
           @click.stop
-          class="fixed inset-y-4 left-4 h-max rounded-lg z-50 w-[240px] bg-canvas"
-        >
+          class="fixed top-16 left-5 h-max rounded-lg z-50 w-[240px] bg-canvas border border-hairline overflow-hidden">
           <div class="flex items-center justify-start p-4">
             <button type="button" @click="sidebarOpen = false" aria-label="Tutup Menu" class="hover:bg-canvas">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

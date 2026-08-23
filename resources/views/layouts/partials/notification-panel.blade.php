@@ -81,7 +81,7 @@
     x-transition:leave-start="translate-x-0 opacity-100"
     x-transition:leave-end="translate-x-full opacity-0"
     @keydown.escape.window="notifOpen = false"
-    class="hidden lg:flex fixed inset-y-4 right-4 z-40 h-[calc(100vh-2rem)] shrink-0 w-[24rem] rounded-md bg-canvas border border-neutral-200 flex-col"
+    class="hidden lg:flex fixed inset-y-4 right-4 z-40 h-[calc(100vh-2rem)] shrink-0 w-[24rem] rounded-lg bg-canvas border border-neutral-200 flex-col"
   >
     <div class="flex items-center justify-between px-6 py-5 border-b border-neutral-200">
       <button type="button" @click="notifOpen = false"

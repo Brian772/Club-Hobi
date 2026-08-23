@@ -18,11 +18,12 @@
     <h2 class="text-lg font-bold text-neutral-900">Club yang anda ikuti</h2>
     <a href="{{ route('clubs.index') }}" class="text-sm text-neutral-500 hover:text-neutral-800">Lihat selengkapnya →</a>
   </div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 border-b border-hairline pb-4">
     @if ($joinedClub->isNotEmpty())
       @foreach ($joinedClub as $club)
         <a href="{{ route('clubs.show', $club->id) }}" class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-          <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-32 object-cover">
+          {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-32 object-cover"> --}}
+          <img src="https://picsum.photos/seed/{{ $club->id }}/400/300" alt="{{ $club->name }}" class="w-full h-48 object-cover">
           <div class="p-4">
             <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
                   <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
@@ -32,10 +33,9 @@
         </a>
       @endforeach
     @else
-      <section id="alreadyJoin" class="border-b border-hairline flex w-full">
+      <section id="alreadyJoin" class="flex w-full">
         <div class="mb-12 flex justify-center w-full">
           <p class="text-caption text-ink-muted">Anda belum bergabung ke klub manapun.</p>
-          <p></p>
         </div>
       </section>
     @endif
