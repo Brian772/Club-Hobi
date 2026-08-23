@@ -16,7 +16,7 @@
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
 
-                <h1 class="page-titleP">Account</h1>
+                <h1 class="text-ink text-heading-2 font-bold">Account</h1>
             </a>
 
         </div>
@@ -27,7 +27,7 @@
 
                 <div class="flex flex-col lg:flex-row gap-2 ">
                     <div class="account-input-group">
-                        <input type="email" class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring focus-within:ring-blue-200 select-none cursor-default" value="{{ $user->email }}" readonly>
+                        <input type="email" class="rounded-full w-full border border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200 select-none cursor-default" value="{{ $user->email }}" readonly>
                     </div>
 
                     @if ($user->email_verified_at)
@@ -48,7 +48,7 @@
                 <label class="input-label">Password</label>
 
                 <div class="settings-group cursor-default">
-                    <input type="password" class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring focus-within:ring-blue-200 select-none cursor-default" value="password" readonly>
+                    <input type="password" class="rounded-full border w-full border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200 select-none cursor-default" value="password" readonly>
                 </div>
             </div>
 
@@ -110,7 +110,7 @@
                             type="password"
                             name="password"
                             id="deleteAccountPassword"
-                            class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring focus-within:ring-blue-200"
+                            class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
                             placeholder="Password"
                             autocomplete="current-password"
                         >

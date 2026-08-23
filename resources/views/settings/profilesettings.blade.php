@@ -20,7 +20,7 @@
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
 
-          <h1 class="page-titleP">Profile</h1>
+          <h1 class="text-ink text-heading-2 font-bold">Profile</h1>
         </a>
       </div>
 
@@ -49,7 +49,7 @@
           <label class="input-label">Nama</label>
 
           <input type="text" name="name"
-            class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring focus-within:ring-blue-200"
+            class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
             value="{{ old('name', $user->name) }}" maxlength="255" required>
         </div>
 
@@ -180,8 +180,7 @@
 
         <form action="{{ route('settings.profile.hobby.add') }}" method="POST" id="hobbyForm">
           @csrf
-          {{-- Hidden input.
-                     Tidak ada checkbox/radio yang terlihat. --}}
+          {{-- Hidden input. Tidak ada checkbox/radio yang terlihat. --}}
           <input type="hidden" name="club_id" id="selectedClubId" value="">
 
           <div class="hobby-options">

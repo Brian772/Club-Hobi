@@ -34,7 +34,7 @@
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                 </div>
                 <div class="mt-auto w-full px-4 py-2">
-                  <button class="w-full bg-primary text-white py-2" type="submit">
+                  <button class="w-full bg-primary rounded-md text-white py-2" type="submit">
                     <a href="{{ route('clubs.show', $club->id) }}">Lihat Klub</a>
                   </button>
                 </div>
@@ -76,7 +76,7 @@
                 <div class="mt-auto w-full px-4 py-2">
                   <form action="{{ route('clubs.join', $club->id) }}" method="POST">
                     @csrf
-                    <button class="w-full bg-primary text-white py-2" type="submit">Bergabung</button>
+                    <button class="w-full bg-primary rounded-md text-white py-2" type="submit">Bergabung</button>
                   </form>
                 </div>
               </div>

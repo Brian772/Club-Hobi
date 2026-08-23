@@ -29,7 +29,7 @@
         <div class="form-group">
           <x-input-label for="email" :value="__('Email')" />
           <input type="email" id="email" name="email" value="{{ old('email') }}"
-            placeholder="Example@example.com" required autofocus>
+            placeholder="example@example.com" required autofocus>
           @error('email')
             <small class="error-text">{{ $message }}</small>
           @enderror
@@ -37,13 +37,13 @@
 
         <div class="form-group">
           <x-input-label for="password" :value="__('Password')" />
-          <input type="password" id="password" name="password" placeholder="********" required>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
           @error('password')
             <small class="error-text">{{ $message }}</small>
           @enderror
         </div>
 
-        <x-secondary-button type="submit" class="mt-[24px]">
+        <x-secondary-button type="submit" class="mt-6">
           Login
         </x-secondary-button>
         <p class="register-text">
@@ -60,20 +60,20 @@
 
       <div class="social-login">
         <a href="{{ route('social.redirect', 'google') }}" class="social-button">
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="24px" height="24px">
           <span>Continue With Google</span>
         </a>
 
         <a href="{{ route('social.redirect', 'facebook') }}" class="social-button">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" width="24px" height="24px">
           <span>Continue With Facebook</span>
         </a>
       </div>
     </div>
 
-    <div class="flex order-1 md:order-2 md:max-w-[400px] justify-center w-full">
+    <div class="flex order-1 md:order-2 md:max-w-100 justify-center w-full">
       <img src="{{ asset('images/login-illustration.svg') }}" alt="Login Illustration"
-        class="w-[150px] md:w-full max-w-[400px]">
+        class="w-37.5 md:w-full max-w-100">
     </div>
   </div>
 @endsection

@@ -10,7 +10,7 @@
 
   @if ($step == 1)
     <div class="flex flex-col md:flex-row items-center justify-center">
-      <div class="order-2 md:order-1 md:w-1/2 max-w-[400px] w-full flex flex-col">
+      <div class="order-2 md:order-1 md:w-1/2 max-w-100 w-full flex flex-col">
         <div class="flex flex-col w-full justify-center items-start my-2">
           <h2 class="text-primary text-heading-2 font-bold md:text-heading-1">Join the orbii</h2>
           <p class="text-ink-muted text-caption">Start finding a hobby club that's right for you.</p>
@@ -28,7 +28,7 @@
           <div class="form-group">
             <x-input-label for="email" :value="__('Email')" />
             <input type="email" id="email" name="email" value="{{ old('email') }}"
-              placeholder="EmailAnda@example.com" required autofocus>
+              placeholder="example@example.com" required autofocus>
             @error('email')
               <small class="error-text">{{ $message }}</small>
             @enderror
@@ -36,7 +36,7 @@
 
           <div class="form-group">
             <x-input-label for="password" :value="__('Password')" />
-            <input type="password" id="password" name="password" placeholder="********" required>
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
             @error('password')
               <small class="error-text">{{ $message }}</small>
             @enderror
@@ -44,18 +44,18 @@
 
           <div class="form-group">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="********"
+            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="••••••••"
               required>
           </div>
 
           <div class="remember-me my-2 mt-6">
-            <label>
-              <input type="checkbox" name="remember" class="rounded-sm border-ink-faint">
+            <label class="flex gap-2 flex-row">
+              <input type="checkbox" name="remember" class="rounded-sm border-ink-faint srink-0">
               <span class="text-ink-muted text-caption">I agree to the Terms &amp; Conditions and Privacy Policy</span>
             </label>
           </div>
 
-          <x-secondary-button type="submit">
+          <x-secondary-button class="w-full" type="submit">
             Next
           </x-secondary-button>
 
@@ -84,15 +84,15 @@
         </div>
       </div>
 
-      <div class=" flex order-1 justify-center md:order-2 md:w-1/2 max-w-[400px] w-full">
+      <div class=" flex order-1 justify-center md:order-2 md:w-1/2 max-w-100 w-full">
         <img src="{{ asset('images/amico1.png') }}" alt="Registration Illustration"
-          class="w-[150px] md:w-full max-w-[400px]"
+          class="w-37.5 md:w-full max-w-100"
           onerror="this.onerror=null; this.src='{{ asset('images/pana.png') }}';">
       </div>
     </div>
   @elseif($step == 2)
     <div class="flex flex-col md:flex-row items-center justify-center">
-      <div class="order-2 md:order-1 md:w-1/2 max-w-[400px] w-full flex flex-col">
+      <div class="order-2 md:order-1 md:w-1/2 max-w-100 w-full flex flex-col">
         <div class="flex flex-col justify-center items-start mb-2">
           <h2 class="text-primary text-heading-2 font-bold md:text-heading-1">Tell us about yourself</h2>
           <p class="text-ink-muted text-caption">This information will appear on your profile within the club.</p>
@@ -119,13 +119,13 @@
           enctype="multipart/form-data">
           @csrf
 
-          <div class="flex items-center justify-start mb-2 profile-upload">
+          <div class="flex items-center gap-4 justify-start w-full mb-2 profile-upload">
             {{-- <input type="file" id="avatar_url" name="avatar_url" accept=".jpg,.jpeg,.png" hidden> --}}
 
-            <div class="flex flex-row justify-center mb-2">
-              <label for="avatar_url" class="w-[96px] h-[96px] cursor-pointer relative block">
+            <div class="flex flex-row justify-start mb-2">
+              <label for="avatar_url" class="w-max h-max cursor-pointer relative block">
                 <span
-                  class="upload-icon w-[96px] h-[96px] border border-solid rounded-full flex items-center justify-center overflow-hidden m-0"
+                  class="upload-icon w-24 h-24 border border-solid rounded-full flex items-center justify-center overflow-hidden m-0"
                   id="avatar-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -136,7 +136,7 @@
                 </span>
 
                 <span id="avatar-preview-wrap"
-                  class="{{ $avatarPreviewUrl ? '' : 'hidden' }} w-[96px] h-[96px] overflow-hidden m-0 rounded-full">
+                  class="{{ $avatarPreviewUrl ? '' : 'hidden' }} w-24 h-24 overflow-hidden m-0 rounded-full">
                   <img id="avatar-preview" src="{{ $avatarPreviewUrl }}" alt="{{ session('register.name') }}"
                     class="w-full h-full object-cover block">
                 </span>
@@ -145,7 +145,7 @@
               </label>
             </div>
 
-            </label>
+            </label class="w-max h-max">
             <span class="upload-copy ml-2 justify-center items-start" id="avatar-copy">
               <strong>Upload Photo Profile</strong>
               <small>Choose File · JPG/PNG, max 5MB</small>
@@ -208,15 +208,15 @@
         </script>
       </div>
 
-      <div class="flex order-1 justify-center md:order-2 md:w-1/2 max-w-[400px] w-full">
+      <div class="flex order-1 justify-center md:order-2 md:w-1/2 max-w-100 w-full">
         <img src="{{ asset('images/amico2.png') }}" alt="Profile Illustration"
-          class="w-[150px] md:w-full max-w-[400px]"
+          class="w-37.5 md:w-full max-w-100"
           onerror="this.onerror=null; this.src='{{ asset('images/pana.png') }}';">
       </div>
     </div>
   @elseif($step == 3)
     <div class="flex flex-col md:flex-row items-center justify-center">
-      <div class="order-2 md:order-1 md:w-1/2 max-w-[400px] w-full flex flex-col">
+      <div class="order-2 md:order-1 md:w-1/2 max-w-100 w-full flex flex-col">
         <div class="flex flex-col justify-center items-start mb-2">
           <h2 class="text-primary text-heading-2 md:text-heading-1 font-bold">Choose your hobby</h2>
           <p class="text-ink-muted text-caption">We'll recommend clubs based on your interests.</p>
@@ -248,8 +248,8 @@
         </form>
       </div>
 
-      <div class="order-1 md:order-2 md:w-1/2 max-w-[400px] w-full flex justify-center items-center">
-        <img src="{{ asset('images/rafiki.png') }}" alt="Hobby Illustration" class="w-[150px] md:w-full max-w-[400px]"
+      <div class="order-1 md:order-2 md:w-1/2 max-w-100 w-full flex justify-center items-center">
+        <img src="{{ asset('images/rafiki.png') }}" alt="Hobby Illustration" class="w-37.5 md:w-full max-w-100"
           onerror="this.onerror=null; this.src='{{ asset('images/pana.png') }}';">
       </div>
     </div>

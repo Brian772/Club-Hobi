@@ -1,7 +1,7 @@
 <div class="flex flex-col h-full w-full justify-between">
   <div class="flex flex-col gap-2">
     {{-- Logo --}}
-    <div class="hidden lg:flex items-center w-full gap-2 p-4 border-b border-hairline">
+    <div class="hidden lg:flex items-center w-full gap-2 pt-2 border-b border-hairline">
       <svg width="105" height="53" viewBox="0 0 105 53" fill="none" xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink">
         <rect width="105" height="53" fill="url(#pattern0_698_231)" />

@@ -1,6 +1,6 @@
   <header
     class="md:hidden flex items-center justify-between bg-white/60 backdrop-blur-lg px-4 py-2 border-b border-hairline">
-    <button @click="sidebarOpen = true" class="text-ink focus:outline-none">
+    <button @click="sidebarOpen = true" class="text-ink focus:outline-hidden">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
         <path d="M0 0h24v24H0z" fill="none" />
         <path fill="currentColor"
@@ -8,7 +8,7 @@
       </svg>
     </button>
     <div class="flex items-center gap-2">
-      <button @click="notifyOpen = !notifyOpen" class="text-ink rounded-full focus:outline-none">
+      <button @click="notifyOpen = !notifyOpen" class="text-ink rounded-full focus:outline-hidden">
         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
           <path d="M0 0h24v24H0z" fill="none" />
           <path fill="currentColor"

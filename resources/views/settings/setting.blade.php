@@ -3,12 +3,13 @@
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
 
 @section('content')
   <div class="flex flex-col w-full h-max">
 
-    <h1 class="page-title">Settings</h1>
+    <h1 class="text-ink text-heading-2 font-bold mb-4">Settings</h1>
     <div class="settings-list">
         <div class="settings-group">
           {{-- Profile Card --}}
