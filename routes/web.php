@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/clubs/{id}/join', [ClubController::class, 'join'])->name('clubs.join');
     Route::post('/clubs/{id}/leave', [ClubController::class, 'leave'])->name('clubs.leave');
     Route::delete('/clubs/{id}/member/{userId}', [ClubController::class, 'kickMember'])->name('clubs.kick');
+    Route::get('/clubs/{id}/edit', [ClubController::class, 'edit'])->name('clubs.edit');
     Route::put('/clubs/{id}', [ClubController::class, 'update'])->name('clubs.update');
 });
 
