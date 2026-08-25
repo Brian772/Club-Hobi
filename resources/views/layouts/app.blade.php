@@ -14,12 +14,7 @@
 
   @if (Route::is('login') || Route::is('register') || Route::is('home'))
     <div class="flex flex-col p-6 lg:p-8 min-h-dvh justify-center">
-      @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-      @endif
-      @if (session('error'))
-        <div class="alert alert-error">{{ session('error') }}</div>
-      @endif
+      <x-alert />
 
       @yield('content')
     </div>
@@ -72,11 +67,12 @@
       </div>
 
       <div
-        class="flex-1 min-w-0 w-full flex flex-col rounded-lg inset-y-4 min-h-[calc(100vh-46px)] overflow-hidden lg:pl-61.25 transition-[padding] duration-200"
+        class="flex-1 min-w-0 w-full flex flex-col rounded-lg h-[calc(100vh-34px)] overflow-hidden lg:pl-61.25 transition-[padding] duration-200"
         :class="notifOpen ? 'lg:pr-[24.3rem]' : 'lg:pr-0'">
         @include('layouts.partials.topbar')
 
-        <main class="pt-12 p-6 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 h-max lg:border lg:border-hairline">
+        <main class="pt-12 p-6 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 overflow-y-auto lg:border lg:border-hairline">
+          <x-alert />
           @yield('content')
         </main>
       </div>

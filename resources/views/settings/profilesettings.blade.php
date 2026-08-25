@@ -49,7 +49,7 @@
           <label class="input-label">Nama</label>
 
           <input type="text" name="name"
-            class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
+            class="rounded-full border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
             value="{{ old('name', $user->name) }}" maxlength="255" required>
         </div>
 
@@ -85,17 +85,6 @@
       </form>
     </div>
   </div>
-
-  @if (session('success'))
-    <div class="profile-toast success-toast" id="successToast">
-      <i class="fa-solid fa-circle-check"></i>
-      <span>{{ session('success') }}</span>
-
-      <button type="button" class="toast-close" onclick="closeToast('successToast')">
-        &times;
-      </button>
-    </div>
-  @endif
 
   @if ($errors->any())
     <div class="profile-toast error-toast" id="errorToast">

@@ -20,14 +20,16 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 border-b border-hairline pb-4">
     @if ($joinedClub->isNotEmpty())
       @foreach ($joinedClub as $club)
-        <a href="{{ route('clubs.show', $club->id) }}" class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+        <a href="{{ route('clubs.show', $club->id) }}"
+          class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
           {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-32 object-cover"> --}}
-          <img src="https://picsum.photos/seed/{{ $club->id }}/400/300" alt="{{ $club->name }}" class="w-full h-48 object-cover">
+          <img src="https://picsum.photos/seed/{{ $club->id }}/400/300" alt="{{ $club->name }}"
+            class="w-full h-48 object-cover">
           <div class="p-4">
             <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
-                  <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
-                  <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
-                  <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+            <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
+            <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
+            <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
           </div>
         </a>
       @endforeach
@@ -41,24 +43,12 @@
   </div>
 
   <div class="space-y-4">
-    @foreach ($feedPosts as $post)
-      <div class="bg-white rounded-xl border border-neutral-200 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-3">
-            <img src="{{ $post->author->avatar_full_url ?? asset('images/default-avatar.png') }}"
-              class="w-9 h-9 rounded-full object-cover" alt="{{ $post->author->name }}">
-            <div>
-              <span class="text-sm font-semibold text-neutral-900">{{ $post->author->name }}</span>
-              <span class="text-sm text-neutral-400">memposting di {{ $post->club->name }}</span>
-            </div>
-          </div>
-          <span class="text-xs text-neutral-400">{{ $post->created_at->diffForHumans() }}</span>
-        </div>
-        <p class="text-neutral-800 mb-3">{{ $post->body }}</p>
-        @if ($post->image_url)
-          <img src="{{ $post->image_url }}" class="w-full rounded-lg mb-3" alt="">
-        @endif
-      </div>
-    @endforeach
+    @if ($club->posts->isEmpty())
+      <p class="text-caption text-ink-muted">Belum ada postingan di klub ini.</p>
+    @else
+      @foreach ($feedPosts as $post)
+        <x-post :post="$post" />
+      @endforeach
+    @endif
   </div>
 @endsection

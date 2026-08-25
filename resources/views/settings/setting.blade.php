@@ -64,7 +64,7 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('turbo:load', function() {
 
       const logoutBtn = document.getElementById('logout-btn');
       const logoutModal = document.getElementById('logout-modal');

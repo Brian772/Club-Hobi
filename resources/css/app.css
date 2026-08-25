@@ -1,8 +1,9 @@
 @import '../../node_modules/@fortawesome/fontawesome-free/css/all.css'
   layer(base);
 @import 'tailwindcss';
-@source "./node_modules/preline/dist/*.js";
-@import "./node_modules/preline/variants.css";
+/* Preline UI */
+@import "../../node_modules/preline/variants.css";
+@source "../../node_modules/preline/dist/*.js";
 
 @plugin '@tailwindcss/forms';
 

@@ -19,10 +19,12 @@ class DashboardController extends Controller
 
         $joinedClub = Club::whereIn('id', $joinedClub)->withCount('members')->get();
 
+        $clubsIds = $user->clubs->pluck('id');
+
         $feedPosts = Post::query()
-            ->with(['author', 'club'])
+            ->with(['user', 'club'])
+            ->whereIn('club_id', $clubsIds)
             ->latest()
-            ->take(10)
             ->get();
         
         return view('dashboard', compact('user', 'joinedClub', 'feedPosts'));

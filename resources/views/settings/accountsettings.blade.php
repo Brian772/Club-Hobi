@@ -161,7 +161,7 @@
     });
 
     @if ($errors->userDeletion->any())
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('turbo:load', function() {
             openDeleteAccountModal();
         });
     @endif

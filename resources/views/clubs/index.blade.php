@@ -2,12 +2,6 @@
 
 @section('content')
   <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-    @if (session('success'))
-      <div class="bg-accent-green/40 border-accent-green text-green-700 px-4 py-3 rounded relative" role="alert">
-        <span class="block sm:inline">{{ session('success') }}</span>
-      </div>
-    @endif
-
     @if ($isEmpty)
       <section>
         <h2 class="text-heading-1 font-bold mb-4">Tidak Ada Klub</h2>
@@ -17,14 +11,14 @@
       @if ($joinedClub->isNotEmpty())
         <section id="alreadyJoin" class="pb-4 border-b border-hairline">
           <h2 class="text-2xl font-bold mb-4">Klub Anda</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-            :class="notifOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
+            :class="notifOpen ? 'lg:grid-cols-1 xl:grid-cols-2' : 'lg:grid-cols-3 xl:grid-cols-3'">
             @foreach ($joinedClub as $club)
               <div class="block border rounded-lg overvlow-hidden hover:shadow-lg transition-shadow duration-300">
                 @if ($club->cover_url)
                   {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
                   <img src="https://picsum.photos/seed/{{ $club->id }}/400/300" alt="{{ $club->name }}"
-                    class="w-full h-48 object-cover">
+                    class="w-full h-48 rounded-t-lg object-cover">
                 @endif
 
                 <div class="p-4">
@@ -34,8 +28,8 @@
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                 </div>
                 <div class="mt-auto w-full px-4 py-2">
-                  <button class="w-full bg-primary rounded-md text-white py-2" type="submit">
-                    <a href="{{ route('clubs.show', $club->id) }}">Lihat Klub</a>
+                  <button class="w-full flex items-center justify-center" type="submit">
+                    <a href="{{ route('clubs.show', $club->id) }}" class="w-full bg-primary rounded-md text-white py-2">Lihat Klub</a>
                   </button>
                 </div>
               </div>
@@ -57,14 +51,14 @@
           <h2 class="text-2xl font-bold mb-4">Rekomendasi Klub</h2>
           <p class="text-caption text-ink-muted mb-2">Berdasarkan Minat:
             {{ implode(', ', auth()->user()->interest_array ?? []) }}</p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-            :class="notifOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
+            :class="notifOpen ? 'lg:grid-cols-1 xl:grid-cols-2' : 'lg:grid-cols-3 xl:grid-cols-3'">
             @foreach ($recomendedClubs as $club)
               <div class="block border rounded-lg overvlow-hidden hover:shadow-lg transition-shadow duration-300">
                 @if ($club->cover_url)
                   {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
                   <img src="https://picsum.photos/seed/{{ $club->id }}/400/300" alt="{{ $club->name }}"
-                    class="w-full h-48 object-cover">
+                    class="w-full h-48 rounded-t-lg object-cover">
                 @endif
 
                 <div class="p-4">
@@ -76,7 +70,7 @@
                 <div class="mt-auto w-full px-4 py-2">
                   <form action="{{ route('clubs.join', $club->id) }}" method="POST">
                     @csrf
-                    <button class="w-full bg-primary rounded-md text-white py-2" type="submit">Bergabung</button>
+                    <button class="w-full bg-primary rounded-md text-white py-2 cursor-pointer" type="submit">Bergabung</button>
                   </form>
                 </div>
               </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Club;
+use App\Models\Post;
 use App\Models\ClubMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,33 +19,31 @@ class ClubController extends Controller
 
         $userInterest = array_map('trim', $user->interest_array);
 
-        $recomendedClubs = collect();
+        $joinedClub = Club::withCount('members')
+            ->whereHas('members', fn($q) => $q->where('user_id', $user->id))
+            ->get();
+
+        $joinedClubIds = $joinedClub->pluck('id');
 
         if (!empty($userInterest)) {
             $recomendedClubs = Club::withCount('members')
-            ->whereIn('category', $userInterest)
-            ->get();
+                ->whereIn('category', $userInterest)
+                ->get();
         }
 
         $recomendedClubs = $userInterest
-        ? $allClubs->whereIn('category', $userInterest)->values()
-        : collect();
-
-        $recomendedIds = $recomendedClubs->pluck('id');
-
-        $others = $allClubs->reject(fn($c) => $recomendedIds->contains($c->id))->values();
-
-        $joinedClub = Club::withCount('members')
-        ->whereHas('members', fn ($q) => $q->where('user_id', $user->id))
-        ->get();
+            ? $allClubs->whereIn('category', $userInterest)->reject(fn($c) => $joinedClubIds->contains($c->id))->values()
+            : collect();
 
         $isEmpty = $allClubs->isEmpty() && $recomendedClubs->isEmpty();
 
-        return view('clubs.index', compact('recomendedClubs', 'allClubs', 'isEmpty', 'joinedClub', 'others'));
+        return view('clubs.index', compact('recomendedClubs', 'allClubs', 'isEmpty', 'joinedClub'));
     }
 
     public function show($id)
     {
+        $user = Auth::user();
+
         $club = Club::withCount('members')
             ->with(['posts.user', 'files'])
             ->findOrFail($id);
@@ -53,7 +52,12 @@ class ClubController extends Controller
             ->where('user_id', Auth::user()->id)
             ->exists();
 
-        return view('clubs.show', compact('club', 'isJoined'));
+        $posts = Post::with('user')
+            ->latest()
+            ->where('club_id', $id)
+            ->get();
+
+        return view('clubs.show', compact('club', 'isJoined', 'posts', 'user'));
     }
 
     public function join(Request $request, $id)
@@ -82,7 +86,7 @@ class ClubController extends Controller
             ->where('user_id', $userId)
             ->delete();
 
-        return redirect()->back()->with('success', 'berhasil keluar dari klub!');
+        return redirect()->route('clubs.index')->with('success', 'berhasil keluar dari klub!');
     }
 
     public function kickMember(Request $request, $clubId, $userId)
@@ -96,6 +100,16 @@ class ClubController extends Controller
             ->delete();
 
         return redirect()->back()->with('success', 'Anggota berhasil dikeluarkan dari klub!');
+    }
+
+    public function edit($id)
+    {
+        if (Auth::user()->role_global !== 'admin') {
+            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melakukan tindakan ini.');
+        }
+
+        $club = Club::findOrFail($id);
+        return view('admin.clubs.edit', compact('club'));
     }
 
     public function update(Request $request, $id)
