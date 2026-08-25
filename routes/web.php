@@ -40,10 +40,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
 
-    Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
-    Route::get('/clubs/{club}', [ClubController::class, 'show'])->name('clubs.show');
-    Route::post('/clubs/{club}/join', [ClubController::class, 'join'])->name('clubs.join');
-    Route::delete('/clubs/{club}/leave', [ClubController::class, 'leave'])->name('clubs.leave');
+    Route::prefix('clubs')->name('clubs.')->group(function () {
+        Route::get('/', [ClubController::class, 'index'])->name('index');
+        Route::get('/{club}', [ClubController::class, 'show'])->name('show');
+        Route::post('/{club}/join', [ClubController::class, 'join'])->name('join');
+        Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');
+    });
 
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
@@ -83,14 +85,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
-    Route::get('/clubs/{id}', [ClubController::class, 'show'])->name('clubs.show');
-    Route::post('/clubs/{id}/join', [ClubController::class, 'join'])->name('clubs.join');
-    Route::post('/clubs/{id}/leave', [ClubController::class, 'leave'])->name('clubs.leave');
-    Route::delete('/clubs/{id}/member/{userId}', [ClubController::class, 'kickMember'])->name('clubs.kick');
-    Route::get('/clubs/{id}/edit', [ClubController::class, 'edit'])->name('clubs.edit');
-    Route::put('/clubs/{id}', [ClubController::class, 'update'])->name('clubs.update');
-});
-
+require __DIR__ . '/admin.php';
 require __DIR__ . '/auth.php';

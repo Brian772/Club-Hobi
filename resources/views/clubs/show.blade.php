@@ -36,7 +36,7 @@
         </form>
 
         @can('admin')
-          <x-secondary-button class="w-max px-4" type="button" onclick="window.location='{{ route('clubs.edit', $club->id) }}'">
+          <x-secondary-button class="w-max px-4" type="button" onclick="window.location='{{ route('admin.clubs.edit', $club->id) }}'">
             Edit Klub
           </x-secondary-button>
         @endcan
