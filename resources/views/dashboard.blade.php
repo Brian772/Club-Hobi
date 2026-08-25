@@ -47,8 +47,12 @@
       <p class="text-caption text-ink-muted">Belum ada postingan di klub ini.</p>
     @else
       @foreach ($feedPosts as $post)
-        <x-post :post="$post" />
-      @endforeach
+        @if ($post->is_announcement)
+          <x-post-announcement :post="$post" />
+        @else
+          <x-post :post="$post" />
+        @endif
+        @endforeach
     @endif
   </div>
 @endsection

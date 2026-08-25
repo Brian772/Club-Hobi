@@ -72,6 +72,7 @@
         @include('layouts.partials.topbar')
 
         <main class="pt-12 p-6 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 overflow-y-auto lg:border lg:border-hairline">
+          <x-alert-account-status />
           <x-alert />
           @yield('content')
         </main>

@@ -53,6 +53,7 @@ class ClubController extends Controller
             ->exists();
 
         $posts = Post::with('user')
+            ->orderByDesc('is_announcement')
             ->latest()
             ->where('club_id', $id)
             ->get();

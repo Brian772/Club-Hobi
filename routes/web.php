@@ -7,6 +7,8 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Settings\SettingsController;
+use App\Http\Controllers\AppealController;
+use App\Http\Controllers\BannedController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -76,6 +78,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/account', [SettingsController::class, 'accountsettings'])
             ->name('account');
     });
+    
+    Route::get('/banned', [BannedController::class, 'index'])->name('banned');
+    Route::get('/appeals', [AppealController::class, 'create'])->name('appeal.create');
+    Route::post('/appeals/store', [AppealController::class, 'store'])->name('appeal.store');
 });
 
 Route::middleware('auth')->group(function () {

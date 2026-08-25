@@ -42,25 +42,25 @@ class AuthenticatedSessionController extends Controller
             ])->onlyInput('email');
         }
 
-        if ($user->status === 'suspended') {
-            $until = $user->suspended_until
-                ? $user->suspended_until->format('d M Y H:i')
-                : null;
+        // if ($user->status === 'suspended') {
+        //     $until = $user->suspended_until
+        //         ? $user->suspended_until->format('d M Y H:i')
+        //         : null;
 
-            return back()
-                ->withErrors([
-                    'email' => 'Akun Anda sedang ditangguhkan' . ($until ? " hingga {$until}." : '.'),
-                ])
-                ->onlyInput('email');
-        }
+        //     return back()
+        //         ->withErrors([
+        //             'email' => 'Akun Anda sedang ditangguhkan' . ($until ? " hingga {$until}." : '.'),
+        //         ])
+        //         ->onlyInput('email');
+        // }
 
-        if (in_array($user->status, ['banned', 'inactive'], true)) {
-            return back()
-                ->withErrors([
-                    'email' => 'Akun Anda telah dinonaktifkan.',
-                ])
-                ->onlyInput('email');
-        }
+        // if (in_array($user->status, ['banned', 'inactive'], true)) {
+        //     return back()
+        //         ->withErrors([
+        //             'email' => 'Akun Anda telah dinonaktifkan.',
+        //         ])
+        //         ->onlyInput('email');
+        // }
 
         // 3. Login & Regenerate Session
         Auth::login($user);

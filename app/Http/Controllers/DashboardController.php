@@ -23,6 +23,7 @@ class DashboardController extends Controller
 
         $feedPosts = Post::query()
             ->with(['user', 'club'])
+            ->orderByDesc('is_announcement')
             ->whereIn('club_id', $clubsIds)
             ->latest()
             ->get();
