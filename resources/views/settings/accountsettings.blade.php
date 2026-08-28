@@ -3,6 +3,7 @@
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
 
 @section('content')
@@ -27,7 +28,7 @@
 
                 <div class="flex flex-col lg:flex-row gap-2 ">
                     <div class="account-input-group">
-                        <input type="email" class="rounded-full w-full border border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200 select-none cursor-default" value="{{ $user->email }}" readonly>
+                        <input type="email" class="rounded-md w-full border border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200 select-none cursor-default" value="{{ $user->email }}" readonly>
                     </div>
 
                     @if ($user->email_verified_at)
@@ -48,7 +49,7 @@
                 <label class="input-label">Password</label>
 
                 <div class="settings-group cursor-default">
-                    <input type="password" class="rounded-full border w-full border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200 select-none cursor-default" value="password" readonly>
+                    <input type="password" class="rounded-md border w-full border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200 select-none cursor-default" value="password" readonly>
                 </div>
             </div>
 

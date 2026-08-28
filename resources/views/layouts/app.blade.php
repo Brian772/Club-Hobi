@@ -5,9 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
   <title>Club Hobi</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @yield('styles')
+  <style>
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f1f5f9;
+    }
+  </style>
 </head>
 
 <body class="bg-canvas-soft">
@@ -72,7 +79,9 @@
         @include('layouts.partials.topbar')
 
         <main class="pt-12 p-6 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 overflow-y-auto lg:border lg:border-hairline">
-          <x-alert-account-status />
+          <section class="block lg:hidden mb-4 w-full">
+            <x-alert-account-status />
+          </section>
           <x-alert />
           @yield('content')
         </main>

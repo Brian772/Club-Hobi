@@ -27,7 +27,7 @@
                   <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                 </div>
-                <div class="mt-auto w-full px-4 py-2">
+                <div class="mt-auto w-full p-2">
                   <button class="w-full flex items-center justify-center" type="submit">
                     <a href="{{ route('clubs.show', $club->id) }}" class="w-full bg-primary rounded-md text-white py-2">Lihat Klub</a>
                   </button>
@@ -67,7 +67,7 @@
                   <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                 </div>
-                <div class="mt-auto w-full px-4 py-2">
+                <div class="mt-auto w-full p-2">
                   <form action="{{ route('clubs.join', $club->id) }}" method="POST">
                     @csrf
                     <button class="w-full bg-primary rounded-md text-white py-2 cursor-pointer" type="submit">Bergabung</button>

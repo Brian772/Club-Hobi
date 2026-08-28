@@ -8,7 +8,7 @@
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-3xl font-bold text-neutral-900">Halo, {{ auth()->user()->name }} </h1>
     <a href="{{ route('posts.create') }}"
-      class="hidden lg:inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-blue-700">
+      class="hidden lg:inline-flex items-center gap-2 bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary-active">
       + Buat Postingan
     </a>
   </div>
@@ -43,16 +43,17 @@
   </div>
 
   <div class="space-y-4">
-    @if ($club->posts->isEmpty())
-      <p class="text-caption text-ink-muted">Belum ada postingan di klub ini.</p>
-    @else
-      @foreach ($feedPosts as $post)
-        @if ($post->is_announcement)
-          <x-post-announcement :post="$post" />
-        @else
+    @foreach ($feedPosts as $post)
+      @if ($post->is_announcement)
+        <x-post-announcement :post="$post" />
+      @else
+        <section class="block lg:hidden">
+          <x-post-mobile :post="$post" />
+        </section>
+        <section class="hidden lg:block">
           <x-post :post="$post" />
-        @endif
-        @endforeach
-    @endif
+        </section>
+      @endif
+    @endforeach
   </div>
 @endsection

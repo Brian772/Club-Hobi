@@ -2,8 +2,8 @@
 
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
 
 
@@ -49,7 +49,7 @@
           <label class="input-label">Nama</label>
 
           <input type="text" name="name"
-            class="rounded-full border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
+            class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
             value="{{ old('name', $user->name) }}" maxlength="255" required>
         </div>
 

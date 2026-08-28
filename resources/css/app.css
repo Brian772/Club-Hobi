@@ -11,7 +11,7 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-  --color-primary: #0075de;
+  --color-primary: #476cff;
   --color-primary-active: #005bb0;
 
   --color-secondary: #213183;
@@ -22,7 +22,8 @@
   --color-ink-faint: #a39e98;
 
   --color-canvas: #ffffff;
-  --color-canvas-soft: #f6f5f4;
+  --color-canvas-soft: #fafafa;
+  --color-canvas-muted: #cccccc;
 
   --color-hairline: #e6e6e6;
 
@@ -76,7 +77,7 @@
   --text-caption--line-height: 1.43;
   --text-caption--letter-spacing: 0em;
   --text-caption--font-weight: 400;
-  --text-overline: 12px;
+  --text-overline: 10px;
   --text-overline--line-height: 1.33;
   --text-overline--letter-spacing: 0.05em;
   --text-overline--font-weight: 600;

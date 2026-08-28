@@ -177,12 +177,6 @@
             <x-secondary-button type="submit">
               Next
             </x-secondary-button>
-
-            <button type="submit" class="" formnovalidate
-              onclick="document.getElementById('avatar_url').value = ''; document.getElementById('avatar-preview-wrap').style.display = 'none'; document.getElementById('avatar-icon').style.display = 'flex'; document.getElementById('avatar-copy').style.display = '';"
-              style="background:none; border:none; padding:0; color:#9a9a9a; cursor:pointer; font:inherit; text-decoration:underline;">
-              Skip For Now
-            </button>
           </div>
         </form>
 

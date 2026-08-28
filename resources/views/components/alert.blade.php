@@ -34,7 +34,19 @@
   </div>
 @endif
 
-@if (session('success') || session('error') || session('warning'))
+@if (session('info'))
+  <div id="alert"
+    class="fixed flex top-18 lg:top-4 right-4 w-max p-2 lg:pl-4 lg:pr-12 lg:py-4 bg-white border border-blue-300 rounded-md z-100 overflow-hidden transition-opacity duration-500"
+    role="alert">
+    <div class="flex flex-row justify-center items-center gap-2">
+      <i class="fa-solid fa-circle-info text-blue-600"></i>
+      <span class="block sm:inline text-caption lg:text-body-mid text-blue-600">{{ session('info') }}</span>
+    </div>
+    <div id="alertProgressBar" class="absolute rounded-full bottom-0 left-0 h-1 bg-blue-600"></div>
+  </div>
+@endif
+
+@if (session('success') || session('error') || session('warning') || session('info'))
   <script>
     (function() {
       const duration = 3000;

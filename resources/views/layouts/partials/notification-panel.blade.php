@@ -20,13 +20,12 @@
     @keydown.escape.window="notifOpen = false"
     class="fixed inset-y-0 right-0 w-full max-w-sm bg-canvas shadow-xl flex flex-col"
   >
-    <div class="flex items-center justify-between px-6 py-5 border-b border-neutral-200">
+    <div class="flex items-center justify-between px-6 py-2 border-b border-neutral-200">
       <button type="button" @click="notifOpen = false"
-        class="flex items-center gap-2 px-4 py-2 rounded-md text-ink hover:text-white hover:bg-red-600 text-sm transition-colors">
+        class="flex items-center gap-2 px-2 rounded-md text-ink hover:bg-rprimary/10 hover:text-primary text-sm transition-colors">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
-        Close
       </button>
     </div>
 
@@ -83,13 +82,12 @@
     @keydown.escape.window="notifOpen = false"
     class="hidden lg:flex fixed inset-y-4 right-4 z-40 h-[calc(100vh-2rem)] shrink-0 w-[24rem] rounded-lg bg-canvas border border-neutral-200 flex-col"
   >
-    <div class="flex items-center justify-between px-6 py-5 border-b border-neutral-200">
+    <div class="flex items-center justify-between p-2 border-b border-neutral-200">
       <button type="button" @click="notifOpen = false"
-        class="flex items-center gap-2 px-4 py-2 rounded-md text-ink hover:text-white hover:bg-red-600 text-sm transition-colors">
+        class="flex items-center gap-2 p-2 rounded-md text-ink hover:text-primary hover:bg-primary/10 text-sm transition-colors">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
-        Close
       </button>
     </div>
 

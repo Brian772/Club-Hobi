@@ -17,6 +17,11 @@ Route::get(
     [RegisteredUserController::class, 'create']
 )->name('register');
 
+Route::post(
+        'register/step-3',
+        [RegisteredUserController::class, 'step3']
+    )->name('register.step3');
+
 Route::middleware('guest')->group(function () {
 
     Route::post(
@@ -28,11 +33,6 @@ Route::middleware('guest')->group(function () {
         'register/step-2',
         [RegisteredUserController::class, 'step2']
     )->name('register.step2');
-
-    Route::post(
-        'register/step-3',
-        [RegisteredUserController::class, 'step3']
-    )->name('register.step3');
 
     Route::get(
         'login',

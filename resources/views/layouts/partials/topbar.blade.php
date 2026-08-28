@@ -23,8 +23,10 @@
   </button>
 </header>
 
-<div class="hidden lg:flex border border-hairline bg-canvas rounded-lg mb-2 items-center justify-end px-8 py-2">
-  <button @click="notifOpen = true" class="relative text-neutral-500 rounded-md hover:text-canvas hover:bg-primary p-1"
+<div class="hidden lg:flex gap-4 flex-row border border-hairline bg-canvas rounded-lg mb-2 items-center p-2
+{{ auth()->user()->status !== 'active' ? 'justify-between' : 'justify-end' }}">
+  <x-alert-account-status />
+  <button @click="notifOpen = true" class="relative text-neutral-500 rounded-md hover:text-primary hover:bg-primary/10 p-1"
     aria-label="Buka notifikasi">
     <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 0 24 24">
       <path d="M0 0h24v24H0z" fill="none" />
