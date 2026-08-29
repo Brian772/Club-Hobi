@@ -20,7 +20,8 @@ class DashboardController extends Controller
         $joinedClub = Club::whereIn('id', $joinedClub)->withCount('members')->get();
 
         $feedPosts = Post::query()
-            ->with(['author', 'club'])
+            ->with(['author', 'club', 'comments.user'])
+            ->withCount(['comments', 'likes'])
             ->latest()
             ->take(10)
             ->get();

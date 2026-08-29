@@ -27,9 +27,10 @@
       <form action="{{ route('settings.profile.update') }}" method="POST" class="profile-page-content w">
         @csrf
         <div class="profile-avatar-section">
+          <div class="profile-avatar-left">
           <div class="profile-avatar-lg">
-            @if ($user->avatar_url)
-              <img src="{{ asset('storage/' . $user->avatar_url) }}" alt="Foto Profil">
+            @if ($user->avatar_full_url)
+              <img src="{{ $user->avatar_full_url}}" alt="Foto Profil">
             @else
               {{ strtoupper(substr($user->name, 0, 1)) }}
             @endif
@@ -43,6 +44,9 @@
 
             <span class="photo-hint">JPG/PNG, max 2MB</span>
           </div>
+          </div>
+
+           <a href="{{ route('posts.index') }}" class="content-control-button"><span class="content-control-icon">▣</span>Kontrol Postingan</a>
         </div>
 
         <div class="form-group-item">
@@ -124,8 +128,8 @@
 
       <div class="modal-body">
         <div class="avatar-preview">
-          @if ($user->avatar_url)
-            <img src="{{ asset('storage/' . $user->avatar_url) }}" alt="Foto Profil">
+          @if ($user->avatar_full_url)
+            <img src="{{$user->avatar_full_url}}" alt="Foto Profil">
           @else
             <span>{{ strtoupper(substr($user->name, 0, 1)) }}</span>
           @endif
