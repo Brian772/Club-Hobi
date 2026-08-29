@@ -35,8 +35,8 @@ class UserFactory extends Factory
             'status' => 'active',
             'suspended_until' => null,
             'email_verified_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
+            'updated_at' => fake()->dateTimeBetween('-1 year', 'now')
         ];
     }
 

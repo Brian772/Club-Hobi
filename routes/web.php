@@ -9,6 +9,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\AppealController;
 use App\Http\Controllers\BannedController;
+use App\Http\Controllers\ChartController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -90,6 +91,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/api/user-charts', [App\Http\Controllers\ChartController::class, 'getDataUsers'])->name('api.chart');
 
 require __DIR__ . '/admin.php';
 require __DIR__ . '/auth.php';

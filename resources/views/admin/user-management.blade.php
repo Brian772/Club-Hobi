@@ -6,8 +6,7 @@
 
 @section('content')
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
-    <p>Welcome to the admin dashboard!</p>
+    <h1 class="text-2xl font-bold mb-4">Admin User Management</h1>
+    <p>Welcome to the admin user management page!</p>
   </div>
 @endsection
-
