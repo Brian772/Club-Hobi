@@ -58,7 +58,11 @@ class ClubController extends Controller
             ->where('club_id', $id)
             ->get();
 
-        return view('clubs.show', compact('club', 'isJoined', 'posts', 'user'));
+        $members = ClubMember::with('user')
+        ->where('club_id', $id)
+        ->get();
+
+        return view('clubs.show', compact('club', 'isJoined', 'posts', 'members', 'user'));
     }
 
     public function join(Request $request, $id)
