@@ -7,6 +7,7 @@ use App\Models\Club;
 use App\Models\Post;
 use App\Models\ClubMember;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
 class AdminClubController extends Controller
@@ -30,23 +31,29 @@ class AdminClubController extends Controller
         return view('admin.clubs.edit', compact('club'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request,Club $club)
     {
         if (Auth::user()->role_global !== 'admin') {
             return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melakukan tindakan ini.');
         }
 
-        $request->validate([
+        $validated = $request->validate([
+            'name' => 'required|string',
             'description' => 'required|string',
-            'cover_url' => 'nullable|string',
+            'cover_url' => 'nullable|image|mimes:jpeg,png|max:2048',
         ]);
 
-        $club = Club::findorFail($id);
-        $club->update([
-            'description' => $request->description,
-            'cover_url' => $request->cover_url ?? $club->cover_url,
-        ]);
+        if ($request->hasFile('cover')) {
+            if ($club->cover_url && Storage::disk('public')->exists($club->cover_url)) {
+                Storage::disk('public')->delete($club->cover_url);
+            }
 
-        return redirect()->back()->with('success', 'Klub berhasil diperbarui!');
+            $path = $request->file('cover')->store('club/covers', 'public');
+            $validated['cover_url'] = $path;
+        }
+
+        $club->update($validated);
+
+        return redirect()->route('clubs.show', $club->id)->with('success', 'Klub berhasil diperbarui!');
     }
 }

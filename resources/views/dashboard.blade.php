@@ -23,7 +23,7 @@
         <a href="{{ route('clubs.show', $club->id) }}"
           class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
           {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-32 object-cover"> --}}
-          <img src="https://picsum.photos/seed/{{ $club->id }}/400/300" alt="{{ $club->name }}"
+          <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
             class="w-full h-48 object-cover">
           <div class="p-4">
             <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>

@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-  <a href="{{ route('clubs.index') }}" class="flex items-center gap-2 text-ink-muted mb-4">
+  <a href="{{ route('clubs.index') }}" class="flex w-max items-center gap-2 text-ink-muted mb-4">
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 16 9">
       <path d="M0 0h16v9H0z" fill="none" />
       <path fill="currentColor" d="M12.5 5h-9c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h9c.28 0 .5.22.5.5s-.22.5-.5.5" />
@@ -15,7 +15,7 @@
   </a>
   <header
     class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full border-b border-hairlinep pb-4">
-    <img src="https://picsum.photos/seed/{{ $club->id }}/400/300" alt="Logo {{ $club->name }}"
+    <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="Logo {{ $club->name }}"
       class="rounded-md w-full md:w-100 h-48 md:h-auto object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
     <div class="flex flex-col justify-between items-start w-full self-stretch">
       <div class="flex flex-col gap-2">
