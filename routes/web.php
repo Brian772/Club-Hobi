@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');
     });
 
+    Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
+
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
     Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
@@ -79,7 +81,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/account', [SettingsController::class, 'accountsettings'])
             ->name('account');
     });
-    
+
     Route::get('/banned', [BannedController::class, 'index'])->name('banned');
     Route::get('/appeals', [AppealController::class, 'create'])->name('appeal.create');
     Route::post('/appeals/store', [AppealController::class, 'store'])->name('appeal.store');

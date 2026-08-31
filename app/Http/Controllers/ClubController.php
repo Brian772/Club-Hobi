@@ -59,8 +59,9 @@ class ClubController extends Controller
             ->get();
 
         $members = ClubMember::with('user')
-        ->where('club_id', $id)
-        ->get();
+            ->orderByRaw('user_id = ? DESC', [Auth::user()->id])
+            ->where('club_id', $id)
+            ->get();
 
         return view('clubs.show', compact('club', 'isJoined', 'posts', 'members', 'user'));
     }

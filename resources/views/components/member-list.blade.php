@@ -1,4 +1,4 @@
-<div class="w-full flex flex-row justify-between items-center p-4">
+<a href="{{ route('profile.show', ['user' => $member->user->id]) }}" class="w-full flex flex-row justify-between items-center p-4">
   <div class="flex flex-row gap-3 justify-center items-center w-max">
     <div class="min-w-10">
       <img src="{{ $member->user->avatar_full_url }}" alt="{{ $member->user->name }}"
@@ -37,4 +37,4 @@
       </form>
     @endcan
   @endif
-</div>
+</a>
