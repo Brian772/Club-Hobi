@@ -91,17 +91,6 @@
                     @csrf
                     @method('DELETE')
 
-<<<<<<< HEAD
-                    <div class="mb-4">
-                        <input
-                            type="password"
-                            name="password"
-                            id="deleteAccountPassword"
-                            class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
-                            placeholder="Password"
-                            autocomplete="current-password"
-                        >
-=======
                     <div class="delete-account-password-group" style="margin-bottom: 20px; text-align: left;">
                         <label for="deleteAccountPassword" class="input-label">
                             Masukkan password untuk konfirmasi
@@ -113,7 +102,6 @@
                                 {{ $errors->userDeletion->first('password') }}
                             </p>
                         @endif
->>>>>>> e9177dea4c1cb9a48a7b9284d3bf53cb2524b5b4
                     </div>
 
                     <div class="delete-account-actions">
@@ -139,26 +127,12 @@
                 document.getElementById('deleteAccountModal').classList.remove('show');
             }
 
-<<<<<<< HEAD
-        if (event.target === deleteAccountModal) {
-            closeDeleteAccountModal();
-        }
-    });
-
-    @if ($errors->userDeletion->any())
-        document.addEventListener('turbo:load', function() {
-            openDeleteAccountModal();
-        });
-    @endif
-</script>
-=======
             document.addEventListener('click', function (event) {
                 const deleteAccountModal = document.getElementById('deleteAccountModal');
                 if (event.target === deleteAccountModal) {
                     closeDeleteAccountModal();
                 }
             });
->>>>>>> e9177dea4c1cb9a48a7b9284d3bf53cb2524b5b4
 
             @if ($errors->userDeletion->any())
                 document.addEventListener('DOMContentLoaded', function () {
