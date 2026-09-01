@@ -22,9 +22,10 @@ class DashboardController extends Controller
         $clubsIds = $user->clubs->pluck('id');
 
         $feedPosts = Post::query()
-            ->with(['user', 'club'])
+            ->with(['user', 'club', 'author', 'club', 'comments.user'])
             ->orderByDesc('is_announcement')
             ->whereIn('club_id', $clubsIds)
+            ->withCount(['comments', 'likes'])
             ->latest()
             ->get();
         

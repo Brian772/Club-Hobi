@@ -1,0 +1,489 @@
+.post-page {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 15px 32px;
+    box-sizing: border-box;
+    color: #1e293b;
+}
+
+/* Header & Navigasi */
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.content-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+}
+
+.content-header p {
+    color: #64748b;
+    font-size: 14px;
+    margin: 0;
+}
+
+.content-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Membuat container h1 menyatu secara horizontal */
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Jarak antara panah dan judul */
+    font-size: 40px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+}
+
+/* Styling panah polos tanpa background/border */
+.back-arrow {
+    color: #0f172a;
+    text-decoration: none;
+    font-size: 40px; /* Ukuran pas dengan h1 */
+    line-height: 1;
+    transition: transform 0.2s, color 0.2s;
+}
+
+/* Efek sedikit bergeser ke kiri saat di-hover */
+.back-arrow:hover {
+    color: #2563eb;
+    transform: translateX(-3px);
+}
+
+/* Stat Card Section */
+.post-statistics {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    min-width: 180px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.stat-card span {
+    display: block;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.stat-card strong {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 6px;
+}
+
+/* Grid Card Postingan */
+.posts-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.post-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.post-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.post-club-badge {
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.post-date {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.post-body {
+    padding: 16px 18px;
+    flex-grow: 1;
+}
+
+.post-body h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+.post-body p {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.post-media-preview {
+    margin-top: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    max-height: 200px;
+}
+
+.post-image, .post-video {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+/* Footer & Controls Card */
+.post-footer {
+    padding: 12px 18px;
+    border-top: 1px solid #f1f5f9;
+    background-color: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-engagement {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.post-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.post-control a, .post-control button {
+    border: none;
+    background: none;
+    padding: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #64748b;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.post-control a:hover {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.post-control button:hover {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+/* Button UI */
+.create-post-button, .trash-button, .publish-button, .cancel-button, .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.create-post-button, .publish-button {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+}
+
+.create-post-button:hover, .publish-button:hover {
+    background: #1d4ed8;
+}
+
+.trash-button, .cancel-button, .back-button {
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+
+.trash-button:hover, .cancel-button:hover, .back-button:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+/* Empty State */
+.empty-post {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px 20px;
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    color: #64748b;
+}
+
+.empty-post a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 8px;
+}
+
+/* Styling Form Buat & Edit Postingan */
+.post-form-container {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.post-page-header {
+    margin-bottom: 20px;
+}
+
+.post-page-header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 8px 0 4px 0;
+}
+
+.post-page-header p {
+    color: #64748b;
+    font-size: 14px;
+    margin: 0;
+}
+
+.create-post-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-group input[type="text"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #0f172a;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Custom Drag & Drop File Input */
+.file-upload-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.file-upload-wrapper:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.file-upload-wrapper input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+}
+
+.file-upload-design {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #64748b;
+    pointer-events: none;
+}
+
+.file-upload-design i {
+    font-size: 22px;
+    color: #2563eb;
+}
+
+.file-upload-design span {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.file-upload-design small {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.form-error {
+    color: #dc2626;
+    font-size: 12px;
+}
+
+/* Styling Halaman Sampah Postingan */
+.trash-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.trash-post-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: border-color 0.2s;
+}
+
+.trash-post-card:hover {
+    border-color: #cbd5e1;
+}
+
+.trash-post-info h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+}
+
+.trash-post-info p {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.trash-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-restore {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-restore:hover {
+    background-color: #dbeafe;
+}
+
+.btn-force-delete {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-force-delete:hover {
+    background-color: #fee2e2;
+}
+
+.back-icon {
+    width: 20px;
+    height: 20px;
+}

@@ -52,11 +52,19 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 
+    Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+    Route::get('/posts/trash', [PostController::class, 'trash'])->name('posts.trash');
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
     Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
+    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::patch('/posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore');
+    Route::delete('/posts/{post}/force-delete', [PostController::class, 'forceDelete'])->name('posts.force-delete');
     Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/comments', [PostController::class, 'storeComment'])->name('posts.comments.store');
+    Route::delete('/comments/{comment}', [PostController::class, 'destroyComment'])->name('comments.destroy');
 
     Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::prefix('settings')->name('settings.')->group(function () {

@@ -73,7 +73,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return null;
         }
 
-        if (str_starts_with($this->avatar_url, 'http://') || str_starts_with($this->avatar_url, 'https://')) {
+        if (str_starts_with($this->avatar_url, 'http://') || str_starts_with($avatar, 'https://')) {
             return $this->avatar_url;
         }
 
