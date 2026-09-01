@@ -7,8 +7,8 @@ Route::view('/', 'TA.landing')->name('landing');
 Route::view('/landing', 'TA.landing')->name('landing.page');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return view('mobile.dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 Route::get('/mobile/dashboard', function () {
     return view('mobile.dashboard');

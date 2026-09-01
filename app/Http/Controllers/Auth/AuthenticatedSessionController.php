@@ -18,7 +18,7 @@ class AuthenticatedSessionController extends Controller
     public function create(): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('profile.index');
+            return redirect()->route('dashboard');
         }
 
         return view('auth.login');
@@ -62,7 +62,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('profile.index'))
+        return redirect()->intended(route('dashboard'))
             ->with('success', 'Berhasil masuk. Selamat datang kembali, ' . $user->name . '!');
     }
 

@@ -30,10 +30,22 @@ class RegisteredUserController extends Controller
                 return redirect()->route('register', ['step' => 1]);
             }
         } elseif (Auth::check()) {
-            return redirect()->route('profile.index');
+            return redirect()->route('dashboard');
         }
 
-        return view('auth.register', compact('step'));
+        $categories = [
+            'Photography',
+            'Fishing',
+            'Reading',
+            'Music',
+            'Gaming',
+            'Traveling',
+            'Football',
+            'Swimming',
+            'Hiking',
+        ];
+
+        return view('auth.register', compact('step', 'categories'));
     }
 
     /**
@@ -103,6 +115,6 @@ class RegisteredUserController extends Controller
 
         session(['user_hobbies' => $selectedHobbies]);
 
-        return redirect()->route('beranda')->with('success', 'Registrasi berhasil!');
+        return redirect()->route('dashboard')->with('success', 'Registrasi berhasil!');
     }
 }
