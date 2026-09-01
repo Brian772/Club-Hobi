@@ -54,7 +54,17 @@ class RegisteredUserController extends Controller
     public function step1(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+<<<<<<< Updated upstream
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+=======
+            'email' => [
+                'required',
+                'string',
+                'email:rfc',
+                'max:255',
+                Rule::unique(User::class, 'email'),
+            ],
+>>>>>>> Stashed changes
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
@@ -115,6 +125,17 @@ class RegisteredUserController extends Controller
 
         session(['user_hobbies' => $selectedHobbies]);
 
+<<<<<<< Updated upstream
         return redirect()->route('dashboard')->with('success', 'Registrasi berhasil!');
+=======
+        // 4. Auto Login & Redirect ke Dashboard
+        Auth::login($user);
+        $request->session()->regenerate();
+        $request->session()->forget('register');
+
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Registrasi berhasil! Selamat datang, ' . $user->name . '!');
+>>>>>>> Stashed changes
     }
 }

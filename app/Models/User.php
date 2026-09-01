@@ -43,6 +43,22 @@ class User extends Authenticatable
 
     public function posts(): HasMany
     {
+<<<<<<< Updated upstream
         return $this->hasMany(Post::class);
+=======
+        $avatar = (string) ($this->avatar_url ?? '');
+        if ($avatar === '') {
+            return null;
+        }
+
+        if (str_starts_with($this->avatar_url, 'http://') || str_starts_with($this->avatar_url, 'https://')) {
+            return $this->avatar_url;
+        }
+
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+
+        return $disk->url($this->avatar_url);
+>>>>>>> Stashed changes
     }
 }

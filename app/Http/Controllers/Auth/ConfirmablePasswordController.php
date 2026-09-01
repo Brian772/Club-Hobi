@@ -33,7 +33,13 @@ class ConfirmablePasswordController extends Controller
             ]);
         }
 
+<<<<<<< Updated upstream
         $request->session()->put('auth.password_confirmed_at', time());
+=======
+        /** @var \Illuminate\Session\Store $session */
+        $session = $request->session();
+        $session->passwordConfirmed();
+>>>>>>> Stashed changes
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
