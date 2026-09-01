@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Club;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +16,18 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
+    public function show(string $id)
+    {
+        $user = Auth::user();
+
+        $profile = User::where('id', $id)->first();
+
+        if (!$profile) {
+            return redirect()->route('clubs.index')->with('error', 'User not found.');
+        }
+
+        return view('profile.show', compact('profile', 'user'));
+    }
     public function edit(Request $request): View
     {
         return view('profile.edit', [

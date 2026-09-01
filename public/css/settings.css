@@ -1,8 +1,6 @@
 /* Reset & Fondasi */
 * {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -140,28 +138,12 @@ aside,
     min-height: 100vh;
 }
 
-.page-title {
-    font-size: 50px;
-    font-weight: 800;
-    color: #000000;
-    margin-bottom: 24px;
-    margin-top: 10px;
-}
-
-.page-titleP {
-    margin: 0;
-    font-size: 50px;
-    line-height: 1;
-    font-weight: 800;
-    color: #000000;
-}
-
 .page-header {
-    margin-bottom: 18px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: 24px;
 }
 
 .page-header .back-link {
@@ -172,6 +154,7 @@ aside,
 .back-link {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     text-decoration: none;
     color: #000000;
@@ -183,8 +166,8 @@ aside,
 }
 
 .back-icon {
-    width: 48px;
-    height: 48px;
+    width: 32px;
+    height: 32px;
     transform: translateY(-1px);
     flex-shrink: 0;
 }
@@ -200,7 +183,7 @@ aside,
 .settings-group {
     background: #ffffff;
     border: 1px solid #e5e7eb;
-    border-radius: 20px;
+    border-radius: 12px;
     overflow: hidden;
 }
 

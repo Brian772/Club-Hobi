@@ -5,183 +5,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
   <title>Club Hobi</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #f4f5f7;
-      color: #1f2937;
-      min-height: 100vh;
-    }
-
-    nav {
-      background: #1f2937;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav a {
-      color: #f9fafb;
-      text-decoration: none;
-      margin-right: 1rem;
-      font-size: 0.95rem;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    nav form button {
-      background: #374151;
-      color: #fff;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .container {
-      max-width: 2000px;
-      /* Diperbesar dari 720px */
-      margin: 0rem auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Class khusus untuk halaman auth (login/register) */
-    .auth-page .container {
-      max-width: 100%;
-      margin: 0;
-      padding: 0;
-      background: transparent;
-      box-shadow: none;
-      border-radius: 0;
-      min-height: calc(100vh - 80px);
-      /* Kurangi tinggi navbar */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .alert {
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      font-size: 0.9rem;
-    }
-
-    .alert-success {
-      background: #d1fae5;
-      color: #065f46;
-    }
-
-    .alert-error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.3rem;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      padding: 0.6rem;
-      margin-bottom: 1rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
-
-    button,
-    .btn {
-      display: inline-block;
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      text-decoration: none;
-    }
-
-    button:hover,
-    .btn:hover {
-      background: #1d4ed8;
-    }
-
-    .btn-danger {
-      background: #dc2626;
-    }
-
-    .btn-danger:hover {
-      background: #b91c1c;
-    }
-
-    .error-text {
-      color: #b91c1c;
-      font-size: 0.8rem;
-      margin-top: -0.7rem;
-      margin-bottom: 0.8rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-
-    th,
-    td {
-      text-align: left;
-      padding: 0.6rem;
-      border-bottom: 1px solid #e5e7eb;
-      font-size: 0.9rem;
-    }
-
-    .actions a,
-    .actions button {
-      margin-right: 0.5rem;
-      font-size: 0.85rem;
-    }
-  </style>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @yield('styles')
+  <style>
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f1f5f9;
+    }
+  </style>
 </head>
 
 <body class="bg-canvas-soft">
 
   @if (Route::is('login') || Route::is('register') || Route::is('home'))
     <div class="flex flex-col p-6 lg:p-8 min-h-dvh justify-center">
-      @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-      @endif
-      @if (session('error'))
-        <div class="alert alert-error">{{ session('error') }}</div>
-      @endif
+      <x-alert />
 
       @yield('content')
     </div>
   @else
-    <div x-data="{ sidebarOpen: false, notifOpen: false }" class="min-h-dvh p-[24px] flex flex-col lg:flex-row lg:p-[17px]">
+    <div x-data="{ sidebarOpen: false, notifOpen: false }" class="min-h-dvh p-6 flex flex-col lg:flex-row lg:p-4.25">
 
       {{-- sidebar desktop --}}
       <aside
-        class="hidden lg:fixed lg:inset-y-4 lg:left-4 lg:rounded-lg lg:z-30 lg:flex lg:h-[calc(100vh-2rem)] lg:shrink-0 lg:w-[240px] lg:overflow-hidden lg:border lg:border-hairline lg:bg-canvas">
+        class="hidden lg:fixed lg:inset-y-4 lg:left-4 lg:rounded-lg lg:z-30 lg:flex lg:h-[calc(100vh-2rem)] lg:shrink-0 lg:w-60 lg:overflow-hidden lg:border lg:border-hairline lg:bg-canvas">
         @include('layouts.partials.sidebar-content')
       </aside>
 
@@ -208,8 +57,7 @@
           x-transition:leave-start="translate-x-0"
           x-transition:leave-end="-translate-x-full"
           @click.stop
-          class="fixed inset-y-4 left-4 h-max rounded-lg z-50 w-[240px] bg-canvas"
-        >
+          class="fixed top-16 left-5 h-max rounded-lg z-50 w-60 bg-canvas border border-hairline overflow-hidden">
           <div class="flex items-center justify-start p-4">
             <button type="button" @click="sidebarOpen = false" aria-label="Tutup Menu" class="hover:bg-canvas">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -226,11 +74,15 @@
       </div>
 
       <div
-        class="flex-1 min-w-0 w-full flex flex-col rounded-lg inset-y-4 min-h-[calc(100vh-46px)] overflow-hidden lg:pl-[245px] transition-[padding] duration-200"
+        class="flex-1 min-w-0 w-full flex flex-col rounded-lg h-[calc(100vh-34px)] overflow-hidden lg:pl-61.25 transition-[padding] duration-200"
         :class="notifOpen ? 'lg:pr-[24.3rem]' : 'lg:pr-0'">
         @include('layouts.partials.topbar')
 
-        <main class="p-6 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 h-max lg:border lg:border-hairline">
+        <main class="pt-12 p-6 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 overflow-y-auto lg:border lg:border-hairline">
+          <section class="block lg:hidden mb-4 w-full">
+            <x-alert-account-status />
+          </section>
+          <x-alert />
           @yield('content')
         </main>
       </div>
@@ -238,7 +90,6 @@
     </div>
   @endif
   @stack('scripts')
-
 </body>
 
 </html>

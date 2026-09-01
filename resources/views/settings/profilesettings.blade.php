@@ -2,8 +2,8 @@
 
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
 
 
@@ -20,7 +20,7 @@
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
 
-          <h1 class="page-titleP">Profile</h1>
+          <h1 class="text-ink text-heading-2 font-bold">Profile</h1>
         </a>
       </div>
 
@@ -53,7 +53,7 @@
           <label class="input-label">Nama</label>
 
           <input type="text" name="name"
-            class="rounded-full border border-hairline focus-within:border-blue-500 focus-within:ring focus-within:ring-blue-200"
+            class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
             value="{{ old('name', $user->name) }}" maxlength="255" required>
         </div>
 
@@ -89,17 +89,6 @@
       </form>
     </div>
   </div>
-
-  @if (session('success'))
-    <div class="profile-toast success-toast" id="successToast">
-      <i class="fa-solid fa-circle-check"></i>
-      <span>{{ session('success') }}</span>
-
-      <button type="button" class="toast-close" onclick="closeToast('successToast')">
-        &times;
-      </button>
-    </div>
-  @endif
 
   @if ($errors->any())
     <div class="profile-toast error-toast" id="errorToast">
@@ -184,8 +173,7 @@
 
         <form action="{{ route('settings.profile.hobby.add') }}" method="POST" id="hobbyForm">
           @csrf
-          {{-- Hidden input.
-                     Tidak ada checkbox/radio yang terlihat. --}}
+          {{-- Hidden input. Tidak ada checkbox/radio yang terlihat. --}}
           <input type="hidden" name="club_id" id="selectedClubId" value="">
 
           <div class="hobby-options">

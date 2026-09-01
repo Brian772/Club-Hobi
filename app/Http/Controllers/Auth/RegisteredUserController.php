@@ -32,28 +32,34 @@ class RegisteredUserController extends Controller
          * ke halaman registrasi lagi.
          */
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            if ($step === 3 && empty(Auth::user()->interests)) {
+                // Jika user sudah login tapi belum memilih minat, arahkan ke step 3
+            } else {
+                return redirect()->route('dashboard');
+            }
         }
 
         /*
          * Step 2 membutuhkan email dan password
          * dari step 1.
          */
-        if ($step === 2 && !session()->has('register.email')) {
-            return redirect()->route('register', ['step' => 1]);
-        }
+        if (!Auth::check()) {
+            if ($step === 2 && !session()->has('register.email')) {
+                return redirect()->route('register', ['step' => 1]);
+            }
 
-        /*
+            /*
          * Step 3 membutuhkan data dari step 1 dan 2.
          */
-        if (
-            $step === 3 &&
-            (
-                !session()->has('register.email') ||
-                !session()->has('register.name')
-            )
-        ) {
-            return redirect()->route('register', ['step' => 1]);
+            if (
+                $step === 3 &&
+                (
+                    !session()->has('register.email') ||
+                    !session()->has('register.name')
+                )
+            ) {
+                return redirect()->route('register', ['step' => 1]);
+            }
         }
 
         /*
@@ -161,17 +167,28 @@ class RegisteredUserController extends Controller
      */
     public function step3(Request $request): RedirectResponse
     {
+
+        $validated = $request->validate([
+            'hobbies'   => ['required', 'array'],
+            'hobbies.*' => ['string'],
+        ]);
+
+        $interestsString = implode(',', $validated['hobbies'] ?? []);
+
+        if (Auth::check()) {
+            /** @var User $user */
+            $user = Auth::user();
+            $user->update([
+                'interests' => $interestsString,
+            ]);
+
+            return redirect()->route('dashboard')->with('success', 'Selamat datang, ' . $user->name . '!');
+        }
         $email = session('register.email');
 
         if (!$email) {
             return redirect()->route('register', ['step' => 1]);
         }
-
-        // 1 Validasi pilihan hobi (dibuat opsional/nullable)
-        $validated = $request->validate([
-            'hobbies'   => ['nullable', 'array'],
-            'hobbies.*' => ['string'],
-        ]);
 
         // 3. Buat User baru ke database
         $user = User::create([
@@ -180,7 +197,7 @@ class RegisteredUserController extends Controller
             'avatar_url'    => session('register.avatar_url'),
             'email'         => $email,
             'password_hash' => session('register.password'),
-            'interests'      => implode(', ', $validated['hobbies'] ?? []),
+            'interests'     => $interestsString,
             'role_global'   => 'member',
             'status'        => 'active',
             'email_verified_at' => now(),

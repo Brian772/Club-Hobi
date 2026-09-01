@@ -3,6 +3,7 @@
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
 
 @section('content')
@@ -23,19 +24,22 @@
         <label class="input-label">Email</label>
         <div class="input-verified-wrapper">
             <input type="email" class="custom-input-box" value="{{ $user->email }}" readonly>
-
-            {{-- Pengecekan Real dari Database --}}
-            @if ($user->hasVerifiedEmail())
-                <span class="verified-badge">
-                    <i class="fa-solid fa-circle-check"></i>
-                    Verified
-                </span>
-            @else
-                <span class="unverified-badge">
-                    <i class="fa-solid fa-circle-xmark"></i>
-                    Belum Diverifikasi
-                </span>
-            @endif
+            <div class="account-status-card">
+                <div class="account-status-icon">
+                    {{-- Pengecekan Real dari Database --}}
+                    @if ($user->hasVerifiedEmail())
+                        <span class="verified-badge">
+                            <i class="fa-solid fa-circle-check"></i>
+                            Verified
+                        </span>
+                    @else
+                        <span class="unverified-badge">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            Belum Diverifikasi
+                        </span>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 

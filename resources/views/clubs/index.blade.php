@@ -1,13 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-  <div x-data="{ joinClubModal: false }" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-    @if (session('success'))
-      <div class="bg-accent-green/40 border-accent-green text-green-700 px-4 py-3 rounded relative" role="alert">
-        <span class="block sm:inline">{{ session('success') }}</span>
-      </div>
-    @endif
-
+  <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
     @if ($isEmpty)
       <section>
         <h2 class="text-heading-1 font-bold mb-4">Tidak Ada Klub</h2>
@@ -15,26 +9,28 @@
       </section>
     @else
       @if ($joinedClub->isNotEmpty())
-        <section id="alreadyJoin">
+        <section id="alreadyJoin" class="pb-4 border-b border-hairline">
           <h2 class="text-2xl font-bold mb-4">Klub Anda</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-            :class="notifOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
+            :class="notifOpen ? 'lg:grid-cols-1 xl:grid-cols-2' : 'lg:grid-cols-3 xl:grid-cols-3'">
             @foreach ($joinedClub as $club)
-              <div class="block border rounded-lg overvlow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div
+                class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 @if ($club->cover_url)
-                  <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover">
+                  {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
+                  <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                    class="w-full h-48 rounded-t-lg object-cover">
                 @endif
 
-                <div class="p-4">
+                <div class="p-4 flex flex-col flex-1">
                   <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
-                  <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
+                  <h3 class="text-lg font-semibold mb-2 line-clamp-2">{{ $club->name }}</h3>
                   <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                 </div>
-                <div class="mt-auto w-full px-4 py-2">
-                  <button class="w-full bg-primary text-white py-2" type="submit">
-                    <a href="{{ route('clubs.show', $club->id) }}">Lihat Klub</a>
-                  </button>
+                <div class="mt-auto w-full p-2">
+                  <a href="{{ route('clubs.show', $club->id) }}"
+                    class="bg-primary rounded-md text-white py-2 w-full flex items-center justify-center">Lihat Klub</a>
                 </div>
               </div>
             @endforeach
@@ -51,38 +47,38 @@
       @endif
 
       @if ($recomendedClubs->isNotEmpty())
-        <section class="mt-8 pb-4mb-12 border-b border-hairline">
+        <section class="mt-8 pb-4mb-12">
           <h2 class="text-2xl font-bold mb-4">Rekomendasi Klub</h2>
-          <p class="text-caption text-ink-muted">Berdasarkan Minat:
+          <p class="text-caption text-ink-muted mb-2">Berdasarkan Minat:
             {{ implode(', ', auth()->user()->interest_array ?? []) }}</p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-            :class="notifOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
+            :class="notifOpen ? 'lg:grid-cols-1 xl:grid-cols-2' : 'lg:grid-cols-3 xl:grid-cols-3'">
             @foreach ($recomendedClubs as $club)
-              <div class="block border rounded-lg overvlow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 @if ($club->cover_url)
-                  <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover">
+                  {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
+                  <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                    class="w-full h-48 rounded-t-lg object-cover">
                 @endif
 
-                <div class="p-4">
+                <div class="p-4 flex flex-col flex-1">
                   <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
-                  <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
+                  <h3 class="text-lg font-semibold mb-2 line-clamp-2">{{ $club->name }}</h3>
                   <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                 </div>
-                <div class="mt-auto w-full px-4 py-2">
+                <div class="mt-auto w-full p-2">
                   <form action="{{ route('clubs.join', $club->id) }}" method="POST">
                     @csrf
-                    <button class="w-full bg-primary text-white py-2" type="submit">Bergabung</button>
+                    <button class="w-full bg-primary rounded-md text-white py-2 cursor-pointer"
+                      type="submit">Bergabung</button>
                   </form>
                 </div>
               </div>
             @endforeach
           </div>
-          <div class="mt-6">
-            {{ $clubs->links() }}
-          </div>
         </section>
       @endif
-
     @endif
-  @endsection
+  </div>
+@endsection

@@ -96,7 +96,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return [];
         }
 
-        return collect(explode(', ',  $this->interests))
+        return collect(explode(',',  $this->interests))
             ->map(fn($item) => trim($item))
             ->filter()
             ->values()

@@ -62,6 +62,7 @@ class SocialiteController extends Controller
                             'avatar_url' => $socialUser->getAvatar(),
                             'role_global' => 'member',
                             'status' => 'active',
+                            'interests' => null,
                         ]
                     );
                 }
@@ -69,7 +70,11 @@ class SocialiteController extends Controller
 
             Auth::login($user, true);
 
-            return redirect()->intended('/dashboard');
+            if (empty($user->interests)) {
+                return redirect()->route('register', ['step' => 3])->with('info', 'Silakan pilih minat Anda untuk melanjutkan.');
+            }
+
+            return redirect()->route('dashboard')->with('success', 'Selamat datang, ' . $user->name);
         } catch (Throwable $th) {
             return redirect()->route('login')->with('error', 'Gagal login menggunakan ' . $provider);
         }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Club;
+use App\Models\Post;
 use App\Models\ClubMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,32 +15,35 @@ class ClubController extends Controller
     {
         $user = Auth::user();
 
+        $allClubs = Club::withcount('members')->get();
+
         $userInterest = array_map('trim', $user->interest_array);
 
-        $recomendedClubs = collect();
+        $joinedClub = Club::withCount('members')
+            ->whereHas('members', fn($q) => $q->where('user_id', $user->id))
+            ->get();
+
+        $joinedClubIds = $joinedClub->pluck('id');
 
         if (!empty($userInterest)) {
             $recomendedClubs = Club::withCount('members')
-            ->whereIn('category', $userInterest)
-            ->get();
+                ->whereIn('category', $userInterest)
+                ->get();
         }
 
-        $recomendedIds = $recomendedClubs->pluck('id');
+        $recomendedClubs = $userInterest
+            ? $allClubs->whereIn('category', $userInterest)->reject(fn($c) => $joinedClubIds->contains($c->id))->values()
+            : collect();
 
-        $joinedClub = ClubMember::where('user_id', $user->id)->pluck('club_id');
-        $joinedClub = Club::whereIn('id', $joinedClub)->withCount('members')->get();
+        $isEmpty = $allClubs->isEmpty() && $recomendedClubs->isEmpty();
 
-        $clubs = Club::withCount('members')
-        ->whereNotIn('id', $recomendedIds)
-        ->paginate(10);
-
-        $isEmpty = $clubs->isEmpty() && $recomendedClubs->isEmpty();
-
-        return view('clubs.index', compact('recomendedClubs', 'clubs', 'isEmpty', 'joinedClub'));
+        return view('clubs.index', compact('recomendedClubs', 'allClubs', 'isEmpty', 'joinedClub'));
     }
 
     public function show($id)
     {
+        $user = Auth::user();
+
         $club = Club::withCount('members')
             ->with(['posts.user', 'files'])
             ->findOrFail($id);
@@ -48,7 +52,18 @@ class ClubController extends Controller
             ->where('user_id', Auth::user()->id)
             ->exists();
 
-        return view('clubs.show', compact('club', 'isJoined'));
+        $posts = Post::with('user')
+            ->orderByDesc('is_announcement')
+            ->latest()
+            ->where('club_id', $id)
+            ->get();
+
+        $members = ClubMember::with('user')
+            ->orderByRaw('user_id = ? DESC', [Auth::user()->id])
+            ->where('club_id', $id)
+            ->get();
+
+        return view('clubs.show', compact('club', 'isJoined', 'posts', 'members', 'user'));
     }
 
     public function join(Request $request, $id)
@@ -77,39 +92,6 @@ class ClubController extends Controller
             ->where('user_id', $userId)
             ->delete();
 
-        return redirect()->back()->with('success', 'berhasil keluar dari klub!');
-    }
-
-    public function kickMember(Request $request, $clubId, $userId)
-    {
-        if (Auth::user()->role_global !== 'admin') {
-            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melakukan tindakan ini.');
-        }
-
-        ClubMember::where('club_id', $clubId)
-            ->where('user_id', $userId)
-            ->delete();
-
-        return redirect()->back()->with('success', 'Anggota berhasil dikeluarkan dari klub!');
-    }
-
-    public function update(Request $request, $id)
-    {
-        if (Auth::user()->role_global !== 'admin') {
-            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melakukan tindakan ini.');
-        }
-
-        $request->validate([
-            'description' => 'required|string',
-            'cover_url' => 'nullable|string',
-        ]);
-
-        $club = Club::findorFail($id);
-        $club->update([
-            'description' => $request->description,
-            'cover_url' => $request->cover_url ?? $club->cover_url,
-        ]);
-
-        return redirect()->back()->with('success', 'Klub berhasil diperbarui!');
+        return redirect()->route('clubs.index')->with('success', 'berhasil keluar dari klub!');
     }
 }

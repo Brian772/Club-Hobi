@@ -1,4 +1,109 @@
-@import '../../node_modules/@fortawesome/fontawesome-free/css/all.css';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import '../../node_modules/@fortawesome/fontawesome-free/css/all.css'
+  layer(base);
+@import 'tailwindcss';
+/* Preline UI */
+@import "../../node_modules/preline/variants.css";
+@source "../../node_modules/preline/dist/*.js";
+
+@plugin '@tailwindcss/forms';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+  --color-primary: #476cff;
+  --color-primary-active: #005bb0;
+
+  --color-secondary: #213183;
+
+  --color-ink: #000000;
+  --color-ink-secondary: #31302e;
+  --color-ink-muted: #615d59;
+  --color-ink-faint: #a39e98;
+
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #fafafa;
+  --color-canvas-muted: #cccccc;
+
+  --color-hairline: #e6e6e6;
+
+  --color-accent-sky: #62aef0;
+  --color-accent-purple: #d6b6f6;
+  --color-accent-pink: #ff64c8;
+  --color-accent-orange: #dd5b00;
+  --color-accent-teal: #2a9d99;
+  --color-accent-green: #1aae39;
+  --color-accent-brown: #523410;
+  --color-accent-red: #ff383c;
+  --color-accent-yellow: #ffcc00;
+
+  --text-display-1: 64px;
+  --text-display-1--line-height: 1.1;
+  --text-display-1--letter-spacing: -0.05em;
+  --text-display-1--font-weight: 700;
+  --text-display-2: 54px;
+  --text-display-2--line-height: 1.1;
+  --text-display-2--letter-spacing: -0.025em;
+  --text-display-2--font-weight: 700;
+  --text-heading-1: 40px;
+  --text-heading-1--line-height: 1.1;
+  --text-heading-1--letter-spacing: -0.01em;
+  --text-heading-1--font-weight: 700;
+  --text-heading-2: 26px;
+  --text-heading-2--line-height: 1.15;
+  --text-heading-2--letter-spacing: -0.0075em;
+  --text-heading-2--font-weight: 700;
+  --text-heading-3: 22px;
+  --text-heading-3--line-height: 1.2;
+  --text-heading-3--letter-spacing: -0.005em;
+  --text-heading-3--font-weight: 700;
+  --text-title: 20px;
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.0025em;
+  --text-title--font-weight: 600;
+  --text-body-mid: 16px;
+  --text-body-mid--line-height: 1.5;
+  --text-body-mid--letter-spacing: 0em;
+  --text-body-mid--font-weight: 400;
+  --text-body-sm: 15px;
+  --text-body-sm--line-height: 1.33;
+  --text-body-sm--letter-spacing: 0em;
+  --text-body-sm--font-weight: 400;
+  --text-btn-text: 16px;
+  --text-btn-text--line-height: 1.5;
+  --text-btn-text--letter-spacing: 0em;
+  --text-btn-text--font-weight: 600;
+  --text-caption: 14px;
+  --text-caption--line-height: 1.43;
+  --text-caption--letter-spacing: 0em;
+  --text-caption--font-weight: 400;
+  --text-overline: 10px;
+  --text-overline--line-height: 1.33;
+  --text-overline--letter-spacing: 0.05em;
+  --text-overline--font-weight: 600;
+
+  --radius-xs: 4px;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 200px;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}

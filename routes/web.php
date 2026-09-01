@@ -7,6 +7,9 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Settings\SettingsController;
+use App\Http\Controllers\AppealController;
+use App\Http\Controllers\BannedController;
+use App\Http\Controllers\ChartController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -40,10 +43,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
 
-    Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
-    Route::get('/clubs/{club}', [ClubController::class, 'show'])->name('clubs.show');
-    Route::post('/clubs/{club}/join', [ClubController::class, 'join'])->name('clubs.join');
-    Route::delete('/clubs/{club}/leave', [ClubController::class, 'leave'])->name('clubs.leave');
+    Route::prefix('clubs')->name('clubs.')->group(function () {
+        Route::get('/', [ClubController::class, 'index'])->name('index');
+        Route::get('/{club}', [ClubController::class, 'show'])->name('show');
+        Route::post('/{club}/join', [ClubController::class, 'join'])->name('join');
+        Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');
+    });
+
+    Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 
     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
     Route::get('/posts/trash', [PostController::class, 'trash'])->name('posts.trash');
@@ -82,6 +89,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/account', [SettingsController::class, 'accountsettings'])
             ->name('account');
     });
+
+    Route::get('/banned', [BannedController::class, 'index'])->name('banned');
+    Route::get('/appeals', [AppealController::class, 'create'])->name('appeal.create');
+    Route::post('/appeals/store', [AppealController::class, 'store'])->name('appeal.store');
 });
 
 Route::middleware('auth')->group(function () {
@@ -91,13 +102,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
-    Route::get('/clubs/{id}', [ClubController::class, 'show'])->name('clubs.show');
-    Route::post('/clubs/{id}/join', [ClubController::class, 'join'])->name('clubs.join');
-    Route::post('/clubs/{id}/leave', [ClubController::class, 'leave'])->name('clubs.leave');
-    Route::delete('/clubs/{id}/member/{userId}', [ClubController::class, 'kickMember'])->name('clubs.kick');
-    Route::put('/clubs/{id}', [ClubController::class, 'update'])->name('clubs.update');
-});
+Route::get('/api/user-charts', [App\Http\Controllers\ChartController::class, 'getDataUsers'])->name('api.chart');
 
+require __DIR__ . '/admin.php';
 require __DIR__ . '/auth.php';
