@@ -85,8 +85,7 @@
       </div>
 
       <div class=" flex order-1 justify-center md:order-2 md:w-1/2 max-w-100 w-full">
-        <img src="{{ asset('images/amico1.png') }}" alt="Registration Illustration"
-          class="w-37.5 md:w-full max-w-100"
+        <img src="{{ asset('images/amico1.png') }}" alt="Registration Illustration" class="w-37.5 md:w-full max-w-100"
           onerror="this.onerror=null; this.src='{{ asset('images/pana.png') }}';">
       </div>
     </div>
@@ -203,8 +202,7 @@
       </div>
 
       <div class="flex order-1 justify-center md:order-2 md:w-1/2 max-w-100 w-full">
-        <img src="{{ asset('images/amico2.png') }}" alt="Profile Illustration"
-          class="w-37.5 md:w-full max-w-100"
+        <img src="{{ asset('images/amico2.png') }}" alt="Profile Illustration" class="w-37.5 md:w-full max-w-100"
           onerror="this.onerror=null; this.src='{{ asset('images/pana.png') }}';">
       </div>
     </div>
@@ -226,10 +224,11 @@
           @csrf
 
           <div class="hobby-grid">
-            @forelse($categories as $category)
+            @forelse($categories as $hobby)
               <label class="hobby-option">
-                <input type="checkbox" name="hobbies[]" value="{{ $category }}">
-                <span>{{ $category }}</span>
+                <input type="checkbox" name="hobbies[]" value="{{ $hobby->name }}"
+                  {{ in_array($hobby->name, old('hobbies', [])) ? 'checked' : '' }}>
+                <span>{{ $hobby->name }}</span>
               </label>
             @empty
               <p>Belum ada kategori hobi yang tersedia.</p>

@@ -32,6 +32,7 @@ class ClubFiles extends Model
         'uploaded_at' => 'datetime',
     ];
 
+
     public function club(): BelongsTo
     {
         return $this->belongsTo(Club::class, 'club_id');

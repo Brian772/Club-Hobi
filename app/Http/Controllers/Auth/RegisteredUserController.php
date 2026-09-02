@@ -59,17 +59,14 @@ class RegisteredUserController extends Controller
                 )
             ) {
                 return redirect()->route('register', ['step' => 1]);
-            }
+            } 
         }
 
         /*
          * Kategori hobby hanya diambil pada step 3.
          */
         $categories = $step === 3
-            ? DB::table('clubs')
-            ->whereNotNull('category')
-            ->distinct()
-            ->pluck('category')
+            ? DB::table('hobbies')->orderBy('name')->get()
             : collect();
 
         return view(

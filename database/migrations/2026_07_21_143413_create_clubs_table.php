@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('clubs', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->string('category');
+            $table->foreignId('hobby_id')->constrained('hobbies')->restrictOnDelete();
             $table->text('description')->nullable();
+            $table->foreignUuid('created_by')->constrained('users')->onDelete('cascade');
             $table->string('cover_url')->nullable();
             $table->timestamp('created_at')->useCurrent();
         });

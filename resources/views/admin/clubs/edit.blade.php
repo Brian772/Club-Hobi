@@ -45,7 +45,7 @@
           <x-input-label for="category" :value="__('Club Category')" />
           <input type="text" name="category"
             class="w-full lg:w-1/2 rounded-md border border-hairline px-4 py-2 focus:ring-primary focus:border-primary"
-            id="category" value="{{ $club->category }}" readonly>
+            id="category" value="{{ $club->hobby->name }}" readonly>
         </div>
         <div class="w-full flex flex-col gap-2">
           <x-input-label for="description" :value="__('Club Description')" />

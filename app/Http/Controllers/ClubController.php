@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\Post;
+use App\Models\Hobby;
 use App\Models\ClubMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,20 +20,20 @@ class ClubController extends Controller
 
         $userInterest = array_map('trim', $user->interest_array);
 
+        $userInterestId = $userInterest ? Hobby::whereIn('name', $userInterest)->pluck('id') : collect();
+
         $joinedClub = Club::withCount('members')
             ->whereHas('members', fn($q) => $q->where('user_id', $user->id))
             ->get();
 
         $joinedClubIds = $joinedClub->pluck('id');
 
-        if (!empty($userInterest)) {
-            $recomendedClubs = Club::withCount('members')
-                ->whereIn('category', $userInterest)
-                ->get();
-        }
-
-        $recomendedClubs = $userInterest
-            ? $allClubs->whereIn('category', $userInterest)->reject(fn($c) => $joinedClubIds->contains($c->id))->values()
+        $recomendedClubs = $userInterestId->isNotEmpty()
+            ? Club::with('hobby')
+            ->withCount('members')
+            ->whereIn('hobby_id', $userInterestId)
+            ->whereNotIn('id', $joinedClubIds)
+            ->get()
             : collect();
 
         $isEmpty = $allClubs->isEmpty() && $recomendedClubs->isEmpty();
@@ -52,10 +53,14 @@ class ClubController extends Controller
             ->where('user_id', Auth::user()->id)
             ->exists();
 
-        $posts = Post::with('user')
+        $clubsIds = $user->clubs->pluck('id');
+
+        $posts = Post::query()
+            ->with(['user', 'club', 'author', 'comments.user'])
             ->orderByDesc('is_announcement')
+            ->whereIn('club_id', $clubsIds)
+            ->withCount(['comments', 'likes'])
             ->latest()
-            ->where('club_id', $id)
             ->get();
 
         $members = ClubMember::with('user')

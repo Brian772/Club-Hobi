@@ -102,7 +102,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->values()
             ->toArray();
     }
-    
+
     public function clubs()
     {
         return $this->belongsToMany(
@@ -111,5 +111,15 @@ class User extends Authenticatable implements MustVerifyEmail
             'user_id',
             'club_id'
         );
+    }
+
+    public function clubRequests()
+    {
+        return $this->hasMany(ClubRequest::class, 'user_id');
+    }
+
+    public function reviewedClubRequests()
+    {
+        return $this->hasMany(ClubRequest::class, 'reviewed_by');
     }
 }

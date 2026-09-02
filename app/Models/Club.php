@@ -23,15 +23,27 @@ class Club extends Model
         'category',
     ];
 
-    public function members(): HasMany {
+    public function hobby()
+    {
+        return $this->belongsTo(Hobby::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function members(): HasMany
+    {
         return $this->hasMany(ClubMember::class, 'club_id');
     }
 
-    public function posts(): HasMany {
+    public function posts(): HasMany
+    {
         return $this->hasMany(Post::class, 'club_id');
     }
 
-    public function files(): HasMany {
+    public function files(): HasMany
+    {
         return $this->hasMany(ClubFiles::class, 'club_id');
     }
 }
