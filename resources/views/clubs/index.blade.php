@@ -23,7 +23,7 @@
                 @endif
 
                 <div class="p-4 flex flex-col flex-1">
-                  <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
+                  <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                   <h3 class="text-lg font-semibold mb-2 line-clamp-2">{{ $club->name }}</h3>
                   <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
@@ -62,7 +62,7 @@
                 @endif
 
                 <div class="p-4 flex flex-col flex-1">
-                  <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
+                  <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                   <h3 class="text-lg font-semibold mb-2 line-clamp-2">{{ $club->name }}</h3>
                   <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>

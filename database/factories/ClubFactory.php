@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Club;
+use App\Models\Hobby;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -18,22 +20,13 @@ class ClubFactory extends Factory
      */
     public function definition(): array
     {
-        $categories = [
-            'photography',
-            'fishing',
-            'hiking',
-            'reading',
-            'gaming',
-            'traveling',
-            'cooking',
-            'fitness',
-        ];
         return [
             'id' =>(string) Str::uuid(),
             'name' => fake()->company().' Club',
+            'hobby_id' => Hobby::inRandomOrder()->first()->id,
             'description' => fake()->paragraph(),
+            'created_by' => User::inRandomOrder()->first()->id,
             'cover_url' => fake()->imageUrl(640, 480, 'hobbies', true),
-            'category' => fake()->randomElement($categories),
             'created_at' => now(),
         ];
     }

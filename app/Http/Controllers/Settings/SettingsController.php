@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Models\Club;
+use App\Models\Hobby;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -32,16 +34,15 @@ class SettingsController extends Controller
         // Club yang sedang diikuti user
         $user->load('clubs');
 
-        // Ambil satu club sebagai representasi untuk setiap kategori hobi.
-        $clubs = Club::query()
-            ->selectRaw('MIN(id) as id, category')
-            ->whereNotNull('category')
-            ->where('category', '<>', '')
-            ->groupBy('category')
-            ->orderBy('category')
-            ->get();
+        $interestNames = $user->interests
+        ? array_filter(explode(',', $user->interests))
+        : [];
 
-        return view('settings.profilesettings', compact('user', 'clubs'));
+        $interests = Hobby::whereIn('name', $interestNames)->orderBy('name')->get();
+
+        $hobbies = Hobby::orderBy('name')->get();
+
+        return view('settings.profilesettings', compact('user', 'hobbies', 'interests'));
     }
 
     /**
@@ -117,18 +118,30 @@ class SettingsController extends Controller
      */
     public function addHobby(Request $request)
     {
-        $request->validate([
-            'club_id' => 'required|exists:clubs,id',
+        $validated = $request->validate([
+            'hobby_id' => ['required', 'exists:hobbies,id'],
         ]);
 
         $user = Auth::user();
+        $hobby = Hobby::findOrFail($validated['hobby_id']);
 
-        // Menambahkan club tanpa menghapus club yang sudah ada
-        $user->clubs()->syncWithoutDetaching([
-            $request->club_id => [
-                'id' => (string) Str::uuid(),
-            ],
-        ]);
+        $current = $user->interests
+        ? array_filter(explode(',', $user->interests))
+        : [];
+
+        if (!in_array($hobby->name, $current)) {
+            $current[] = $hobby->name;
+            $user->interests = implode(',', $current);
+            $user->save();
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Hobi berhasil ditambahkan.',
+                'hobby' => $hobby,
+            ]);
+        }
 
         return redirect()
             ->route('settings.profile')
@@ -138,16 +151,21 @@ class SettingsController extends Controller
     /**
      * Hapus hobi / club dari profile user
      */
-    public function deleteHobby($clubId)
+    public function deleteHobby(Request $request, $hobbyId)
     {
         $user = Auth::user();
+        $hobby = Hobby::findOrFail($hobbyId);
 
-        $user->clubs()->detach($clubId);
+        $current = $user->interests
+        ? array_filter(explode(',', $user->interests))
+        : [];
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Hobi berhasil dihapus.'
-        ]);
+        $current = array_filter($current, fn ($name) => $name !== $hobby->name);
+
+        $user->interests = implode(',', $current);
+        $user->save();
+
+        return response()->json(['success' => true]);;
     }
 
     /**

@@ -26,7 +26,7 @@
           <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
             class="w-full h-48 object-cover">
           <div class="p-4">
-            <span class="text-caption text-ink-muted">{{ $club->category ?? 'Kategori Tidak Diketahui' }}</span>
+            <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
             <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
             <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
             <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>

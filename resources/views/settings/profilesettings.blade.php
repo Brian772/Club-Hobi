@@ -28,25 +28,26 @@
         @csrf
         <div class="profile-avatar-section">
           <div class="profile-avatar-left">
-          <div class="profile-avatar-lg">
-            @if ($user->avatar_full_url)
-              <img src="{{ $user->avatar_full_url}}" alt="Foto Profil">
-            @else
-              {{ strtoupper(substr($user->name, 0, 1)) }}
-            @endif
+            <div class="profile-avatar-lg">
+              @if ($user->avatar_full_url)
+                <img src="{{ $user->avatar_full_url }}" alt="Foto Profil">
+              @else
+                {{ strtoupper(substr($user->name, 0, 1)) }}
+              @endif
+            </div>
+
+            <div class="profile-avatar-info">
+              <button type="button" class="btn-edit-photo" onclick="openAvatarModal()">
+                <i class="fa-solid fa-pencil"></i>
+                Edit foto
+              </button>
+
+              <span class="photo-hint">JPG/PNG, max 2MB</span>
+            </div>
           </div>
 
-          <div class="profile-avatar-info">
-            <button type="button" class="btn-edit-photo" onclick="openAvatarModal()">
-              <i class="fa-solid fa-pencil"></i>
-              Edit foto
-            </button>
-
-            <span class="photo-hint">JPG/PNG, max 2MB</span>
-          </div>
-          </div>
-
-           <a href="{{ route('posts.index') }}" class="content-control-button"><span class="content-control-icon">▣</span>Kontrol Postingan</a>
+          <a href="{{ route('posts.index') }}" class="content-control-button"><span
+              class="content-control-icon">▣</span>Kontrol Postingan</a>
         </div>
 
         <div class="form-group-item">
@@ -73,9 +74,9 @@
           <label class="input-label">Hobi</label>
 
           <div class="hobby-list" id="hobbyList">
-            @forelse ($user->clubs as $club)
-              <span class="hobby-badge active select-none cursor-pointer" data-club-id="{{ $club->id }}"
-                onclick="openDeleteHobbyModal(this)">{{ $club->category }}</span>
+            @forelse ($interests as $interest)
+              <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
+                onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
             @empty
               <span class="empty-hobby" id="emptyHobby">Belum ada hobi</span>
             @endforelse
@@ -118,7 +119,7 @@
       <div class="modal-body">
         <div class="avatar-preview">
           @if ($user->avatar_full_url)
-            <img src="{{$user->avatar_full_url}}" alt="Foto Profil">
+            <img src="{{ $user->avatar_full_url }}" alt="Foto Profil">
           @else
             <span>{{ strtoupper(substr($user->name, 0, 1)) }}</span>
           @endif
@@ -174,19 +175,20 @@
         <form action="{{ route('settings.profile.hobby.add') }}" method="POST" id="hobbyForm">
           @csrf
           {{-- Hidden input. Tidak ada checkbox/radio yang terlihat. --}}
-          <input type="hidden" name="club_id" id="selectedClubId" value="">
+          <input type="hidden" name="hobby_id" id="selectedHobbyId" value="">
 
           <div class="hobby-options">
-            @forelse ($clubs as $club)
+            @forelse ($hobbies as $hobby)
               @php
-                $alreadyJoined = $user->clubs->contains('category', $club->category);
+                $alreadyJoined = $interests->contains('id', $hobby->id);
               @endphp
 
               <button type="button" class="hobby-card {{ $alreadyJoined ? 'disabled' : '' }}"
-                data-club-id="{{ $club->id }}" {{ $alreadyJoined ? 'disabled' : '' }}onclick="selectHobby(this)">
+                data-hobby-name="{{ $hobby->name }}" data-hobby-id="{{ $hobby->id }}"
+                {{ $alreadyJoined ? 'disabled' : '' }}onclick="selectHobby(this)">
 
                 <div class="hobby-card-content">
-                  <strong class="hobby-title">{{ $club->category }}</strong>
+                  <strong class="hobby-title">{{ $hobby->name }}</strong>
                 </div>
 
                 @if ($alreadyJoined)
@@ -200,13 +202,13 @@
 
             @empty
               <div class="empty-hobby-database">
-                Belum ada data club/hobi
+                Belum ada data hobi
                 di database
               </div>
             @endforelse
           </div>
 
-          @if ($clubs->whereNotIn('category', $user->clubs->pluck('category'))->count() > 0)
+          @if ($hobbies->isNotEmpty())
             <button type="submit" class="btn-modal-primary" id="addHobbyButton" disabled>
               <i class="fa-solid fa-plus"></i>
               Tambah Hobi
@@ -253,9 +255,9 @@
     }
 
     function selectHobby(element) {
-      const clubId = element.dataset.clubId;
+      const hobbyId = element.dataset.hobbyId;
       const hiddenInput =
-        document.getElementById('selectedClubId');
+        document.getElementById('selectedHobbyId');
       const addButton =
         document.getElementById('addHobbyButton');
       document
@@ -265,7 +267,7 @@
         });
       element.classList.add('selected');
 
-      hiddenInput.value = clubId;
+      hiddenInput.value = hobbyId;
 
       if (addButton) {
         addButton.disabled = false;
@@ -274,7 +276,7 @@
 
     function resetHobbySelection() {
       const hiddenInput =
-        document.getElementById('selectedClubId');
+        document.getElementById('selectedHobbyId');
       const addButton =
         document.getElementById('addHobbyButton');
       if (hiddenInput) {
@@ -420,7 +422,7 @@
     function openDeleteHobbyModal(element) {
 
       selectedHobbyElement = element;
-      selectedHobbyId = element.dataset.clubId;
+      selectedHobbyId = element.dataset.hobbyId;
 
       const modal = document.getElementById('deleteHobbyModal');
 
@@ -509,35 +511,36 @@
           if (data.success) {
 
             hobbyElement.remove();
-
             closeDeleteHobbyModal();
 
             /* Jika sudah tidak ada hobi */
-            const hobbyList =
-              document.getElementById('hobbyList');
-
-            const hobbyBadges =
-              hobbyList.querySelectorAll('.hobby-badge');
+            const hobbyList = document.getElementById('hobbyList');
+            const hobbyBadges = hobbyList.querySelectorAll('.hobby-badge');
 
             if (hobbyBadges.length === 0) {
-
-              const emptyHobby =
-                document.createElement('span');
-
+              const emptyHobby = document.createElement('span');
               emptyHobby.className = 'empty-hobby';
               emptyHobby.id = 'emptyHobby';
               emptyHobby.textContent = 'Belum ada hobi';
 
-              const addButton =
-                hobbyList.querySelector('.btn-add-hobby');
-
+              const addButton = hobbyList.querySelector('.btn-add-hobby');
               hobbyList.insertBefore(
                 emptyHobby,
                 addButton
               );
             }
-          }
 
+            const modalCard = document.querySelector(`.hobby-card[data-hobby-id="${hobbyId}"]`);
+            if (modalCard) {
+              modalCard.classList.remove('disabled');
+              modalCard.removeAttribute('disabled');
+
+              const alreadryLabel = mdoalCard.querySelector('.already-added');
+              if (alreadryLabel) {
+                alreadryLabel.outerHTML = '<span class="hobby-check"><i class="fa-solid fa-check"></i></span>';
+              }
+            }
+          }
         })
         .catch(error => {
           console.error('Gagal menghapus hobi:', error);
