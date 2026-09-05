@@ -25,7 +25,7 @@ Route::get('/', function () {
 // Halaman Dashboard (hanya bisa diakses jika sudah login)
 Route::middleware('auth')->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])
+    Route::get('/home', [DashboardController::class, 'index'])
         ->name('dashboard');
 
     Route::get('/dashboard/profile', [DashboardController::class, 'profile'])
@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('clubs')->name('clubs.')->group(function () {
         Route::get('/', [ClubController::class, 'index'])->name('index');
         Route::get('/request', [ClubRequestController::class, 'request'])->name('request');
+        Route::get('/request/list', [ClubRequestController::class, 'listRequest'])->name('request.list');
+        Route::get('/request/list/{request}', [ClubRequestController::class, 'detail'])->name('request.detail');
         Route::post('/request/store', [ClubRequestController::class, 'storeRequest'])->name('request.store');
         Route::get('/{club}', [ClubController::class, 'show'])->name('show');
         Route::post('/{club}/join', [ClubController::class, 'join'])->name('join');

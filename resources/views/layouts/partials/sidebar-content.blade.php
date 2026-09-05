@@ -9,9 +9,9 @@
       @php
         $navItems = [
             ['label' => 'Home', 'route' => 'dashboard', 'icon' => 'home'],
-            ['label' => 'Notification', 'route' => 'notifications.index', 'icon' => 'notif'],
-            ['label' => 'Pesan', 'route' => 'messages.index', 'icon' => 'chat'],
             ['label' => 'Club', 'route' => 'clubs.index', 'icon' => 'folder'],
+            ['label' => 'Pesan', 'route' => 'messages.index', 'icon' => 'chat'],
+            ['label' => 'Notification', 'route' => 'notifications.index', 'icon' => 'notif'],
             ['label' => 'Settings', 'route' => 'settings.index', 'icon' => 'cog'],
         ];
         if (Auth::user()->role_global === 'admin') {

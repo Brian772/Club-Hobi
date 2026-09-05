@@ -20,6 +20,21 @@ class ClubRequestController extends Controller
         return view('clubs.request', compact('hobbies'));
     }
 
+    public function listRequest()
+    {
+        $user = Auth::user();
+        $clubRequests = ClubRequest::where('user_id', $user->id)->get();
+
+        return view('clubs.request-list', compact('clubRequests'));
+    }
+
+    public function detail($id)
+    {
+        $clubRequest = ClubRequest::findOrFail($id);
+
+        return view('clubs.request-detail', compact('clubRequest'));
+    }
+
     public function storeRequest(StoreClubRequestRequest $request)
     {
         $validated = $request->validated();

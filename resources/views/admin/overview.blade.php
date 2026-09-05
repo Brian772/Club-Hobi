@@ -5,9 +5,9 @@
 @endsection
 
 @section('content')
-  <div class="container mx-auto px-4">
-    <h1 class="text-2xl font-bold mb-4">Overview</h1>
-  </div>
+  <header class="mb-8">
+    <h2 class="text-heading-2 text-ink">Overview</h2>
+  </header>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     <div class="w-full h-32 rounded-lg bg-canvas-soft border border-hairline flex flex-col items-start justify-start p-4">
