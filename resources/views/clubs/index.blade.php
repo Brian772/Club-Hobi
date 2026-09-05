@@ -10,7 +10,10 @@
     @else
       @if ($joinedClub->isNotEmpty())
         <section id="alreadyJoin" class="pb-4 border-b border-hairline">
-          <h2 class="text-2xl font-bold mb-4">Klub Anda</h2>
+          <div class="flex flex-row  justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">Klub Anda</h2>
+            <a href="{{ route('clubs.request') }}" class="text-primary hover:text-primary-active">+ Ajukan Klub Baru</a>
+          </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
             :class="notifOpen ? 'lg:grid-cols-1 xl:grid-cols-2' : 'lg:grid-cols-3 xl:grid-cols-3'">
             @foreach ($joinedClub as $club)
@@ -54,7 +57,8 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
             :class="notifOpen ? 'lg:grid-cols-1 xl:grid-cols-2' : 'lg:grid-cols-3 xl:grid-cols-3'">
             @foreach ($recomendedClubs as $club)
-              <div class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div
+                class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 @if ($club->cover_url)
                   {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
                   <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"

@@ -4,7 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
-use App\Http\Controllers\ClubController;
+use App\Http\Controllers\Clubs\ClubController;
+use App\Http\Controllers\Clubs\ClubRequestController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\AppealController;
@@ -45,6 +46,8 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('clubs')->name('clubs.')->group(function () {
         Route::get('/', [ClubController::class, 'index'])->name('index');
+        Route::get('/request', [ClubRequestController::class, 'request'])->name('request');
+        Route::post('/request/store', [ClubRequestController::class, 'storeRequest'])->name('request.store');
         Route::get('/{club}', [ClubController::class, 'show'])->name('show');
         Route::post('/{club}/join', [ClubController::class, 'join'])->name('join');
         Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');

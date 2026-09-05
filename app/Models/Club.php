@@ -18,9 +18,10 @@ class Club extends Model
     protected $fillable = [
         'id',
         'name',
+        'hobby_id',
         'description',
+        'created_by',
         'cover_url',
-        'category',
     ];
 
     public function hobby()

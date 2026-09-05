@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Clubs;
 
 use App\Http\Controllers\Controller;
 use App\Models\Club;
@@ -100,3 +100,4 @@ class ClubController extends Controller
         return redirect()->route('clubs.index')->with('success', 'berhasil keluar dari klub!');
     }
 }
+
