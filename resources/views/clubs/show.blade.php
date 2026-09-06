@@ -5,45 +5,60 @@
 @endsection
 
 @section('content')
-  <a href="{{ route('clubs.index') }}" class="flex w-max items-center gap-2 text-ink-muted mb-4">
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 16 9">
-      <path d="M0 0h16v9H0z" fill="none" />
-      <path fill="currentColor" d="M12.5 5h-9c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h9c.28 0 .5.22.5.5s-.22.5-.5.5" />
-      <path fill="currentColor"
-        d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
-    </svg>
-  </a>
-  <header class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
+  <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-3">
+    <a href="{{ route('clubs.index', $club->id) }}" class="text-ink-muted">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 16 9">
+        <path d="M0 0h16v9H0z" fill="none" />
+        <path fill="currentColor" d="M12.5 5h-9c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h9c.28 0 .5.22.5.5s-.22.5-.5.5" />
+        <path fill="currentColor"
+          d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
+      </svg>
+    </a>
+    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">{{ $club->name }}</h2>
+  </header>
+  <div class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
     <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="Logo {{ $club->name }}"
-      class="rounded-md w-full md:w-100 h-48 md:h-auto object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
+      class="rounded-md w-full md:w-100 h-48 md:h-64 object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
     <div class="flex flex-col justify-between items-start w-full self-stretch">
       <div class="flex flex-col gap-2">
-        <div class="flex flex-col gap-2 mb-2">
-          <h1 class="text-heading-2 text-ink font-bold">Klub {{ $club->name }}</h1>
+        <div class="flex flex-col mb-2">
           <span class="text-caption lg:text-body-mid text-ink-muted">{{ $club->hobby->name }} <span
               class="font-extrabold">·</span>
-            {{ $club->members_count }} anggota</span>
+            {{ $club->members_count }} Anggota</span>
+          <p class="text-caption text-ink-muted">Owner : {{ $creator->user->name }}</p>
         </div>
         <p class="text-caption lg:text-body-mid text-ink-muted">{{ $club->description }}</p>
       </div>
-      <div class="mt-2 flex flex-row gap-2 items-center justify-start w-full">
-        <form action="{{ route('clubs.leave', $club->id) }}" method="POST">
+      <?php
+      $isOwner = $creator && $creator->user_id === auth()->id();
+      ?>
+        <div class="mt-2 flex flex-row gap-2 items-center w-full justify-start
+        {{ $isOwner ? 'lg:justify-between' : 'lg:justify-end' }}">
+        @can('settings', $club)
+          <a href="{{ route('clubs.settings', $club->id) }}"
+            class="order-2 lg:order-1 rounded-md text-body-mid text-ink hover:bg-primary/10 hover:text-primary p-2 flex flex-row gap-2 items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-settings-icon lucide-settings">
+              <path
+                d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            Settings
+          </a>
+        @endcan
+        <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
           @csrf
           @method('DELETE')
-          <x-secondary-button class="w-max px-4" type="submit">
-            Keluar Klub
-          </x-secondary-button>
+          <button type="submit"
+            class="lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
+            Keluar
+          </button>
         </form>
-
-        @can('admin')
-          <x-secondary-button class="w-max px-4" type="button"
-            onclick="window.location='{{ route('admin.clubs.edit', $club->id) }}'">
-            Edit Klub
-          </x-secondary-button>
-        @endcan
       </div>
+
     </div>
-  </header>
+  </div>
 
   <section id="postingan">
     <main x-data="{ tab: 'post' }" class="flex flex-col gap-4">
@@ -76,7 +91,7 @@
       {{-- Postingan --}}
       <div x-show="tab === 'post'">
         <header class="mb-4">
-          <h2 class="text-heading-2 text-ink font-bold">Postingan</h2>
+          <h2 class="text-title lg:text-heading-2 text-ink font-bold">Postingan</h2>
         </header>
         @if ($club->posts->isEmpty())
           <p class="text-caption text-ink-muted">Belum ada postingan di klub ini.</p>
@@ -161,7 +176,8 @@
               </div>
 
               {{-- Section Komentar (Hidden by default) --}}
-              <div id="comments-{{ $post->id }}" class="hidden pt-4 mt-3 border-t border-dashed border-neutral-200">
+              <div id="comments-{{ $post->id }}"
+                class="hidden pt-4 mt-3 border-t border-dashed border-neutral-200">
                 <form action="{{ route('posts.comments.store', $post->id) }}" method="POST" class="flex gap-2 mb-3">
                   @csrf
                   <input type="text" name="content" placeholder="Tulis komentar..." required
@@ -201,103 +217,14 @@
       {{-- Member --}}
       <div x-show="tab === 'member'">
         <header class="mb-4">
-          <h2 class="text-heading-2 text-ink font-bold">Member</h2>
+          <h2 class="text-title lg:text-heading-2 text-ink font-bold">Member</h2>
         </header>
         @if (empty($members))
           <p class="text-caption text-ink-muted">Belum ada member di klub ini.</p>
         @else
           <div class="flex flex-col gap-2">
             @foreach ($members as $member)
-              <div
-                class="flex flex-row w-full lg:px-4 py-2 items-center justify-between gap-4 mx-auto border border-canvas hover:border-hairline rounded-lg transition-colors duration-300">
-                <div class="flex flex-row gap-2 items-center justify-start w-max">
-                  <div class="min-w-10 mr-2">
-                    <img src="{{ $member->user->avatar_full_url }}" alt="{{ $member->user->name }}"
-                      class="rounded-full w-10 h-10 object-cover">
-                  </div>
-                  <div class="flex flex-col gap-2">
-                    <h3 class="text-body-mid font-semibold text-ink">{{ $member->user->name }}
-                      @if ($member->user->role_global === 'admin')
-                        <span
-                          class="text-overline text-primary bg-primary/10 rounded-full px-2 py-1 border border-primary font-semibold">Admin</span>
-                      @endif
-                    </h3>
-                    <p class="text-caption text-ink-muted"><span class="text-ink font-semibold">Hobi:
-                      </span>{{ implode(', ', $member->user->interest_array ?? []) }}</p>
-                  </div>
-                </div>
-
-                <div class="flex flex-row gap-2 items-center w-max">
-                  <span class="text-caption text-ink-muted">{{ $member->role }}</span>
-                  @if ($member->user->id !== Auth::user()->id)
-                    <div x-data="{ MenuOpen: false }">
-                      <button type="button" @click="MenuOpen = true"
-                        class="text-ink-muted text-body-mid rounded-full p-2 hover:bg-hairline">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                          stroke-linejoin="round" class="lucide lucide-ellipsis-vertical">
-                          <circle cx="12" cy="12" r="1" />
-                          <circle cx="12" cy="5" r="1" />
-                          <circle cx="12" cy="19" r="1" />
-                        </svg>
-                      </button>
-
-                      <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
-                        <div x-transition:enter="transition ease-out duration-200"
-                          x-transition:enter-start="opacity-0 -translate-y-2"
-                          x-transition:enter-end="opacity-100 translate-y-0"
-                          x-transition:leave="transition ease-in duration-200"
-                          x-transition:leave-start="opacity-100 translate-y-0"
-                          x-transition:leave-end="opacity-0 -translate-y-2" @click.outside="MenuOpen = false"
-                          class="absolute z-50 right-5 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
-                          <a href="{{ route('profile.show', ['user' => $member->user->id]) }}"
-                            class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                              stroke-linejoin="round" class="lucide lucide-user-round">
-                              <circle cx="12" cy="8" r="5" />
-                              <path d="M20 21a8 8 0 0 0-16 0" />
-                            </svg>
-                            Lihat Profil
-                          </a>
-                          <a href="{{ route('messages.index', ['conversation' => $member->user->id]) }}"
-                            class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                              stroke-linejoin="round" class="lucide lucide-message-circle-icon lucide-message-circle">
-                              <path
-                                d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
-                            </svg>
-                            Kirim Pesan
-                          </a>
-                          @can('admin')
-                            @if ($member->user->role_global !== 'admin')
-                              <form action="{{ route('admin.clubs.kick', [$member->club_id, $member->user_id]) }}"
-                                method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                  class="w-full flex flex-row gap-2 items-center text-left px-4 py-2 text-caption text-red-500 rounded-md hover:bg-hairline">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round"
-                                    class="lucide lucide-user-round-x-icon lucide-user-round-x">
-                                    <path d="m16.5 16.5 5 5" />
-                                    <path d="M2 21a8 8 0 0 1 11.531-7.18" />
-                                    <path d="m21.5 16.5-5 5" />
-                                    <circle cx="10" cy="8" r="5" />
-                                  </svg>
-                                  Kick Member
-                                </button>
-                              </form>
-                            @endif
-                          @endcan
-                        </div>
-                      </div>
-                    </div>
-                  @endif
-                </div>
-              </div>
+              <x-member-list :member="$member" />
             @endforeach
           </div>
         @endif

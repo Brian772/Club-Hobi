@@ -5,11 +5,19 @@
 @endsection
 
 @section('content')
-  <header class="w-full mb-4">
-    <h2 class="text-heading-2 text-ink">Edit Club {{ $club->name }}</h2>
+  <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-3">
+    <a href="{{ route('clubs.show', $club->id) }}" class="text-ink-muted">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 16 9">
+        <path d="M0 0h16v9H0z" fill="none" />
+        <path fill="currentColor" d="M12.5 5h-9c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h9c.28 0 .5.22.5.5s-.22.5-.5.5" />
+        <path fill="currentColor"
+          d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
+      </svg>
+    </a>
+    <h2 class="text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">Edit {{ $club->name }}</h2>
   </header>
-  <div>
-    <form action="{{ route('admin.clubs.update', $club->id) }}" method="POST" enctype="multipart/form-data">
+  <div class="max-w-4xl">
+    <form action="{{ route('clubs.update', $club->id) }}" method="POST" enctype="multipart/form-data">
       @csrf
       @method('PUT')
       <div class="flex flex-col lg:flex-row gap-4 w-full">
@@ -44,7 +52,7 @@
         <div class="w-full flex flex-col gap-2">
           <x-input-label for="category" :value="__('Club Category')" />
           <input type="text" name="category"
-            class="w-full lg:w-1/2 rounded-md border border-hairline px-4 py-2 focus:ring-primary focus:border-primary"
+            class="w-full lg:w-1/3 rounded-md border border-hairline px-4 py-2 focus:ring-primary focus:border-primary"
             id="category" value="{{ $club->hobby->name }}" readonly>
         </div>
         <div class="w-full flex flex-col gap-2">

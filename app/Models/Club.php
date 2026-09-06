@@ -47,4 +47,9 @@ class Club extends Model
     {
         return $this->hasMany(ClubFiles::class, 'club_id');
     }
+
+    public function joinRequests(): HasMany
+    {
+        return $this->hasMany(ClubJoinRequest::class, 'club_id');
+    }
 }

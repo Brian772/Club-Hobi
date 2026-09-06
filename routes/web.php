@@ -6,6 +6,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Clubs\ClubController;
 use App\Http\Controllers\Clubs\ClubRequestController;
+use App\Http\Controllers\Clubs\ClubJoinRequestController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\AppealController;
@@ -51,8 +52,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/request/list/{request}', [ClubRequestController::class, 'detail'])->name('request.detail');
         Route::post('/request/store', [ClubRequestController::class, 'storeRequest'])->name('request.store');
         Route::get('/{club}', [ClubController::class, 'show'])->name('show');
-        Route::post('/{club}/join', [ClubController::class, 'join'])->name('join');
+        Route::get('/{club}/settings', [ClubController::class, 'settings'])->name('settings');
+        Route::put('/{club}/settings', [ClubController::class, 'update'])->name('update');
+        Route::post('/{club}/join/request', [ClubJoinRequestController::class, 'storeRequest'])->name('join.request');
+        Route::delete('/{club}/join/{request}/cancel', [ClubJoinRequestController::class, 'cancelRequest'])->name('join.request.cancel');
+        Route::patch('/{club}/settings/join/{request}/accept', [ClubJoinRequestController::class, 'acceptRequest'])->name('join.request.accept');
+        Route::patch('/{club}/settings/join/{request}/reject', [ClubJoinRequestController::class, 'rejectRequest'])->name('join.request.reject');
         Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');
+        Route::delete('/clubs/{club}/kick/{userId}', [ClubController::class, 'kickMember'])->name('kick');
     });
 
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');

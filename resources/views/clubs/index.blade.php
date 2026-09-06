@@ -10,7 +10,7 @@
     @if ($joinedClub->isNotEmpty())
       <section id="alreadyJoin" class="pb-4 border-b border-hairline">
         <div class="flex flex-row  justify-between items-center mb-4">
-          <h2 class="text-2xl font-bold">Klub Anda</h2>
+          <h2 class="text-title lg:text-heading-2 font-bold">Klub Anda</h2>
           <nav>
             <a href="{{ route('clubs.request') }}" class="text-primary hover:text-primary-active">+ Ajukan Klub Baru</a>
             <span class="text-ink-muted mx-2">|</span>
@@ -45,7 +45,7 @@
     @else
       <section id="alreadyJoin" class="border-b border-hairline">
         <div class="mb-12">
-          <h2 class="text-2xl font-bold mb-4">Klub Anda</h2>
+          <h2 class="text-title lg:text-heading-2 font-bold mb-4">Klub Anda</h2>
           <p class="text-caption text-ink-muted">Anda belum bergabung ke klub manapun.</p>
           <p></p>
         </div>
@@ -54,7 +54,7 @@
 
     @if ($recomendedClubs->isNotEmpty())
       <section class="mt-8 pb-4mb-12">
-        <h2 class="text-2xl font-bold mb-4">Rekomendasi Klub</h2>
+        <h2 class="text-title lg:text-heading-2 font-bold mb-4">Rekomendasi Klub</h2>
         <p class="text-caption text-ink-muted mb-2">Berdasarkan Minat:
           {{ implode(', ', auth()->user()->interest_array ?? []) }}</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
@@ -75,11 +75,39 @@
                 <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
               </div>
               <div class="mt-auto w-full p-2">
-                <form action="{{ route('clubs.join', $club->id) }}" method="POST">
-                  @csrf
-                  <button class="w-full bg-primary rounded-md text-white py-2 cursor-pointer"
-                    type="submit">Bergabung</button>
-                </form>
+                <?php
+                $isAlreadyRequested = $club
+                    ->joinRequests()
+                    ->where('user_id', auth()->id())
+                    ->where('status', 'pending')
+                    ->exists();
+                    
+                    $pendingRequest = $pendingRequests->get($club->id);
+                    $isAlreadyRequested = $pendingRequest !== null;
+                ?>
+                @if ($isAlreadyRequested)
+                  <div class="flex flex-row gap-2">
+                    <button
+                      class="w-full border border-hairline bg-canvas-soft rounded-md text-primary py-2 cursor-not-allowed"
+                      type="button" disabled>
+                      Menunggu Persetujuan
+                    </button>
+                    <form action="{{ route('clubs.join.request.cancel', [$club->id, $pendingRequest->id]) }}" method="POST">
+                      @csrf
+                      @method('DELETE')
+                      <button class="w-max bg-accent-red/10 text-accent-red py-2 px-4 rounded-md text-center cursor-pointer" type="submit">
+                        Batal
+                      </button>
+                    </form>
+                  </div>
+                @else
+                  <form action="{{ route('clubs.join.request', $club->id) }}" method="POST">
+                    @csrf
+                    <button class="w-full bg-primary rounded-md text-white py-2 cursor-pointer" type="submit">
+                      Permintaan Bergabung
+                    </button>
+                  </form>
+                @endif
               </div>
             </div>
           @endforeach

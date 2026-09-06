@@ -10,7 +10,7 @@
           d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
       </svg>
     </a>
-    <h2 class="text-heading-2 text-ink-secondary">Pengajuan Klub Saya</h2>
+    <h2 class="text-title lg:text-heading-2 text-ink-secondary">Pengajuan Klub Saya</h2>
   </header>
   @if ($clubRequests->isEmpty())
     <p class="text-caption text-ink-muted">Anda belum mengajukan klub apa pun.</p>

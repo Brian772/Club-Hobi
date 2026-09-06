@@ -78,7 +78,7 @@
         :class="notifOpen ? 'lg:pr-[24.3rem]' : 'lg:pr-0'">
         @include('layouts.partials.topbar')
 
-        <main class="pt-12 p-6 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 overflow-y-auto lg:border lg:border-hairline">
+        <main class="pt-12 lg:p-8 lg:bg-canvas rounded-lg flex-1 min-h-0 overflow-y-auto lg:border lg:border-hairline">
           <section class="block lg:hidden mb-4 w-full">
             <x-alert-account-status />
           </section>

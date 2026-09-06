@@ -10,7 +10,7 @@
           d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
       </svg>
     </a>
-    <h2 class="text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">Club Request
+    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">Club Request
       @if ($clubRequest->status === 'pending')
         <span
           class="rounded-full bg-accent-yellow/10 text-accent-yellow text-overline px-2 py-1">{{ Str::upper($clubRequest->status) }}</span>

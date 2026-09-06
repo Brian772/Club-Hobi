@@ -6,12 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\Post;
 use App\Models\Hobby;
+use App\Models\ClubJoinRequest;
 use App\Models\ClubMember;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
 class ClubController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
         $user = Auth::user();
@@ -21,6 +26,11 @@ class ClubController extends Controller
         $userInterest = array_map('trim', $user->interest_array);
 
         $userInterestId = $userInterest ? Hobby::whereIn('name', $userInterest)->pluck('id') : collect();
+
+        $pendingRequests = ClubJoinRequest::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->get()
+            ->keyBy('club_id');
 
         $joinedClub = Club::withCount('members')
             ->whereHas('members', fn($q) => $q->where('user_id', $user->id))
@@ -38,7 +48,7 @@ class ClubController extends Controller
 
         $isEmpty = $allClubs->isEmpty() && $recomendedClubs->isEmpty();
 
-        return view('clubs.index', compact('recomendedClubs', 'allClubs', 'isEmpty', 'joinedClub'));
+        return view('clubs.index', compact('recomendedClubs', 'allClubs', 'isEmpty', 'joinedClub', 'pendingRequests'));
     }
 
     public function show($id)
@@ -68,25 +78,67 @@ class ClubController extends Controller
             ->where('club_id', $id)
             ->get();
 
-        return view('clubs.show', compact('club', 'isJoined', 'posts', 'members', 'user'));
+        $creator = ClubMember::with('user')
+            ->where('club_id', $id)
+            ->where('role', 'owner')
+            ->first();
+
+        return view('clubs.show', compact('club', 'isJoined', 'posts', 'members', 'user', 'creator'));
     }
 
-    public function join(Request $request, $id)
-    {
-        $userId = Auth::id();
+    public function settings($id) {
+        
+        $club = Club::findOrFail($id);
 
-        $alreadyJoined = ClubMember::where('club_id', $id)
-            ->where('user_id', $userId)
-            ->exists();
-
-        if (!$alreadyJoined) {
-            ClubMember::create([
-                'club_id' => $id,
-                'user_id' => $userId,
-                'joined_at' => now(),
-            ]);
+        if (Gate::denies('settings', $club)) {
+            return redirect()->route('clubs.show', ['club' => $club->id])->with('error', 'Anda tidak memiliki izin untuk mengakses pengaturan klub ini.');
         }
-        return redirect()->back()->with('success', 'berhasil bergabung dengan klub!');
+
+        $this->authorize('settings', $club);
+
+        $members = ClubMember::with('user')
+            ->where('club_id', $id)
+            ->paginate(15);
+
+            $moderator = ClubMember::with('user')
+            ->where('club_id', $id)
+            ->where('role', 'moderator')
+            ->get();
+
+        $joinRequests = ClubJoinRequest::with('user')
+            ->orderBy('created_at', 'desc')
+            ->where('club_id', $id)
+            ->where('status', 'pending')
+            ->withCount('user')
+            ->get();
+
+        return view('clubs.settings', compact('club', 'members', 'moderator', 'joinRequests'));
+    }
+
+    public function update(Request $request, Club $club)
+    {
+        if (Gate::denies('edit', $club)) {
+            return redirect()->route('clubs.show', ['club' => $club->id])->with('error', 'Anda tidak memiliki izin untuk mengedit klub ini.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'cover_url' => 'nullable|image|mimes:jpeg,png|max:2048',
+        ]);
+
+        if ($request->hasFile('cover')) {
+            if ($club->cover_url && Storage::disk('public')->exists($club->cover_url)) {
+                Storage::disk('public')->delete($club->cover_url);
+            }
+
+            $path = $request->file('cover')->store('club/covers', 'public');
+            $validated['cover_url'] = $path;
+        }
+
+        $club->update($validated);
+
+        return redirect()->route('clubs.show', $club->id)->with('success', 'Klub berhasil diperbarui!');
     }
 
     public function leave(Request $request, $id)
@@ -99,5 +151,17 @@ class ClubController extends Controller
 
         return redirect()->route('clubs.index')->with('success', 'berhasil keluar dari klub!');
     }
-}
 
+    public function kickMember(Request $request, $clubId, $userId)
+    {
+        if (Auth::user()->role_global !== 'admin') {
+            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melakukan tindakan ini.');
+        }
+
+        ClubMember::where('club_id', $clubId)
+            ->where('user_id', $userId)
+            ->delete();
+
+        return redirect()->back()->with('success', 'Anggota berhasil dikeluarkan dari klub!');
+    }
+}
