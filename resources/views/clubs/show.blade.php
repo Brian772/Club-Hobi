@@ -5,45 +5,67 @@
 @endsection
 
 @section('content')
-  <a href="{{ route('clubs.index') }}" class="flex w-max items-center gap-2 text-ink-muted mb-4">
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 16 9">
-      <path d="M0 0h16v9H0z" fill="none" />
-      <path fill="currentColor" d="M12.5 5h-9c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h9c.28 0 .5.22.5.5s-.22.5-.5.5" />
-      <path fill="currentColor"
-        d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
-    </svg>
-  </a>
-  <header class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
+  <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-3">
+    <a href="{{ route('clubs.index', $club->id) }}" class="text-ink-muted">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 16 9">
+        <path d="M0 0h16v9H0z" fill="none" />
+        <path fill="currentColor" d="M12.5 5h-9c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h9c.28 0 .5.22.5.5s-.22.5-.5.5" />
+        <path fill="currentColor"
+          d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
+      </svg>
+    </a>
+    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">{{ $club->name }}</h2>
+  </header>
+  <div class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
     <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="Logo {{ $club->name }}"
-      class="rounded-md w-full md:w-100 h-48 md:h-auto object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
+      class="rounded-md w-full md:w-100 h-48 md:h-64 object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
     <div class="flex flex-col justify-between items-start w-full self-stretch">
       <div class="flex flex-col gap-2">
-        <div class="flex flex-col gap-2 mb-2">
-          <h1 class="text-heading-2 text-ink font-bold">Klub {{ $club->name }}</h1>
+        <div class="flex flex-col mb-2">
           <span class="text-caption lg:text-body-mid text-ink-muted">{{ $club->hobby->name }} <span
               class="font-extrabold">·</span>
-            {{ $club->members_count }} anggota</span>
+            {{ $club->members_count }} Anggota</span>
+          <p class="text-caption text-ink-muted">Owner : {{ $creator->user->name ?? 'Tidak Diketahui' }}</p>
         </div>
         <p class="text-caption lg:text-body-mid text-ink-muted">{{ $club->description }}</p>
       </div>
-      <div class="mt-2 flex flex-row gap-2 items-center justify-start w-full">
-        <form action="{{ route('clubs.leave', $club->id) }}" method="POST">
+      <?php
+      use App\Models\ClubMember;
+
+      $isOwnerOrModerator = ClubMember::where('club_id', $club->id)
+            ->where('user_id', auth()->user()->id)
+            ->whereIn('role', ['owner', 'moderator'])
+            ->first();
+      ?>
+        <div class="mt-2 flex flex-row gap-4 items-center w-full justify-start
+        {{ $isOwnerOrModerator ? 'lg:justify-between' : 'lg:justify-end' }}">
+        @can('view', $club)
+          <a href="{{ route('clubs.settings', $club->id) }}"
+            class="order-2 lg:order-1 rounded-md text-body-mid text-ink hover:bg-primary/10 hover:text-primary p-2 flex flex-row gap-2 items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-settings-icon lucide-settings">
+              <path
+                d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            Settings
+          </a>
+        @endcan
+        @cannot('isOwner', $club)
+        <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
           @csrf
           @method('DELETE')
-          <x-secondary-button class="w-max px-4" type="submit">
-            Keluar Klub
-          </x-secondary-button>
+          <button type="submit"
+            class="lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
+            Keluar
+          </button>
         </form>
-
-        @can('admin')
-          <x-secondary-button class="w-max px-4" type="button"
-            onclick="window.location='{{ route('admin.clubs.edit', $club->id) }}'">
-            Edit Klub
-          </x-secondary-button>
-        @endcan
+        @endcannot
       </div>
+
     </div>
-  </header>
+  </div>
 
   <section id="postingan">
     <main x-data="{ tab: 'post' }" class="flex flex-col gap-4">
@@ -76,7 +98,7 @@
       {{-- Postingan --}}
       <div x-show="tab === 'post'">
         <header class="mb-4">
-          <h2 class="text-heading-2 text-ink font-bold">Postingan</h2>
+          <h2 class="text-title lg:text-heading-2 text-ink font-bold">Postingan</h2>
         </header>
         @if ($club->posts->isEmpty())
           <p class="text-caption text-ink-muted">Belum ada postingan di klub ini.</p>
@@ -161,7 +183,8 @@
               </div>
 
               {{-- Section Komentar (Hidden by default) --}}
-              <div id="comments-{{ $post->id }}" class="hidden pt-4 mt-3 border-t border-dashed border-neutral-200">
+              <div id="comments-{{ $post->id }}"
+                class="hidden pt-4 mt-3 border-t border-dashed border-neutral-200">
                 <form action="{{ route('posts.comments.store', $post->id) }}" method="POST" class="flex gap-2 mb-3">
                   @csrf
                   <input type="text" name="content" placeholder="Tulis komentar..." required
@@ -201,12 +224,12 @@
       {{-- Member --}}
       <div x-show="tab === 'member'">
         <header class="mb-4">
-          <h2 class="text-heading-2 text-ink font-bold">Member</h2>
+          <h2 class="text-title lg:text-heading-2 text-ink font-bold">Member</h2>
         </header>
         @if (empty($members))
           <p class="text-caption text-ink-muted">Belum ada member di klub ini.</p>
         @else
-          <div>
+          <div class="flex flex-col gap-2">
             @foreach ($members as $member)
               <x-member-list :member="$member" />
             @endforeach
@@ -249,7 +272,8 @@
       if (imageExtensions.includes(ext)) {
         content.innerHTML = `<img src="${url}" class="max-w-full max-h-[85vh] rounded-lg object-contain">`;
       } else if (videoExtensions.includes(ext)) {
-        content.innerHTML = `<video controls autoplay class="max-w-full max-h-[85vh] rounded-lg"><source src="${url}" type="video/${ext}"></video>`;
+        content.innerHTML =
+          `<video controls autoplay class="max-w-full max-h-[85vh] rounded-lg"><source src="${url}" type="video/${ext}"></video>`;
       } else {
         window.open(url, '_blank');
         return;

@@ -20,6 +20,7 @@ class ClubMember extends Model
     protected $fillable = [
         'club_id',
         'user_id',
+        'role',
         'joined_at',
     ];
 

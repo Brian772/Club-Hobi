@@ -18,9 +18,10 @@ class Club extends Model
     protected $fillable = [
         'id',
         'name',
+        'hobby_id',
         'description',
+        'created_by',
         'cover_url',
-        'category',
     ];
 
     public function hobby()
@@ -45,5 +46,10 @@ class Club extends Model
     public function files(): HasMany
     {
         return $this->hasMany(ClubFiles::class, 'club_id');
+    }
+
+    public function joinRequests(): HasMany
+    {
+        return $this->hasMany(ClubJoinRequest::class, 'club_id');
     }
 }

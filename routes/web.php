@@ -4,7 +4,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
-use App\Http\Controllers\ClubController;
+use App\Http\Controllers\Clubs\ClubController;
+use App\Http\Controllers\Clubs\ClubRequestController;
+use App\Http\Controllers\Clubs\ClubJoinRequestController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\AppealController;
@@ -24,7 +26,7 @@ Route::get('/', function () {
 // Halaman Dashboard (hanya bisa diakses jika sudah login)
 Route::middleware('auth')->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])
+    Route::get('/home', [DashboardController::class, 'index'])
         ->name('dashboard');
 
     Route::get('/dashboard/profile', [DashboardController::class, 'profile'])
@@ -45,9 +47,22 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('clubs')->name('clubs.')->group(function () {
         Route::get('/', [ClubController::class, 'index'])->name('index');
+        Route::get('/request', [ClubRequestController::class, 'request'])->name('request');
+        Route::get('/request/list', [ClubRequestController::class, 'listRequest'])->name('request.list');
+        Route::get('/request/list/{request}', [ClubRequestController::class, 'detail'])->name('request.detail');
+        Route::post('/request/store', [ClubRequestController::class, 'storeRequest'])->name('request.store');
         Route::get('/{club}', [ClubController::class, 'show'])->name('show');
-        Route::post('/{club}/join', [ClubController::class, 'join'])->name('join');
+        Route::get('/{club}/settings', [ClubController::class, 'settings'])->name('settings');
+        Route::put('/{club}/settings', [ClubController::class, 'update'])->name('update');
+        Route::post('/{club}/join/request', [ClubJoinRequestController::class, 'storeRequest'])->name('join.request');
+        Route::delete('/{club}/join/{request}/cancel', [ClubJoinRequestController::class, 'cancelRequest'])->name('join.request.cancel');
+        Route::patch('/{club}/settings/join/{request}/accept', [ClubJoinRequestController::class, 'acceptRequest'])->name('join.request.accept');
+        Route::patch('/{club}/settings/join/{request}/reject', [ClubJoinRequestController::class, 'rejectRequest'])->name('join.request.reject');
+        Route::patch('/{club}/promote/{userId}', [ClubController::class, 'promoteModerator'])->name('promote');
+        Route::patch('/{club}/demote/{userId}', [ClubController::class, 'demoteModerator'])->name('demote');
         Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');
+        Route::delete('/clubs/{club}/kick/{userId}', [ClubController::class, 'kickMember'])->name('kick');
+        Route::delete('/clubs/{club}/delete', [ClubController::class, 'deleteClub'])->name('delete');
     });
 
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');

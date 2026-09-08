@@ -6,7 +6,7 @@
 
 @section('content')
   <div class="flex items-center justify-between mb-6">
-    <h1 class="text-3xl font-bold text-neutral-900">Halo, {{ auth()->user()->name }} </h1>
+    <h1 class="text-title lg:text-heading-2 font-bold text-neutral-900">Halo, {{ auth()->user()->name }} </h1>
     <a href="{{ route('posts.create') }}"
       class="hidden lg:inline-flex items-center gap-2 bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary-active">
       + Buat Postingan

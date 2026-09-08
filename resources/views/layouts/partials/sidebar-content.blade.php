@@ -9,9 +9,9 @@
       @php
         $navItems = [
             ['label' => 'Home', 'route' => 'dashboard', 'icon' => 'home'],
-            ['label' => 'Notification', 'route' => 'notifications.index', 'icon' => 'notif'],
-            ['label' => 'Pesan', 'route' => 'messages.index', 'icon' => 'chat'],
             ['label' => 'Club', 'route' => 'clubs.index', 'icon' => 'folder'],
+            ['label' => 'Pesan', 'route' => 'messages.index', 'icon' => 'chat'],
+            ['label' => 'Notification', 'route' => 'notifications.index', 'icon' => 'notif'],
             ['label' => 'Settings', 'route' => 'settings.index', 'icon' => 'cog'],
         ];
         if (Auth::user()->role_global === 'admin') {
@@ -19,6 +19,7 @@
               ['label' => 'Overview', 'route' => 'admin.overview', 'icon' => 'overview'],
               ['label' => 'User Management', 'route' => 'admin.user-management', 'icon' => 'user'],
               ['label' => 'Club Management', 'route' => 'admin.club-management', 'icon' => 'blocks'],
+              ['label' => 'Club Request', 'route' => 'admin.clubs.request', 'icon' => 'request'],
             ];
         }
       @endphp

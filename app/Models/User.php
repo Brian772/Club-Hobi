@@ -122,4 +122,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(ClubRequest::class, 'reviewed_by');
     }
+
+    public function joinRequests()
+    {
+        return $this->hasMany(ClubJoinRequest::class, 'user_id');
+    }
 }
