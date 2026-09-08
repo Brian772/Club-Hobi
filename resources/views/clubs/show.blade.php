@@ -25,16 +25,21 @@
           <span class="text-caption lg:text-body-mid text-ink-muted">{{ $club->hobby->name }} <span
               class="font-extrabold">·</span>
             {{ $club->members_count }} Anggota</span>
-          <p class="text-caption text-ink-muted">Owner : {{ $creator->user->name }}</p>
+          <p class="text-caption text-ink-muted">Owner : {{ $creator->user->name ?? 'Tidak Diketahui' }}</p>
         </div>
         <p class="text-caption lg:text-body-mid text-ink-muted">{{ $club->description }}</p>
       </div>
       <?php
-      $isOwner = $creator && $creator->user_id === auth()->id();
+      use App\Models\ClubMember;
+
+      $isOwnerOrModerator = ClubMember::where('club_id', $club->id)
+            ->where('user_id', auth()->user()->id)
+            ->whereIn('role', ['owner', 'moderator'])
+            ->first();
       ?>
-        <div class="mt-2 flex flex-row gap-2 items-center w-full justify-start
-        {{ $isOwner ? 'lg:justify-between' : 'lg:justify-end' }}">
-        @can('settings', $club)
+        <div class="mt-2 flex flex-row gap-4 items-center w-full justify-start
+        {{ $isOwnerOrModerator ? 'lg:justify-between' : 'lg:justify-end' }}">
+        @can('view', $club)
           <a href="{{ route('clubs.settings', $club->id) }}"
             class="order-2 lg:order-1 rounded-md text-body-mid text-ink hover:bg-primary/10 hover:text-primary p-2 flex flex-row gap-2 items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -47,6 +52,7 @@
             Settings
           </a>
         @endcan
+        @cannot('isOwner', $club)
         <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
           @csrf
           @method('DELETE')
@@ -55,6 +61,7 @@
             Keluar
           </button>
         </form>
+        @endcannot
       </div>
 
     </div>

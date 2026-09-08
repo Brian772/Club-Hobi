@@ -58,8 +58,11 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{club}/join/{request}/cancel', [ClubJoinRequestController::class, 'cancelRequest'])->name('join.request.cancel');
         Route::patch('/{club}/settings/join/{request}/accept', [ClubJoinRequestController::class, 'acceptRequest'])->name('join.request.accept');
         Route::patch('/{club}/settings/join/{request}/reject', [ClubJoinRequestController::class, 'rejectRequest'])->name('join.request.reject');
+        Route::patch('/{club}/promote/{userId}', [ClubController::class, 'promoteModerator'])->name('promote');
+        Route::patch('/{club}/demote/{userId}', [ClubController::class, 'demoteModerator'])->name('demote');
         Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');
         Route::delete('/clubs/{club}/kick/{userId}', [ClubController::class, 'kickMember'])->name('kick');
+        Route::delete('/clubs/{club}/delete', [ClubController::class, 'deleteClub'])->name('delete');
     });
 
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');

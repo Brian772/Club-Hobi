@@ -9,6 +9,28 @@ use Illuminate\Auth\Access\Response;
 
 class ClubPolicy
 {
+    public function isOwnerOrModerator(User $user, Club $club): bool
+    {
+        return ClubMember::where('club_id', $club->id)
+            ->where('user_id', $user->id)
+            ->whereIn('role', ['owner', 'moderator'])
+            ->exists();
+    }
+
+    public function isOwner(User $user, Club $club): bool
+    {
+        return ClubMember::where('club_id', $club->id)
+            ->where('user_id', $user->id)
+            ->where('role', 'owner')
+            ->exists();
+    }
+    public function isModerator(User $user, Club $club): bool
+    {
+        return ClubMember::where('club_id', $club->id)
+            ->where('user_id', $user->id)
+            ->where('role', 'moderator')
+            ->exists();
+    }
     /**
      * Determine whether the user can view any models.
      */
@@ -22,7 +44,7 @@ class ClubPolicy
      */
     public function view(User $user, Club $club): bool
     {
-        return false;
+        return $this->isOwnerOrModerator($user, $club);
     }
 
     /**
@@ -33,63 +55,25 @@ class ClubPolicy
         return false;
     }
 
-    public function settings(User $user, Club $club): Response
-    {
-        $member = ClubMember::where('club_id', $club->id)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if (!$member) {
-            return Response::deny('You are not a member of this club.');
-        }
-        if ($member->role === 'owner' && $user->id === $club->created_by) {
-            return Response::allow();
-        }
-        return Response::deny('You do not have permission to access the settings of this club.');
-    }
-
-    public function edit(User $user, Club $club): Response
-    {
-        $member = ClubMember::where('club_id', $club->id)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if (!$member) {
-            return Response::deny('You are not a member of this club.');
-        }
-        if ($member->role === 'owner' && $user->id === $club->created_by) {
-            return Response::allow();
-        }
-        return Response::deny('You do not have permission to edit this club.');
-    }
-
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Club $club): Response
+    public function update(User $user, Club $club): bool
     {
-        $member = ClubMember::where('club_id', $club->id)
-            ->where('user_id', $user->id)
-            ->first();
+        return $this->isOwner($user, $club);
+    }
 
-        if (!$member) {
-            return Response::deny('You are not a member of this club.');
-        }
-        if ($member->role === 'owner' && $user->id === $club->created_by) {
-            return Response::allow();
-        }
-        
-        return Response::deny('You do not have permission to update this club.');
+    public function ManageMembers(User $user, Club $club): bool
+    {
+        return $this->isOwnerOrModerator($user, $club);
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Club $club): Response
+    public function delete(User $user, Club $club): bool
     {
-        return $user->id === $club->user_id
-            ? Response::allow()
-            : Response::deny('You do not own this club.');
+        return $this->isOwner($user, $club);
     }
 
     /**
@@ -97,7 +81,7 @@ class ClubPolicy
      */
     public function restore(User $user, Club $club): bool
     {
-        return false;
+        return $this->isOwner($user, $club);
     }
 
     /**
@@ -105,6 +89,6 @@ class ClubPolicy
      */
     public function forceDelete(User $user, Club $club): bool
     {
-        return false;
+        return $this->isOwner($user, $club);
     }
 }

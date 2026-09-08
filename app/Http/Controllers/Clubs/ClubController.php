@@ -90,13 +90,10 @@ class ClubController extends Controller
         
         $club = Club::findOrFail($id);
 
-        if (Gate::denies('settings', $club)) {
-            return redirect()->route('clubs.show', ['club' => $club->id])->with('error', 'Anda tidak memiliki izin untuk mengakses pengaturan klub ini.');
-        }
-
-        $this->authorize('settings', $club);
+        $this->authorize('view', $club);
 
         $members = ClubMember::with('user')
+            ->orderByRaw('user_id = ? DESC', [Auth::user()->id])
             ->where('club_id', $id)
             ->paginate(15);
 
@@ -117,7 +114,7 @@ class ClubController extends Controller
 
     public function update(Request $request, Club $club)
     {
-        if (Gate::denies('edit', $club)) {
+        if (Gate::denies('update', $club)) {
             return redirect()->route('clubs.show', ['club' => $club->id])->with('error', 'Anda tidak memiliki izin untuk mengedit klub ini.');
         }
 
@@ -163,5 +160,42 @@ class ClubController extends Controller
             ->delete();
 
         return redirect()->back()->with('success', 'Anggota berhasil dikeluarkan dari klub!');
+    }
+
+    public function promoteModerator(Club $club, $id)
+    {
+        if (Gate::denies('isOwner', $club)) {
+            return redirect()->route('clubs.show', ['club' => $club->id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
+        }
+
+        ClubMember::where('club_id', $club->id)
+            ->where('user_id', $id)
+            ->update(['role' => 'moderator']);
+
+        return redirect()->route('clubs.settings', ['club' => $club->id])->with('success', 'Moderator berhasil diperbarui!');
+    
+        }
+    public function demoteModerator(Club $club, $id)
+    {
+        if (Gate::denies('isOwner', $club)) {
+            return redirect()->route('clubs.show', ['club' => $club->id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
+        }
+
+        ClubMember::where('club_id', $club->id)
+            ->where('user_id', $id)
+            ->update(['role' => 'member']);
+
+        return redirect()->route('clubs.settings', ['club' => $club->id])->with('success', 'Moderator berhasil diperbarui!');
+    }
+
+    public function deleteClub(Club $club)
+    {
+        if (Gate::denies('isOwner', $club)) {
+            return redirect()->route('clubs.show', ['club' => $club->id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
+        }
+
+        $club->delete();
+
+        return redirect()->route('clubs.index')->with('success', 'Club berhasil dihapus!');
     }
 }
