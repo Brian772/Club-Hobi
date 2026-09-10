@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminOverviewController;
 use App\Http\Controllers\Admin\AdminUserManagementController;
 use App\Http\Controllers\Admin\AdminClubManagementController;
 use App\Http\Controllers\Admin\AdminClubRequestController;
+use App\Http\Controllers\Admin\ModerationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -18,4 +19,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
   Route::get('/overview', [AdminOverviewController::class, 'index'])->name('overview');
   Route::get('/user-management', [AdminUserManagementController::class, 'index'])->name('user-management');
   Route::get('/club-management', [AdminClubManagementController::class, 'index'])->name('club-management');
+  Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation');
 });

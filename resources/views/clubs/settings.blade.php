@@ -36,7 +36,7 @@
                 <div class="w-full lg:w-1/2 flex flex-col gap-1 h-full">
                   <input type="file" id="cover" name="cover" accept="image/jpeg, image/png" class="hidden">
                   <button type="button" id="editCover" onclick="document.getElementById('cover').click()"
-                    class="rounded-lg bg-canvas-soft border border-hairline text-body-mid mt-4 lg:mt-0 text-ink w-max py-2 px-4 flex flex-row gap-2 items-center justify-center cursor-pointer hover:bg-primary hover:text-white">
+                    class="rounded-md bg-canvas-soft border border-hairline text-body-mid mt-4 lg:mt-0 text-ink w-max py-2 px-4 flex flex-row gap-2 items-center justify-center cursor-pointer hover:bg-primary hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                       class="lucide lucide-pencil-icon lucide-pencil">
@@ -70,9 +70,9 @@
               </div>
 
               <button type="submit"
-                class="w-max rounded-lg bg-primary text-white py-2 px-4 flex flex-row justify-center items-center gap-2 hover:bg-primary-active cursor-pointer">
+                class="w-max rounded-md bg-primary/10 text-primary hover:text-white py-2 px-4 flex flex-row justify-center items-center gap-2 hover:bg-primary cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                   class="lucide lucide-download-icon lucide-download">
                   <path d="M12 15V3" />
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -349,7 +349,7 @@
                                           d="M22.017 10.005a1 1 0 00-.597-.916l-8.59-3.91a2 2 0 00-1.66.001L2.6 9.08a1 1 0 00-.02 1.831l5.093 2.316" />
                                         <path d="m9 17 3 3 3-3" />
                                       </svg>
-                                      Demote To Moderator
+                                      Demote To Member
                                     </button>
                                   @endif
                                 @endcan
@@ -446,7 +446,7 @@
                 able to recover it.</p>
             </div>
             <button type="button" @click="openDelete = true"
-              class="border border-accent-red px-4 py-2 rounded-md text-accent-red bg-accent-red/10 hover:text-white hover:bg-accent-red">
+              class="px-4 py-2 rounded-md text-accent-red hover:underline hover:underline-offset-2">
               Delete
             </button>
           </div>
@@ -459,19 +459,19 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openPromote = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-3 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden">
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
         <div class="flex flex-col gap-2 mb-4">
-          <h3 class="text-title text-ink">
-            Apakah anda yakin?
+          <h3 class="text-title mb-4 text-ink">
+            Promote {{ $member->user->name }} to Moderator?
           </h3>
-          <p class="text-body-mid text-ink-muted">{{ $member->user_name }} akan menjadi moderator</p>
+          <p class="text-body-mid mb-4 text-ink">{{ $member->user->name }} akan menjadi moderator dan mendapatkan akses untuk mengelola anggota serta konten club.</p>
         </div>
-        <div class="flex flex-row gap-2">
+        <div class="flex flex-row justify-end gap-2">
           <form action="{{ route('clubs.promote', [$club->id, $member->user->id]) }}" method="POST">
             @csrf
             @method('PATCH')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded-md w-max text-primary hover:text-white hover:bg-primary">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-layer-arrow-up">
@@ -484,7 +484,7 @@
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded-md text-caption px-4 py-2 text-ink hover:text-white hover:bg-gray-600"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
             @click="openPromote = false">Cancel</button>
         </div>
       </div>
@@ -495,19 +495,19 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openDemote = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-3 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden">
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
         <div class="flex flex-col gap-2 mb-4">
-          <h3 class="text-title text-ink">
-            Apakah anda yakin?
+          <h3 class="text-title text-ink mb-4">
+            Demote {{ $member->user->name }} to Member?
           </h3>
-          <p class="text-body-mid text-ink-muted">{{ $member->user_name }} akan menjadi member</p>
+          <p class="text-body-mid mb-4 text-ink">{{ $member->user->name }} akan kehilangan akses sebagai moderator dan kembali menjadi member.</p>
         </div>
-        <div class="flex flex-row gap-2">
+        <div class="flex flex-row justify-end gap-2">
           <form action="{{ route('clubs.demote', [$club->id, $member->user->id]) }}" method="POST">
             @csrf
             @method('PATCH')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded-md w-max text-primary hover:text-white hover:bg-primary">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-layer-arrow-down">
@@ -521,7 +521,7 @@
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded-md text-caption px-4 py-2 text-ink hover:text-white hover:bg-gray-600"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
             @click="openDemote = false">Cancel</button>
         </div>
       </div>
@@ -532,19 +532,19 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openKick = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-3 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden">
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
         <div class="flex flex-col gap-2 mb-4">
-          <h3 class="text-title text-ink">
-            Apakah anda yakin?
+          <h3 class="text-title mb-4 text-ink">
+            Kick {{ $member->user->name }}?
           </h3>
-          <p class="text-body-mid text-ink-muted">{{ $member->user_name }} akan dikeluarkan dari klub</p>
+          <p class="text-body-mid mb-4 text-ink">{{ $member->user->name }} akan dikeluarkan dari club dan harus mengajukan permintaan baru jika ingin bergabung kembali.</p>
         </div>
-        <div class="flex flex-row gap-2">
+        <div class="flex flex-row justify-end gap-2">
           <form action="{{ route('clubs.kick', [$club->id, $member->user->id]) }}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded-md w-max text-accent-red hover:text-white hover:bg-accent-red">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-arrow-right-from-line">
@@ -552,11 +552,11 @@
                 <path d="M21 12H7" />
                 <path d="m15 18 6-6-6-6" />
               </svg>
-              Kick
+              Kick {{  $member->role }}
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded-md text-caption px-4 py-2 text-ink hover:text-white hover:bg-gray-600"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
             @click="openKick = false">Cancel</button>
         </div>
       </div>
@@ -567,19 +567,19 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openDelete = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-3 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden">
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
         <div class="flex flex-col gap-2 mb-4">
-          <h3 class="text-title text-ink">
-            Apakah anda yakin?
+          <h3 class="text-title mb-4 text-ink">
+            Delete {{ $club->name }}?
           </h3>
-          <p class="text-body-mid text-ink-muted">aksi ini tidak akan bisa di kembalikan</p>
+          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menghapus club ini? Semua data dan konten di dalamnya akan dihapus secara permanen dan tindakan ini tidak dapat dibatalkan.</p>
         </div>
-        <div class="flex flex-row gap-2">
+        <div class="flex flex-row justify-end gap-2">
           <form action="{{ route('clubs.delete', $club->id) }}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded-md w-max text-accent-red hover:text-white hover:bg-accent-red">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-trash">
@@ -593,7 +593,7 @@
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded-md text-caption px-4 py-2 text-ink hover:text-white hover:bg-gray-600"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
             @click="openDelete = false">Cancel</button>
         </div>
       </div>

@@ -19,7 +19,7 @@
       @foreach ($clubRequests as $request)
         <div class="border border-hairline rounded-lg h-max w-full p-4 hover:shadow-lg transition-shadow duration-300">
           <div class="flex flex-col mb-2 w-full">
-            <h3 class="text-ink text-heading-3">{{ $request->name }}</h3>
+            <h3 class="text-ink text-heading-3 mb-4">{{ $request->name }}</h3>
             <p class="text-ink-muted text-body-mid">{{ $request->description }}</p>
             <p class="text-ink-muted text-caption"><span class="font-semibold text-ink">Kategori:</span>
               {{ $request->hobby->name }}</p>

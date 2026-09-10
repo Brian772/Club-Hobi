@@ -9,6 +9,7 @@
   <title>Club Hobi</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @yield('styles')
+  @livewireStyles()
   <style>
     * {
       scrollbar-width: thin;
@@ -90,6 +91,7 @@
     </div>
   @endif
   @stack('scripts')
+  @livewireScripts()
 </body>
 
 </html>
