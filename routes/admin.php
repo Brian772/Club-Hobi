@@ -19,5 +19,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
   Route::get('/overview', [AdminOverviewController::class, 'index'])->name('overview');
   Route::get('/user-management', [AdminUserManagementController::class, 'index'])->name('user-management');
   Route::get('/club-management', [AdminClubManagementController::class, 'index'])->name('club-management');
+  Route::get('/club-management/{club}', [AdminClubManagementController::class, 'show'])->name('club-management.show');
   Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation');
 });

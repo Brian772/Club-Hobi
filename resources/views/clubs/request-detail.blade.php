@@ -45,6 +45,13 @@
       </p>
     </div>
 
+    @if ($clubRequest->status === 'rejected' && $clubRequest->rejected_reason)
+      <div class="flex flex-col gap-1">
+        <h4 class="text-ink text-title">Alasan Ditolak :</h4>
+        <p class="text-ink-muted text-body-mid">{{ $clubRequest->rejected_reason }}</p>
+      </div>
+    @endif
+
     @if ($clubRequest->status !== 'pending')
       <div class="flex flex-col gap-1">
         <h4 class="text-ink text-title">Direview Oleh :</h4>
@@ -56,12 +63,6 @@
         <h4 class="text-ink text-title">Tanggal Direview :</h4>
         <p class="text-ink-muted text-body-mid">
           {{ $clubRequest->reviewed_at ? $clubRequest->reviewed_at->format('d M Y') : 'Belum Direview' }}</p>
-      </div>
-    @endif
-    @if ($clubRequest->status === 'rejected' && $clubRequest->rejected_reason)
-      <div class="flex flex-col gap-1">
-        <h4 class="text-ink text-title">Alasan Ditolak :</h4>
-        <p class="text-ink-muted text-body-mid">{{ $clubRequest->rejected_reason }}</p>
       </div>
     @endif
   </main>

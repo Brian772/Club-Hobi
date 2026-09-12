@@ -112,7 +112,7 @@
                       @csrf
                       @method('DELETE')
                       <button
-                        class="w-max bg-accent-red/10 text-accent-red py-2 px-4 rounded-md text-center cursor-pointer"
+                        class="w-max bg-gray-200 text-ink hover:bg-gray-300 py-2 px-4 rounded-md text-center cursor-pointer"
                         type="submit">
                         Batal
                       </button>

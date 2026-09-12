@@ -58,9 +58,9 @@
         </div>
       @endif
       @if ($clubRequest->status === 'pending')
-        <div class="flex flex-row w-full gap-4">
+        <div class="flex flex-row w-full gap-2 mb-8">
           <button
-            class="flex flex-row w-1/2 items-center cursor-pointer gap-2 px-6 py-2 lg:w-max bg-primary/10 text-primary hover:text-white hover:bg-primary rounded-lg"
+            class="flex flex-row w-1/2 items-center cursor-pointer gap-2 px-6 py-2 lg:w-max bg-primary/10 text-primary hover:text-white hover:bg-primary rounded-md"
             type="submit">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -70,7 +70,7 @@
             Terima
           </button>
           <button type="button" @click="rejectOpen = true"
-          class="flex flex-row w-full items-center cursor-pointer gap-2 px-6 py-2 lg:w-max bg-accent-red/10 text-accent-red hover:text-white hover:bg-accent-red rounded-lg">
+          class="flex flex-row w-full items-center cursor-pointer gap-2 px-6 py-2 lg:w-max bg-accent-red/10 text-accent-red hover:text-white hover:bg-accent-red rounded-md">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="lucide lucide-x">
@@ -114,9 +114,9 @@
               class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               required></textarea>
           </div>
-          <div class="flex w-full flex-row items-center justify-center lg:justify-between gap-4 mt-4">
+          <div class="flex w-full flex-row items-center justify-end gap-2 mt-4">
             <button type="submit"
-              class="flex flex-row w-1/2 items-center cursor-pointer gap-2 px-6 py-2 lg:w-max bg-accent-red/10 text-accent-red hover:text-white hover:bg-accent-red rounded-lg">
+              class="flex flex-row w-1/2 items-center cursor-pointer gap-2 px-6 py-2 lg:w-max bg-accent-red/10 text-accent-red hover:text-white hover:bg-accent-red rounded">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round" class="lucide lucide-x">
@@ -125,7 +125,7 @@
               </svg>
               Tolak</button>
             <button type="button" @click="rejectOpen = false"
-              class="flex flex-row w-1/2 items-center cursor-pointer gap-2 px-6 py-2 lg:w-max bg-gray-100 text-gray-600 hover:text-white hover:bg-gray-600 rounded-lg">
+              class="flex flex-row w-1/2 items-center cursor-pointer gap-2 px-6 py-2 lg:w-max bg-gray-100 text-gray-600 hover:text-white hover:bg-gray-600 rounded">
               Batal</button>
           </div>
         </form>

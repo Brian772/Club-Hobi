@@ -153,19 +153,19 @@ new class extends Component {
   <main class="flex flex-col gap-4 border border-hairrline p-4 rounded-lg">
     <div class="w-full h-max flex flex-row gap-4 border-b border-hairline overflow-x-auto">
       <button wire:click="setTab('all')"
-        class="px-4 py-2 text-body font-semibold focus:outline-none {{ $tab === 'all' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
+        class="px-4 py-2 text-body-mid font-semibold focus:outline-none {{ $tab === 'all' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
         All Users
       </button>
       <button wire:click="setTab('active')"
-        class="px-4 py-2 text-body font-semibold focus:outline-none {{ $tab === 'active' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
+        class="px-4 py-2 text-body-mid font-semibold focus:outline-none {{ $tab === 'active' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
         Active
       </button>
       <button wire:click="setTab('suspend')"
-        class="px-4 py-2 text-body font-semibold focus:outline-none {{ $tab === 'suspend' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
+        class="px-4 py-2 text-body-mid font-semibold focus:outline-none {{ $tab === 'suspend' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
         Suspended
       </button>
       <button wire:click="setTab('banned')"
-        class="px-4 py-2 text-body font-semibold focus:outline-none {{ $tab === 'banned' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
+        class="px-4 py-2 text-body-mid font-semibold focus:outline-none {{ $tab === 'banned' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
         Banned
       </button>
     </div>

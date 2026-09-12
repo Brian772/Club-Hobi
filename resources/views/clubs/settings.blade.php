@@ -15,7 +15,8 @@
     </h2>
   </header>
 
-  <main x-data="{ openPromote: false, openKick: false, openDemote: false, openDelete: false }" class="flex flex-col mt-4 gap-4">
+  <main x-data="{ openPromote: false, openKick: false, openDemote: false, openDelete: false, openAccept: false, openReject: false,
+    selectedName: '', promoteUrl: '', demoteUrl: '', kickUrl: '', kickRole: '',deleteUrl: '', acceptUrl: '', rejectUrl: '' }" class="flex flex-col mt-4 gap-4">
     {{-- Edit Club --}}
     @can('update', $club)
       <section class="border border-hairline rounded-lg p-4">
@@ -192,7 +193,8 @@
                               @if ($member->role === 'member' || $member->role === 'moderator')
                                 @can('isOwner', $club)
                                   @if ($member->role === 'member')
-                                    <button type="button" @click="openPromote = true"
+                                    <button type="button" @click="openPromote = true
+                                    selectedName = '{{ $member->user->name }}'; promoteUrl = '{{ route('clubs.promote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -207,7 +209,8 @@
                                     </button>
                                   @endif
                                   @if ($member->role === 'moderator')
-                                    <button type="button" @click="openDemote = true"
+                                    <button type="button" @click="openDemote = true
+                                    selectedName = '{{ $member->user->name }}'; demoteUrl = '{{ route('clubs.demote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -223,7 +226,8 @@
                                     </button>
                                   @endif
                                 @endcan
-                                <button type="button" @click="openKick = true"
+                                <button type="button" @click="openKick = true
+                                selectedName = '{{ $member->user->name }}'; kickUrl = '{{ route('clubs.kick', [$club->id, $member->user->id]) }}'; kickRole = '{{ $member->role }}';"
                                   class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-accent-red hover:bg-accent-red/10">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -322,7 +326,8 @@
                               @if ($member->role === 'member' || $member->role === 'moderator')
                                 @can('isOwner', $club)
                                   @if ($member->role === 'member')
-                                    <button type="button" @click="openPromote = true"
+                                    <button type="button" @click="openPromote = true;
+                                    selectedName = '{{ $member->user->name }}'; promoteUrl = '{{ route('clubs.promote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -337,7 +342,8 @@
                                     </button>
                                   @endif
                                   @if ($member->role === 'moderator')
-                                    <button type="button" @click="openDemote = true"
+                                    <button type="button" @click="openDemote = true
+                                    selectedName = '{{ $member->user->name }}'; demoteUrl = '{{ route('clubs.demote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -353,7 +359,8 @@
                                     </button>
                                   @endif
                                 @endcan
-                                <button type="button" @click="openKick = true"
+                                <button type="button" @click="openKick = true
+                                  selectedName = '{{ $member->user->name }}'; kickUrl = '{{ route('clubs.kick', [$club->id, $member->user->id]) }}'; kickRole = '{{ $member->role }}';"
                                   class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-accent-red hover:bg-accent-red/10">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -404,24 +411,16 @@
                       {{ $request->created_at->format('d M Y') }}
                     </td>
                     <td class="px-6 py-4 h-16 whitespace-nowrap text-caption flex flex-row gap-2">
-                      <form action="{{ route('clubs.join.request.accept', [$club->id, $request->id]) }}"
-                        method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                          class="px-2 py-1 text-primary cursor-pointer hover:underline hover:underline-offset-2">
-                          Accept
-                        </button>
-                      </form>
-                      <form action="{{ route('clubs.join.request.reject', [$club->id, $request->id]) }}"
-                        method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                          class="px-2 py-1 text-accent-red cursor-pointer hover:underline hover:underline-offset-2">
-                          Reject
-                        </button>
-                      </form>
+                      <button type="button" @click="openAccept = true
+                        selectedName = '{{ $request->user->name }}'; acceptUrl = '{{ route('clubs.join.request.accept', [$club->id, $request->user->id]) }}';"
+                        class="px-2 py-1 text-primary cursor-pointer hover:underline hover:underline-offset-2">
+                        Accept
+                      </button>
+                      <button type="button" @click="openReject = true
+                        selectedName = '{{ $request->user->name }}'; rejectUrl = '{{ route('clubs.join.request.reject', [$club->id, $request->user->id]) }}';"
+                        class="px-2 py-1 text-accent-red cursor-pointer hover:underline hover:underline-offset-2">
+                        Reject
+                      </button>
                   </tr>
                 @endforeach
               </tbody>
@@ -445,7 +444,8 @@
               <p class="text-body-mid text-ink-muted">Delete {{ $club->name }}. If you delete this club, you will not be
                 able to recover it.</p>
             </div>
-            <button type="button" @click="openDelete = true"
+            <button type="button" @click="openDelete = true
+              selectedName = '{{ $club->name }}'; deleteUrl = '{{ route('clubs.delete', $club->id) }}';"
               class="px-4 py-2 rounded-md text-accent-red hover:underline hover:underline-offset-2">
               Delete
             </button>
@@ -462,12 +462,13 @@
       <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
-            Promote {{ $member->user->name }} to Moderator?
+            Promote <span x-text="selectedName"></span> to Moderator?
           </h3>
-          <p class="text-body-mid mb-4 text-ink">{{ $member->user->name }} akan menjadi moderator dan mendapatkan akses untuk mengelola anggota serta konten club.</p>
+          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan menjadi moderator dan mendapatkan akses
+            untuk mengelola anggota serta konten club.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.promote', [$club->id, $member->user->id]) }}" method="POST">
+          <form :action="promoteUrl" method="POST">
             @csrf
             @method('PATCH')
             <button type="submit"
@@ -498,12 +499,13 @@
       <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title text-ink mb-4">
-            Demote {{ $member->user->name }} to Member?
+            Demote <span x-text="selectedName"></span> to Member?
           </h3>
-          <p class="text-body-mid mb-4 text-ink">{{ $member->user->name }} akan kehilangan akses sebagai moderator dan kembali menjadi member.</p>
+          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan kehilangan akses sebagai moderator dan
+            kembali menjadi member.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.demote', [$club->id, $member->user->id]) }}" method="POST">
+          <form :action="demoteUrl" method="POST">
             @csrf
             @method('PATCH')
             <button type="submit"
@@ -535,12 +537,13 @@
       <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
-            Kick {{ $member->user->name }}?
+            Kick <span x-text="selectedName"></span>?
           </h3>
-          <p class="text-body-mid mb-4 text-ink">{{ $member->user->name }} akan dikeluarkan dari club dan harus mengajukan permintaan baru jika ingin bergabung kembali.</p>
+          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan dikeluarkan dari club dan harus
+            mengajukan permintaan baru jika ingin bergabung kembali.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.kick', [$club->id, $member->user->id]) }}" method="POST">
+          <form :action="kickUrl" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit"
@@ -552,7 +555,7 @@
                 <path d="M21 12H7" />
                 <path d="m15 18 6-6-6-6" />
               </svg>
-              Kick {{  $member->role }}
+              Kick <span x-text="selectedName"></span>
             </button>
           </form>
           <button type="button"
@@ -570,12 +573,13 @@
       <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
-            Delete {{ $club->name }}?
+            Delete <span x-text="selectedName"></span>?
           </h3>
-          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menghapus club ini? Semua data dan konten di dalamnya akan dihapus secara permanen dan tindakan ini tidak dapat dibatalkan.</p>
+          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menghapus club ini? Semua data dan konten di
+            dalamnya akan dihapus secara permanen dan tindakan ini tidak dapat dibatalkan.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.delete', $club->id) }}" method="POST">
+          <form :action="deleteUrl" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit"
@@ -595,6 +599,62 @@
           <button type="button"
             class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
             @click="openDelete = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    {{-- Accept Request Modal --}}
+    <div x-show="openAccept" x-cloak @keydown.escape.window="openAccept = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openAccept = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Accept Join Request?
+          </h3>
+          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menerima permintaan bergabung ini?</p>
+        </div>
+        <div class="flex flex-row justify-end gap-2">
+          <form :action="acceptUrl" method="POST">
+            @csrf
+            @method('PATCH')
+            <button type="submit"
+              class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white">
+              Accept
+            </button>
+          </form>
+          <button type="button"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            @click="openAccept = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    {{-- Reject Request Modal --}}
+    <div x-show="openReject" x-cloak @keydown.escape.window="openReject = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openReject = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Reject Join Request?
+          </h3>
+          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menolak permintaan bergabung ini?</p>
+        </div>
+        <div class="flex flex-row justify-end gap-2">
+          <form :action="rejectUrl" method="POST">
+            @csrf
+            @method('PATCH')
+            <button type="submit"
+              class="px-4 py-2 text-accent-red cursor-pointer bg-accent-red/10 hover:bg-accent-red rounded hover:text-white">
+              Reject
+            </button>
+          </form>
+          <button type="button"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            @click="openReject = false">Cancel</button>
         </div>
       </div>
     </div>
