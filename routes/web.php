@@ -11,6 +11,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\AppealController;
 use App\Http\Controllers\BannedController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ChartController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -64,6 +65,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/clubs/{club}/kick/{userId}', [ClubController::class, 'kickMember'])->name('kick');
         Route::delete('/clubs/{club}/delete', [ClubController::class, 'deleteClub'])->name('delete');
     });
+
+    Route::post('/report/store', [ReportController::class, 'store'])->name('reports.store');
 
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 

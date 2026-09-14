@@ -2,7 +2,7 @@
   class="flex flex-row gap-2 lg:gap-4 items-center justify-start rounded-lg border border-hairline bg-canvas-soft p-4 hover:shadow-md transition-shadow duration-300">
   <div class="flex flex-col lg:flex-row gap-2 w-full h-full items-center justify-start">
     <div>
-      <img src="{{ Storage::url($request->cover_url) }}" alt="{{ $request->name }} Cover" width="128" height="64"
+      <img src="{{ Storage::url($request->cover_url) }}" loading="lazy" alt="{{ $request->name }} Cover" width="128" height="64"
         class="rounded-xs object-cover">
     </div>
     <div class="w-full flex flex-col gap-1">

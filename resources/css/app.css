@@ -107,3 +107,7 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 }
+
+[x-cloak] {
+    display: none !important;
+}

@@ -54,6 +54,11 @@ class Post extends Model
         return $this->hasMany(Like::class, 'post_id');
     }
 
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'content');
+    }
+
     // Aktifkan relasi ini jika model & tabel Like sudah ada
     /*
     public function likes(): HasMany

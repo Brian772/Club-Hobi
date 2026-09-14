@@ -21,4 +21,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
   Route::get('/club-management', [AdminClubManagementController::class, 'index'])->name('club-management');
   Route::get('/club-management/{club}', [AdminClubManagementController::class, 'show'])->name('club-management.show');
   Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation');
+  Route::get('/moderation/{report}', [ModerationController::class, 'show'])->name('moderation.report.show');
+  Route::patch('/moderation/{report}/resolved', [ModerationController::class, 'resolved'])->name('moderation.report.resolved');
+  Route::patch('/moderation/{report}/ignored', [ModerationController::class, 'ignored'])->name('moderation.report.ignored');
 });

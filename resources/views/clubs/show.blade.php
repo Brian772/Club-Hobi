@@ -14,7 +14,8 @@
           d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
       </svg>
     </a>
-    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">{{ $club->name }}</h2>
+    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">{{ $club->name }}
+    </h2>
   </header>
   <div class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
     <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="Logo {{ $club->name }}"
@@ -31,17 +32,18 @@
       </div>
       <?php
       use App\Models\ClubMember;
-
+      
       $isOwnerOrModerator = ClubMember::where('club_id', $club->id)
-            ->where('user_id', auth()->user()->id)
-            ->whereIn('role', ['owner', 'moderator'])
-            ->first();
+          ->where('user_id', auth()->user()->id)
+          ->whereIn('role', ['owner', 'moderator'])
+          ->first();
       ?>
-        <div class="mt-2 flex flex-row gap-4 items-center w-full justify-start
+      <div
+        class="mt-2 flex flex-row gap-4 items-center w-full justify-start
         {{ $isOwnerOrModerator ? 'lg:justify-between' : 'lg:justify-end' }}">
         @can('view', $club)
           <a href="{{ route('clubs.settings', $club->id) }}"
-            class="order-2 lg:order-1 rounded-md text-body-mid text-ink hover:bg-primary/10 hover:text-primary p-2 flex flex-row gap-2 items-center">
+            class="order-2 lg:order-1 rounded-md text-body-mid text-ink hover:bg-primary/10 hover:text-primary py-2 px-4 flex flex-row gap-2 items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="lucide lucide-settings-icon lucide-settings">
@@ -53,21 +55,45 @@
           </a>
         @endcan
         @cannot('isOwner', $club)
-        <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
-          @csrf
-          @method('DELETE')
-          <button type="submit"
-            class="lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
-            Keluar
-          </button>
-        </form>
+          <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
+            @csrf
+            @method('DELETE')
+            <button type="submit"
+              class="lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
+              Keluar
+            </button>
+          </form>
         @endcannot
       </div>
 
     </div>
   </div>
 
-  <section id="postingan">
+  <section id="postingan" x-data="{
+      openReportModal: false,
+      contentType: null,
+      contentId: null,
+      reportedUserId: null,
+      reportUrl: null,
+      reportTarget: null,
+
+      openReport(type, contentId, reportedUserId = null, url = null, target= null) {
+        this.contentType = type;
+        this.contentId = contentId;
+        this.reportedUserId = reportedUserId;
+        this.reportUrl = url;
+        this.reportTarget = target;
+        this.openReportModal = true;
+      },
+
+      closeReport() {
+        this.contentType = null;
+        this.contentId = null;
+        this.reportedUserId = null;
+        this.reportUrl = null;
+        this.openReportModal = false;
+      },
+  }">
     <main x-data="{ tab: 'post' }" class="flex flex-col gap-4">
       <div class="w-full h-max flex felx-row gap-6 border-b border-hairline">
         <button @click="tab = 'post'" :class="tab === 'post' ? 'text-primary border-b-2 border-primary' : 'text-ink'"
@@ -237,6 +263,7 @@
         @endif
       </div>
     </main>
+    <x-report-modal />
   </section>
 
   <script>

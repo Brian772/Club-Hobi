@@ -33,7 +33,7 @@
         @foreach ($clubs as $club)
           <div class="flex flex-row items-end lg:items-center justify-between border border-hairline p-2 rounded-lg">
             <div class="flex flex-col lg:flex-row gap-4">
-              <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+              <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" loading="lazy" alt="{{ $club->name }}"
                 width="128" height="64" class="rounded-xs">
               <div class="flex flex-col gap-1">
                 <h2 class="text-lg font-semibold">{{ $club->name }} <span
@@ -58,7 +58,7 @@
             <div
               class="flex flex-row items-end lg:items-center justify-between border border-hairline p-2 rounded-lg">
               <div class="flex flex-col lg:flex-row gap-4">
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" loading="lazy" alt="{{ $club->name }}"
                   width="128" height="64" class="rounded-xs">
                 <div class="flex flex-col gap-1">
                   <h2 class="text-lg font-semibold">{{ $club->name }} <span
