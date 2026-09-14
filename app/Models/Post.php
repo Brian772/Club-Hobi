@@ -29,6 +29,11 @@ class Post extends Model
         'is_announcement' => 'boolean',
     ];
 
+    public function media(): HasMany
+    {
+        return $this->hasMany(PostMedia::class, 'post_id');
+    }
+
     public function club(): BelongsTo
     {
         return $this->belongsTo(Club::class, 'club_id');
@@ -53,12 +58,4 @@ class Post extends Model
     {
         return $this->hasMany(Like::class, 'post_id');
     }
-
-    // Aktifkan relasi ini jika model & tabel Like sudah ada
-    /*
-    public function likes(): HasMany
-    {
-        return $this->hasMany(Like::class, 'post_id');
-    }
-    */
 }

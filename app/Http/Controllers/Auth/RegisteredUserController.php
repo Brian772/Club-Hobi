@@ -61,9 +61,9 @@ class RegisteredUserController extends Controller
          */
         $categories = $step === 3
             ? DB::table('clubs')
-            ->whereNotNull('category')
-            ->distinct()
-            ->pluck('category')
+                ->whereNotNull('category')
+                ->distinct()
+                ->pluck('category')
             : collect();
 
         return view(
@@ -88,11 +88,17 @@ class RegisteredUserController extends Controller
                 'max:255',
                 Rule::unique(User::class, 'email'), // <--- Menolak email duplikat sejak awal
             ],
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique(User::class, 'username'), // Memastikan username belum terdaftar di tabel users
+            ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         session([
-            'register.email'    => $validated['email'],
+            'register.email' => $validated['email'],
             'register.password' => Hash::make($validated['password']),
         ]);
 
@@ -169,20 +175,20 @@ class RegisteredUserController extends Controller
 
         // 1 Validasi pilihan hobi (dibuat opsional/nullable)
         $validated = $request->validate([
-            'hobbies'   => ['nullable', 'array'],
+            'hobbies' => ['nullable', 'array'],
             'hobbies.*' => ['string'],
         ]);
 
         // 3. Buat User baru ke database
         $user = User::create([
-            'name'          => session('register.name'),
-            'bio'           => session('register.bio'),
-            'avatar_url'    => session('register.avatar_url'),
-            'email'         => $email,
+            'name' => session('register.name'),
+            'bio' => session('register.bio'),
+            'avatar_url' => session('register.avatar_url'),
+            'email' => $email,
             'password_hash' => session('register.password'),
-            'interests'      => implode(', ', $validated['hobbies'] ?? []),
-            'role_global'   => 'member',
-            'status'        => 'active',
+            'interests' => implode(', ', $validated['hobbies'] ?? []),
+            'role_global' => 'member',
+            'status' => 'active',
             'email_verified_at' => now(),
         ]);
 
