@@ -16,9 +16,6 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Menampilkan halaman registrasi berdasarkan step.
-     */
     public function create($step = 1): View|RedirectResponse
     {
         $step = (int) $step;
@@ -27,25 +24,14 @@ class RegisteredUserController extends Controller
             abort(404);
         }
 
-        /*
-         * User yang sudah login tidak perlu masuk
-         * ke halaman registrasi lagi.
-         */
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
 
-        /*
-         * Step 2 membutuhkan email dan password
-         * dari step 1.
-         */
         if ($step === 2 && !session()->has('register.email')) {
             return redirect()->route('register', ['step' => 1]);
         }
 
-        /*
-         * Step 3 membutuhkan data dari step 1 dan 2.
-         */
         if (
             $step === 3 &&
             (
@@ -56,9 +42,6 @@ class RegisteredUserController extends Controller
             return redirect()->route('register', ['step' => 1]);
         }
 
-        /*
-         * Kategori hobby hanya diambil pada step 3.
-         */
         $categories = $step === 3
             ? DB::table('clubs')
                 ->whereNotNull('category')
@@ -72,12 +55,6 @@ class RegisteredUserController extends Controller
         );
     }
 
-    /**
-     * STEP 1
-     *
-     * Simpan email dan password sementara
-     * ke session.
-     */
     public function step1(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -105,11 +82,6 @@ class RegisteredUserController extends Controller
         return redirect()->route('register', ['step' => 2]);
     }
 
-    /**
-     * STEP 2
-     *
-     * Simpan nama, bio, dan avatar sementara.
-     */
     public function step2(Request $request): RedirectResponse
     {
         if (!session()->has('register.email')) {
@@ -135,9 +107,6 @@ class RegisteredUserController extends Controller
             ],
         ]);
 
-        /*
-         * Jika ada avatar baru, simpan ke storage.
-         */
         if ($request->hasFile('avatar_url')) {
             $oldAvatar = session('register.avatar_url');
 
@@ -162,9 +131,6 @@ class RegisteredUserController extends Controller
         return redirect()->route('register', ['step' => 3]);
     }
 
-    /**
-     * Selesaikan proses registrasi (Step 3).
-     */
     public function step3(Request $request): RedirectResponse
     {
         $email = session('register.email');
@@ -173,13 +139,11 @@ class RegisteredUserController extends Controller
             return redirect()->route('register', ['step' => 1]);
         }
 
-        // 1 Validasi pilihan hobi (dibuat opsional/nullable)
         $validated = $request->validate([
             'hobbies' => ['nullable', 'array'],
             'hobbies.*' => ['string'],
         ]);
 
-        // 3. Buat User baru ke database
         $user = User::create([
             'name' => session('register.name'),
             'bio' => session('register.bio'),
@@ -193,8 +157,7 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
-
-        // 4. Auto Login & Redirect ke Dashboard
+        
         Auth::login($user);
         $request->session()->regenerate();
         $request->session()->forget('register');

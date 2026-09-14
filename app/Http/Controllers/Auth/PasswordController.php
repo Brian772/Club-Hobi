@@ -10,9 +10,6 @@ use Illuminate\Validation\ValidationException;
 
 class PasswordController extends Controller
 {
-    /**
-     * Mengubah password user yang sedang login.
-     */
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validateWithBag('updatePassword', [

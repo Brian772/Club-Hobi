@@ -11,7 +11,6 @@
     <h1 class="page-title">Settings</h1>
     <div class="settings-list">
         <div class="settings-group">
-          {{-- Profile Card --}}
           <a href="{{ route('settings.profile') }}" class="settings-card">
             <div class="card-left">
               <i class="fa-regular fa-user"></i>
@@ -20,7 +19,6 @@
             <i class="fa-solid fa-play arrow-icon"></i>
           </a>
 
-          {{-- Account Card --}}
           <a href="{{ route('settings.account') }}" class="settings-card">
             <div class="card-left">
               <i class="fa-solid fa-lock"></i>
@@ -30,7 +28,6 @@
           </a>
         </div>
 
-        {{-- Logout Card --}}
         <form method="POST" action="{{ route('logout') }}" id="logout-form" class="settings-group">
           @csrf
           <button type="button" class="settings-card logout-card" id="logout-btn">
@@ -43,7 +40,6 @@
     </div>
   </div>
 
-  {{-- Logout Modal --}}
   <div class="logout-modal-overlay" id="logout-modal">
 
     <div class="logout-modal">

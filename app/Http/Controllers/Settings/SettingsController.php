@@ -11,9 +11,6 @@ use Illuminate\Support\Str;
 
 class SettingsController extends Controller
 {
-    /**
-     * Halaman utama Settings
-     */
     public function settings()
     {
         $user = Auth::user();
@@ -22,17 +19,11 @@ class SettingsController extends Controller
         ]);
     }
 
-    /**
-     * Halaman Profile
-     */
     public function profilesettings()
     {
         $user = Auth::user();
-
-        // Club yang sedang diikuti user
         $user->load('clubs');
 
-        // Ambil satu club sebagai representasi untuk setiap kategori hobi.
         $clubs = Club::query()
             ->selectRaw('MIN(id) as id, category')
             ->whereNotNull('category')
@@ -44,9 +35,6 @@ class SettingsController extends Controller
         return view('settings.profilesettings', compact('user', 'clubs'));
     }
 
-    /**
-     * Update nama dan bio
-     */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -65,9 +53,7 @@ class SettingsController extends Controller
             'message' => 'Profile berhasil disimpan.'
         ]);
     }
-    /**
-     * Upload / ganti foto profile
-     */
+
     public function updateAvatar(Request $request)
     {
         $request->validate([
@@ -75,16 +61,12 @@ class SettingsController extends Controller
         ]);
 
         $user = Auth::user();
-
-        // Hapus foto lama jika ada
         if ($user->avatar_url) {
             Storage::disk('public')->delete($user->avatar_url);
         }
 
-        // Simpan foto baru ke storage/app/public/avatars
         $path = $request->file('avatar')->store('avatars', 'public');
 
-        // Simpan path ke database
         $user->avatar_url = $path;
         $user->save();
 
@@ -93,9 +75,6 @@ class SettingsController extends Controller
             ->with('success', 'Foto profile berhasil diperbarui.');
     }
 
-    /**
-     * Hapus foto profile
-     */
     public function deleteAvatar()
     {
         $user = Auth::user();
@@ -112,9 +91,6 @@ class SettingsController extends Controller
             ->with('success', 'Foto profile berhasil dihapus.');
     }
 
-    /**
-     * Tambah hobi / club
-     */
     public function addHobby(Request $request)
     {
         $request->validate([
@@ -123,7 +99,6 @@ class SettingsController extends Controller
 
         $user = Auth::user();
 
-        // Menambahkan club tanpa menghapus club yang sudah ada
         $user->clubs()->syncWithoutDetaching([
             $request->club_id => [
                 'id' => (string) Str::uuid(),
@@ -135,9 +110,6 @@ class SettingsController extends Controller
             ->with('success', 'Hobi berhasil ditambahkan.');
     }
 
-    /**
-     * Hapus hobi / club dari profile user
-     */
     public function deleteHobby($clubId)
     {
         $user = Auth::user();
@@ -150,9 +122,6 @@ class SettingsController extends Controller
         ]);
     }
 
-    /**
-     * Halaman Account
-     */
     public function accountsettings()
     {
         $user = Auth::user();

@@ -12,9 +12,6 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Tampilkan halaman login.
-     */
     public function create(): View|RedirectResponse
     {
         if (Auth::check()) {
@@ -24,9 +21,6 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-    /**
-     * Proses login.
-     */
     public function store(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
@@ -62,17 +56,13 @@ class AuthenticatedSessionController extends Controller
                 ->onlyInput('email');
         }
 
-        // 3. Login & Regenerate Session
         Auth::login($user);
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'))
             ->with('success', 'Berhasil masuk. Selamat datang kembali, ' . $user->name . '!');
     }
-
-    /**
-     * Logout.
-     */
+    
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();

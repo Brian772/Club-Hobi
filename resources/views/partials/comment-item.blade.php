@@ -1,17 +1,14 @@
 <div class="flex gap-2.5 py-1.5 text-xs group" id="comment-{{ $comment->id }}">
-    {{-- Avatar Komentator --}}
     <img src="{{ $comment->user->avatar_full_url ?? 'https://via.placeholder.com/32' }}" 
          alt="{{ $comment->user->name ?? 'User' }}" 
          class="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5">
 
     <div class="flex-1 min-w-0">
-        {{-- Username & Isi Komentar --}}
         <div class="leading-relaxed text-neutral-900 break-words">
             <span class="font-bold mr-1.5 hover:underline cursor-pointer">{{ $comment->user->name ?? 'User' }}</span>
             <span class="text-neutral-800 font-normal">{{ $comment->content }}</span>
         </div>
 
-        {{-- Meta & Action (Waktu & Tombol Balas ala Instagram) --}}
         <div class="flex items-center gap-3 mt-1 text-[11px] text-neutral-400 font-medium">
             <span>{{ $comment->created_at ? $comment->created_at->diffForHumans(null, true) : '1h' }}</span>
             
@@ -34,7 +31,6 @@
             @endif
         </div>
 
-        {{-- Rekursif Balasan Komentar (Nested Replies ala Instagram) --}}
         @if($comment->replies && $comment->replies->count() > 0)
             <div class="mt-2 pl-3 border-l-2 border-neutral-200 space-y-2">
                 @foreach($comment->replies as $reply)

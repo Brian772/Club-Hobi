@@ -207,16 +207,13 @@ class PostController extends Controller
     {
         $userId = Auth::id();
 
-        // Cek apakah user sudah pernah like postingan ini
         $existingLike = Like::where('post_id', $post->id)
             ->where('user_id', $userId)
             ->first();
 
         if ($existingLike) {
-            // Jika sudah ada, hapus (Unlike)
             $existingLike->delete();
         } else {
-            // Jika belum, buat like baru
             Like::create([
                 'post_id' => $post->id,
                 'user_id' => $userId,
@@ -266,5 +263,4 @@ class PostController extends Controller
         $comment->delete();
         return back()->with('success', 'Komentar berhasil dihapus.');
     }
-
 }

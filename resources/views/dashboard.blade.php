@@ -45,7 +45,6 @@
     @foreach ($feedPosts as $post)
       <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-sm">
 
-        {{-- Header Postingan Feed --}}
         <div class="flex items-center justify-between p-3.5 border-b border-neutral-100">
           <div class="flex items-center gap-3">
             @php
@@ -64,7 +63,6 @@
           <span class="text-[11px] text-neutral-400">{{ $post->created_at->diffForHumans() }}</span>
         </div>
 
-        {{-- Penanganan Media Feed --}}
         @php
           $mediaCollection = collect();
 
@@ -168,7 +166,6 @@
           </div>
         @endif
 
-        {{-- Judul & Content di Feed --}}
         <div class="p-3.5">
           <div class="flex items-center gap-4 text-neutral-600 text-xs font-medium mb-2.5">
             @php
@@ -197,7 +194,6 @@
         </div>
       </div>
 
-      {{-- MODAL KOMENTAR INSTAGRAM --}}
       <div id="commentModal-{{ $post->id }}"
         class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 lg:p-10"
         onclick="closeCommentModal('commentModal-{{ $post->id }}')">
@@ -209,7 +205,6 @@
           class="bg-white text-neutral-900 rounded-xl overflow-hidden w-full max-w-5xl h-[85vh] flex flex-col md:flex-row shadow-2xl border border-neutral-200"
           onclick="event.stopPropagation()">
 
-          {{-- Sisi Kiri: Media Postingan --}}
           <div
             class="w-full md:w-1/2 bg-black flex items-center justify-center relative overflow-hidden h-64 md:h-full border-b md:border-b-0 md:border-r border-neutral-200">
             @if($mediaList->isNotEmpty())
@@ -255,10 +250,8 @@
             @endif
           </div>
 
-          {{-- Sisi Kanan: Header Terpadu + Daftar Komentar --}}
           <div class="w-full md:w-1/2 flex flex-col h-full bg-white min-w-0">
 
-            {{-- HEADER MODAL TERPADU --}}
             <div class="px-4 py-3 border-b border-neutral-100 shrink-0 flex gap-3">
               <img src="{{ $postAuthor->avatar_full_url ?? 'https://via.placeholder.com/40' }}"
                 class="w-8 h-8 rounded-full object-cover border border-neutral-200 shrink-0" alt="Author">
@@ -286,7 +279,6 @@
               </div>
             </div>
 
-            {{-- Area Daftar Komentar --}}
             <div class="flex-1 p-4 overflow-y-auto space-y-4">
               <div class="space-y-4">
                 @forelse ($post->comments->whereNull('parent_id') as $comment)
@@ -401,7 +393,6 @@
       </div>
     @endforeach
 
-    {{-- MEDIA FULLSCREEN MODAL --}}
     <div id="mediaModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4"
       onclick="closeMediaModal()">
       <button onclick="closeMediaModal()"
@@ -636,7 +627,6 @@
         emptyState.remove();
       }
 
-      // Hapus langsung dari tampilan, tanpa menunggu response server.
       commentElement.remove();
       updateCommentsCount(postId, -deletedCount);
 
@@ -661,7 +651,6 @@
           }
         });
 
-        // Hapus empty state jika komentar lain muncul selama request berlangsung.
         const currentEmptyState = commentsContainer?.querySelector('[data-empty-comments="true"]');
         if (
           currentEmptyState &&
@@ -670,7 +659,6 @@
           currentEmptyState.remove();
         }
       } catch (error) {
-        // Jika server gagal, kembalikan komentar ke posisi semula.
         if (parent) {
           if (nextSibling && nextSibling.parentNode === parent) {
             parent.insertBefore(commentElement, nextSibling);

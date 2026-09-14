@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Storage;
 
 class DownloadController extends Controller
 {
-    /**
-     * Download file berdasarkan ID media.
-     */
     public function download($mediaId)
     {
         $media = PostMedia::findOrFail($mediaId);
@@ -24,9 +21,6 @@ class DownloadController extends Controller
         return $this->downloadFile($filePath);
     }
 
-    /**
-     * Download file berdasarkan ID postingan.
-     */
     public function downloadPostFile($postId)
     {
         $post = Post::findOrFail($postId);
@@ -42,16 +36,12 @@ class DownloadController extends Controller
         return $this->downloadFile($filePath);
     }
 
-    /**
-     * Normalisasi path dan cek file pada storage/app/public.
-     */
     private function resolveFilePath(?string $filePath): ?string
     {
         if (!$filePath) {
             return null;
         }
 
-        // File eksternal tidak diproses oleh Storage disk public.
         if (filter_var($filePath, FILTER_VALIDATE_URL)) {
             return null;
         }
@@ -59,7 +49,6 @@ class DownloadController extends Controller
         $filePath = str_replace('\\', '/', $filePath);
         $filePath = ltrim($filePath, '/');
 
-        // Support path: storage/xxx dan public/xxx.
         foreach (['storage/', 'public/'] as $prefix) {
             if (str_starts_with($filePath, $prefix)) {
                 $filePath = substr($filePath, strlen($prefix));
@@ -74,9 +63,6 @@ class DownloadController extends Controller
         return $filePath;
     }
 
-    /**
-     * Kirim file asli tanpa watermark dan tanpa ZIP.
-     */
     private function downloadFile(string $filePath)
     {
         $fullPath = Storage::disk('public')->path($filePath);

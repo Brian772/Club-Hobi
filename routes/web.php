@@ -19,7 +19,7 @@ Route::get('/', function () {
     return view('landing');
 })->name('home');
 
-// Kelompok Route yang memerlukan Autentikasi
+
 Route::middleware(['auth'])->group(function () {
 
     // Dashboard
