@@ -9,9 +9,7 @@ use Illuminate\View\View;
 
 class EmailVerificationPromptController extends Controller
 {
-    /**
-     * Menampilkan halaman pemberitahuan verifikasi email.
-     */
+
     public function __invoke(Request $request): View|RedirectResponse
     {
         return $request->user()->hasVerifiedEmail()

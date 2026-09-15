@@ -16,9 +16,6 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Menampilkan halaman registrasi berdasarkan step.
-     */
     public function create($step = 1): View|RedirectResponse
     {
         $step = (int) $step;
@@ -27,10 +24,6 @@ class RegisteredUserController extends Controller
             abort(404);
         }
 
-        /*
-         * User yang sudah login tidak perlu masuk
-         * ke halaman registrasi lagi.
-         */
         if (Auth::check()) {
             if ($step === 3 && empty(Auth::user()->interests)) {
                 // Jika user sudah login tapi belum memilih minat, arahkan ke step 3
@@ -39,32 +32,21 @@ class RegisteredUserController extends Controller
             }
         }
 
-        /*
-         * Step 2 membutuhkan email dan password
-         * dari step 1.
-         */
-        if (!Auth::check()) {
-            if ($step === 2 && !session()->has('register.email')) {
-                return redirect()->route('register', ['step' => 1]);
-            }
-
-            /*
-         * Step 3 membutuhkan data dari step 1 dan 2.
-         */
-            if (
-                $step === 3 &&
-                (
-                    !session()->has('register.email') ||
-                    !session()->has('register.name')
-                )
-            ) {
-                return redirect()->route('register', ['step' => 1]);
-            } 
+        if ($step === 2 && !session()->has('register.email')) {
+            return redirect()->route('register', ['step' => 1]);
         }
 
-        /*
-         * Kategori hobby hanya diambil pada step 3.
-         */
+        if (
+            $step === 3 &&
+            !Auth::check() &&
+            (
+                !session()->has('register.email') ||
+                !session()->has('register.name')
+            )
+        ) {
+            return redirect()->route('register', ['step' => 1]);
+        }
+
         $categories = $step === 3
             ? DB::table('hobbies')->orderBy('name')->get()
             : collect();
@@ -75,12 +57,6 @@ class RegisteredUserController extends Controller
         );
     }
 
-    /**
-     * STEP 1
-     *
-     * Simpan email dan password sementara
-     * ke session.
-     */
     public function step1(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -95,18 +71,13 @@ class RegisteredUserController extends Controller
         ]);
 
         session([
-            'register.email'    => $validated['email'],
+            'register.email' => $validated['email'],
             'register.password' => Hash::make($validated['password']),
         ]);
 
         return redirect()->route('register', ['step' => 2]);
     }
 
-    /**
-     * STEP 2
-     *
-     * Simpan nama, bio, dan avatar sementara.
-     */
     public function step2(Request $request): RedirectResponse
     {
         if (!session()->has('register.email')) {
@@ -132,9 +103,6 @@ class RegisteredUserController extends Controller
             ],
         ]);
 
-        /*
-         * Jika ada avatar baru, simpan ke storage.
-         */
         if ($request->hasFile('avatar_url')) {
             $oldAvatar = session('register.avatar_url');
 
@@ -159,9 +127,6 @@ class RegisteredUserController extends Controller
         return redirect()->route('register', ['step' => 3]);
     }
 
-    /**
-     * Selesaikan proses registrasi (Step 3).
-     */
     public function step3(Request $request): RedirectResponse
     {
 
@@ -187,12 +152,16 @@ class RegisteredUserController extends Controller
             return redirect()->route('register', ['step' => 1]);
         }
 
-        // 3. Buat User baru ke database
+        $validated = $request->validate([
+            'hobbies' => ['nullable', 'array'],
+            'hobbies.*' => ['string'],
+        ]);
+
         $user = User::create([
-            'name'          => session('register.name'),
-            'bio'           => session('register.bio'),
-            'avatar_url'    => session('register.avatar_url'),
-            'email'         => $email,
+            'name' => session('register.name'),
+            'bio' => session('register.bio'),
+            'avatar_url' => session('register.avatar_url'),
+            'email' => $email,
             'password_hash' => session('register.password'),
             'interests'     => $interestsString,
             'role_global'   => 'member',
@@ -201,8 +170,7 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
-
-        // 4. Auto Login & Redirect ke Dashboard
+        
         Auth::login($user);
         $request->session()->regenerate();
         $request->session()->forget('register');

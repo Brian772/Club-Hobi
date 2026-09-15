@@ -158,17 +158,26 @@
     margin: 0;
 }
 
+/* Container Media Instagram Style */
 .post-media-preview {
-    margin-top: 12px;
-    border-radius: 8px;
+    width: 100%;
+    aspect-ratio: 1/1;
+    background-color: #000000; /* Latar hitam agar video kontras */
     overflow: hidden;
-    max-height: 200px;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.post-image, .post-video {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
+/* Tag Video & Image */
+.post-image, 
+.post-video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover; /* Mengisi penuh frame seperti Instagram */
+    display: block !important;
 }
 
 /* Footer & Controls Card */

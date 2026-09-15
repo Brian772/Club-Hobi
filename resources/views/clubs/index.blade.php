@@ -31,7 +31,7 @@
               class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
                 {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}" loading="lazy"
                   class="w-full h-48 rounded-t-lg object-cover">
               @endif
 
@@ -80,7 +80,7 @@
               @if ($club->cover_url)
                 {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
                 <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
-                  class="w-full h-48 rounded-t-lg object-cover">
+                  class="w-full h-48 rounded-t-lg object-cover" loading="lazy">
               @endif
 
               <div class="p-4 flex flex-col flex-1">
@@ -112,7 +112,7 @@
                       @csrf
                       @method('DELETE')
                       <button
-                        class="w-max bg-accent-red/10 text-accent-red py-2 px-4 rounded-md text-center cursor-pointer"
+                        class="w-max bg-gray-200 text-ink hover:bg-gray-300 py-2 px-4 rounded-md text-center cursor-pointer"
                         type="submit">
                         Batal
                       </button>

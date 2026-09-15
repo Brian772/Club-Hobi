@@ -45,50 +45,51 @@
               <span class="photo-hint">JPG/PNG, max 2MB</span>
             </div>
           </div>
-
-          <a href="{{ route('posts.index') }}" class="content-control-button"><span
-              class="content-control-icon">▣</span>Kontrol Postingan</a>
         </div>
 
-        <div class="form-group-item">
-          <label class="input-label">Nama</label>
-
-          <input type="text" name="name"
-            class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
-            value="{{ old('name', $user->name) }}" maxlength="255" required>
-        </div>
-
-        <div class="form-group-item">
-          <label class="input-label">Bio</label>
-
-          <div class="settings-group bio-group">
-            <textarea name="bio" class="custom-textarea" rows="3" maxlength="150" id="bioInput">{{ old('bio', $user->bio) }}</textarea>
-          </div>
-
-          <div class="char-counter">
-            <span id="bioCounter">{{ strlen($user->bio ?? '') }}</span>/150
-          </div>
-        </div>
-
-        <div class="form-group-item">
-          <label class="input-label">Hobi</label>
-
-          <div class="hobby-list" id="hobbyList">
-            @forelse ($interests as $interest)
-              <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
-                onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
-            @empty
-              <span class="empty-hobby" id="emptyHobby">Belum ada hobi</span>
-            @endforelse
-
-            <button type="button" class="btn-add-hobby" onclick="openHobbyModal()">
-              <i class="fa-solid fa-plus"></i>
-              Tambah
-            </button>
-          </div>
-        </div>
-      </form>
+        <a href="{{ route('posts.index') }}" class="content-control-button"><span
+            class="content-control-icon">▣</span>Riwayat Postingan</a>
     </div>
+
+    <div class="form-group-item">
+      <label class="input-label">Nama</label>
+
+      <input type="text" name="name"
+        class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
+        value="{{ old('name', $user->name) }}" maxlength="255" required>
+    </div>
+
+    <div class="form-group-item">
+      <label class="input-label">Bio</label>
+
+      <div class="settings-group bio-group">
+        <textarea name="bio" class="custom-textarea" rows="3" maxlength="150" id="bioInput">{{ old('bio', $user->bio) }}</textarea>
+      </div>
+
+      <div class="char-counter">
+        <span id="bioCounter">{{ strlen($user->bio ?? '') }}</span>/150
+      </div>
+    </div>
+
+    <div class="form-group-item">
+      <label class="input-label">Hobi</label>
+
+      <div class="hobby-list" id="hobbyList">
+        @forelse ($interests as $interest)
+          <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
+            onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
+        @empty
+          <span class="empty-hobby" id="emptyHobby">Belum ada hobi</span>
+        @endforelse
+
+        <button type="button" class="btn-add-hobby" onclick="openHobbyModal()">
+          <i class="fa-solid fa-plus"></i>
+          Tambah
+        </button>
+      </div>
+    </div>
+    </form>
+  </div>
   </div>
 
   @if ($errors->any())
@@ -219,8 +220,6 @@
     </div>
   </div>
 
-  <!-- POPUP HAPUS HOBI -->
-  <!-- Modal Hapus Akun sekarang berada di halaman Account (accountsettings.blade.php) -->
   <div id="deleteHobbyModal" class="delete-hobby-popover">
     <div class="delete-hobby-content" onclick="confirmDeleteHobby(event)">
       <i class="fa-solid fa-trash"></i>
@@ -443,22 +442,13 @@
       const modalWidth = modal.offsetWidth;
       const modalHeight = modal.offsetHeight;
 
-      /*
-       * Posisi default: tepat di atas badge
-       */
       let left = rect.left + (rect.width / 2) - (modalWidth / 2);
       let top = rect.top - modalHeight - 8;
 
-      /*
-       * Jangan sampai keluar layar sebelah kiri
-       */
       if (left < 8) {
         left = 8;
       }
 
-      /*
-       * Jangan sampai keluar layar sebelah kanan
-       */
       if (left + modalWidth > window.innerWidth - 8) {
         left = window.innerWidth - modalWidth - 8;
       }

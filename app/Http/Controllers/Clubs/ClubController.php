@@ -63,14 +63,22 @@ class ClubController extends Controller
             ->where('user_id', Auth::user()->id)
             ->exists();
 
-        $clubsIds = $user->clubs->pluck('id');
+        $userClubIds = ClubMember::where('user_id', $user->id)->pluck('club_id');
 
         $posts = Post::query()
-            ->with(['user', 'club', 'author', 'comments.user'])
-            ->orderByDesc('is_announcement')
-            ->whereIn('club_id', $clubsIds)
+            ->where('club_id', $id)
+            ->with([
+                'author',
+                'club',
+                'media',
+                'comments' => function ($query) {
+                    $query->with('user')->oldest();
+                },
+                'likes'
+            ])
             ->withCount(['comments', 'likes'])
             ->latest()
+            ->take(20)
             ->get();
 
         $members = ClubMember::with('user')

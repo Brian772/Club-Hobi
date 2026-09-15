@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Club;
+use App\Models\Report;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,6 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'interests',
         'role_global',
         'status',
+        'reason',
         'suspended_until',
         'email_verified_at',
         'remember_token',
@@ -127,4 +129,20 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(ClubJoinRequest::class, 'user_id');
     }
+
+    public function reportsMade()
+    {
+        return $this->hasMany(Report::class, 'reporter_id');
+    }
+
+    public function reportedRecived()
+    {
+        return $this->hasMany(Report::class, 'reported_user_id');
+    }
+
+    public function appeal()
+    {
+        return $this->hasMany(Appeal::class, 'user_id');
+    }
+    
 }

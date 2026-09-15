@@ -15,6 +15,8 @@ class Club extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    protected $casts = ['created_at' => 'datetime', 'updated_at' => 'datetime'];
+
     protected $fillable = [
         'id',
         'name',

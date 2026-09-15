@@ -42,8 +42,9 @@ class ClubJoinRequestController extends Controller
 
     public function acceptRequest(Club $club, $id)
     {
-        $joinRequest = ClubJoinRequest::where('id', $id)
+        $joinRequest = ClubJoinRequest::where('user_id', $id)
             ->where('club_id', $club->id)
+            ->where('status', 'pending')
             ->firstOrFail();
 
         if ($joinRequest->status !== 'pending') {
@@ -73,9 +74,10 @@ class ClubJoinRequestController extends Controller
 
     public function rejectRequest(Club $club, $id)
     {
-        $joinRequest = ClubJoinRequest::where('id', $id)
+        $joinRequest = ClubJoinRequest::where('user_id', $id)
             ->where('club_id', $club->id)
-            ->firstOrFail();
+            ->where('status', 'pending')
+            ->first();
 
         if ($joinRequest->status !== 'pending') {
             return redirect()->back()->with('error', 'Request already processed or an error occurred while processing the request.');
@@ -94,6 +96,7 @@ class ClubJoinRequestController extends Controller
     {
         $pendingRequests = ClubJoinRequest::where('club_id', $club->id)
             ->where('user_id', Auth::id())
+            ->where('status', 'pending')
             ->firstOrFail();
 
         if ($pendingRequests->status !== 'pending') {

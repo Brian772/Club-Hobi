@@ -10,17 +10,11 @@ use Illuminate\View\View;
 
 class PasswordResetLinkController extends Controller
 {
-    /**
-     * Menampilkan halaman lupa password.
-     */
     public function create(): View
     {
         return view('auth.forgot-password');
     }
 
-    /**
-     * Mengirim link reset password.
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([

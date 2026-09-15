@@ -31,6 +31,13 @@ class ClubPolicy
             ->where('role', 'moderator')
             ->exists();
     }
+
+    public function isAdmin(User $user): bool
+    {
+        return User::where('user_id', $user->id)
+            ->where('role', 'admin')
+            ->exists();
+    }
     /**
      * Determine whether the user can view any models.
      */
@@ -65,7 +72,11 @@ class ClubPolicy
 
     public function ManageMembers(User $user, Club $club): bool
     {
+        if ($this->isAdmin($user)) {
+            return true;
+        }
         return $this->isOwnerOrModerator($user, $club);
+        
     }
 
     /**
