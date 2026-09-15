@@ -14,24 +14,30 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        $joinedClub = ClubMember::where('user_id', $user->id)->pluck('club_id')
-            ->take(3);
+        // 1. Ambil list ID klub yang diikuti user
+        $userClubIds = ClubMember::where('user_id', $user->id)->pluck('club_id');
 
-        $joinedClub = Club::whereIn('id', $joinedClub)->withCount('members')->get();
-
-        $clubsIds = $user->clubs->pluck('id');
-
+        // 2. Ambil data klub untuk widget/sidebar
+        $joinedClub = Club::whereIn('id', $userClubIds->take(3))->withCount('members')->get();
+        
         $feedPosts = Post::query()
-            ->with(['user', 'club', 'author', 'comments.user'])
-            ->orderByDesc('is_announcement')
-            ->whereIn('club_id', $clubsIds)
+            ->whereIn('club_id', $userClubIds)
+            ->with([
+                'author',
+                'club',
+                'media',
+                'comments' => function ($query) {
+                    $query->with('user')->oldest();
+                },
+                'likes'
+            ])
             ->withCount(['comments', 'likes'])
             ->latest()
+            ->take(20)
             ->get();
-        
+
         return view('dashboard', compact('user', 'joinedClub', 'feedPosts'));
     }
-
 
     public function profile(): View
     {

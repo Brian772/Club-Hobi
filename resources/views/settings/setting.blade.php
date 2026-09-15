@@ -11,66 +11,36 @@
 
     <h1 class="text-ink text-heading-2 font-bold mb-4">Settings</h1>
     <div class="settings-list">
-      <div class="settings-group">
-        {{-- Profile Card --}}
-        <a href="{{ route('settings.profile') }}" class="settings-card">
-          <div class="card-left">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-user-pen-icon lucide-user-pen">
-              <path d="M11.5 15H7a4 4 0 0 0-4 4v2" />
-              <path
-                d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z" />
-              <circle cx="10" cy="7" r="4" />
-            </svg>
-            <span>Profile</span>
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="lucide lucide-circle-arrow-right-icon lucide-circle-arrow-right">
-            <path d="m12 16 4-4-4-4" />
-          </svg>
-        </a>
+        <div class="settings-group">
+          <a href="{{ route('settings.profile') }}" class="settings-card">
+            <div class="card-left">
+              <i class="fa-regular fa-user"></i>
+              <span>Profile</span>
+            </div>
+            <i class="fa-solid fa-play arrow-icon"></i>
+          </a>
 
-        {{-- Account Card --}}
-        <a href="{{ route('settings.account') }}" class="settings-card">
-          <div class="card-left">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-lock-icon lucide-lock">
-              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            <span>Account</span>
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="lucide lucide-circle-arrow-right-icon lucide-circle-arrow-right">
-            <path d="m12 16 4-4-4-4" />
-          </svg>
-        </a>
-      </div>
+          <a href="{{ route('settings.account') }}" class="settings-card">
+            <div class="card-left">
+              <i class="fa-solid fa-lock"></i>
+              <span>Account</span>
+            </div>
+            <i class="fa-solid fa-play arrow-icon"></i>
+          </a>
+        </div>
 
-      {{-- Logout Card --}}
-      <form method="POST" action="{{ route('logout') }}" id="logout-form" class="settings-group">
-        @csrf
-        <button type="button" class="settings-card logout-card" id="logout-btn">
-          <div class="card-left">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-log-out-icon lucide-log-out">
-              <path d="m16 17 5-5-5-5" />
-              <path d="M21 12H9" />
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            </svg>
-            <span>Logout</span>
-          </div>
-        </button>
-      </form>
+        <form method="POST" action="{{ route('logout') }}" id="logout-form" class="settings-group">
+          @csrf
+          <button type="button" class="settings-card logout-card" id="logout-btn">
+            <div class="card-left">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Logout</span>
+            </div>
+          </button>
+        </form>
     </div>
   </div>
 
-  {{-- Logout Modal --}}
   <div class="logout-modal-overlay" id="logout-modal">
 
     <div class="logout-modal">

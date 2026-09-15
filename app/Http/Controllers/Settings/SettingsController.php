@@ -13,9 +13,6 @@ use Illuminate\Support\Str;
 
 class SettingsController extends Controller
 {
-    /**
-     * Halaman utama Settings
-     */
     public function settings()
     {
         $user = Auth::user();
@@ -24,19 +21,22 @@ class SettingsController extends Controller
         ]);
     }
 
-    /**
-     * Halaman Profile
-     */
     public function profilesettings()
     {
         $user = Auth::user();
-
-        // Club yang sedang diikuti user
         $user->load('clubs');
 
         $interestNames = $user->interests
         ? array_filter(explode(',', $user->interests))
         : [];
+        
+        $clubs = Club::query()
+            ->selectRaw('MIN(id) as id, category')
+            ->whereNotNull('category')
+            ->where('category', '<>', '')
+            ->groupBy('category')
+            ->orderBy('category')
+            ->get();
 
         $interests = Hobby::whereIn('name', $interestNames)->orderBy('name')->get();
 
@@ -45,9 +45,6 @@ class SettingsController extends Controller
         return view('settings.profilesettings', compact('user', 'hobbies', 'interests'));
     }
 
-    /**
-     * Update nama dan bio
-     */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -66,9 +63,7 @@ class SettingsController extends Controller
             'message' => 'Profile berhasil disimpan.'
         ]);
     }
-    /**
-     * Upload / ganti foto profile
-     */
+
     public function updateAvatar(Request $request)
     {
         $request->validate([
@@ -76,16 +71,12 @@ class SettingsController extends Controller
         ]);
 
         $user = Auth::user();
-
-        // Hapus foto lama jika ada
         if ($user->avatar_url) {
             Storage::disk('public')->delete($user->avatar_url);
         }
 
-        // Simpan foto baru ke storage/app/public/avatars
         $path = $request->file('avatar')->store('avatars', 'public');
 
-        // Simpan path ke database
         $user->avatar_url = $path;
         $user->save();
 
@@ -94,9 +85,6 @@ class SettingsController extends Controller
             ->with('success', 'Foto profile berhasil diperbarui.');
     }
 
-    /**
-     * Hapus foto profile
-     */
     public function deleteAvatar()
     {
         $user = Auth::user();
@@ -113,9 +101,6 @@ class SettingsController extends Controller
             ->with('success', 'Foto profile berhasil dihapus.');
     }
 
-    /**
-     * Tambah hobi / club
-     */
     public function addHobby(Request $request)
     {
         $validated = $request->validate([
@@ -142,6 +127,11 @@ class SettingsController extends Controller
                 'hobby' => $hobby,
             ]);
         }
+        $user->clubs()->syncWithoutDetaching([
+            $request->club_id => [
+                'id' => (string) Str::uuid(),
+            ],
+        ]);
 
         return redirect()
             ->route('settings.profile')
@@ -168,9 +158,6 @@ class SettingsController extends Controller
         return response()->json(['success' => true]);;
     }
 
-    /**
-     * Halaman Account
-     */
     public function accountsettings()
     {
         $user = Auth::user();

@@ -8,6 +8,7 @@ use App\Http\Controllers\Clubs\ClubController;
 use App\Http\Controllers\Clubs\ClubRequestController;
 use App\Http\Controllers\Clubs\ClubJoinRequestController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\AppealController;
 use App\Http\Controllers\BannedController;
@@ -24,24 +25,22 @@ Route::get('/', function () {
     return view('landing');
 })->name('home');
 
-// Halaman Dashboard (hanya bisa diakses jika sudah login)
-Route::middleware('auth')->group(function () {
 
     Route::get('/home', [DashboardController::class, 'index'])
         ->name('dashboard');
+Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboard/profile', [DashboardController::class, 'profile'])
-        ->name('profile.dashboard');
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/profile', [DashboardController::class, 'profile'])->name('profile.dashboard');
+    Route::get('/dashboard/posts', [DashboardController::class, 'posts'])->name('posts.dashboard');
+    Route::get('/dashboard/club-files', [DashboardController::class, 'clubFiles'])->name('club_files.dashboard');
 
-    Route::get('/dashboard/posts', [DashboardController::class, 'posts'])
-        ->name('posts.dashboard');
-
-    Route::get('/dashboard/club-files', [DashboardController::class, 'clubFiles'])
-        ->name('club_files.dashboard');
-
+    // Notifikasi
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 
+    // Pesan
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
@@ -70,6 +69,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 
+    // Postingan & Komentar
     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
     Route::get('/posts/trash', [PostController::class, 'trash'])->name('posts.trash');
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
@@ -111,16 +111,35 @@ Route::middleware('auth')->group(function () {
     Route::get('/banned', [BannedController::class, 'index'])->name('banned');
     Route::get('/appeals', [AppealController::class, 'index'])->name('appeal');
     Route::post('/appeals/store', [AppealController::class, 'store'])->name('appeal.store');
-});
+    // Download Media
+    Route::get('/media/{media}/download', [DownloadController::class, 'download'])->name('media.download');
+    Route::get('/posts/{post}/download', [DownloadController::class, 'downloadPostFile'])->name('posts.download');
 
-Route::middleware('auth')->group(function () {
+    // Pengaturan
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [SettingsController::class, 'settings'])->name('index');
+        Route::get('/profile', [SettingsController::class, 'profilesettings'])->name('profile');
+        Route::post('/profile/update', [SettingsController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/avatar', [SettingsController::class, 'updateAvatar'])->name('profile.avatar');
+        Route::delete('/profile/avatar', [SettingsController::class, 'deleteAvatar'])->name('profile.avatar.delete');
+        Route::post('/profile/hobby', [SettingsController::class, 'addHobby'])->name('profile.hobby.add');
+        Route::delete('/profile/hobby/{clubId}', [SettingsController::class, 'deleteHobby'])->name('profile.hobby.delete');
+        Route::get('/account', [SettingsController::class, 'accountsettings'])->name('account');
+    });
+
+    // Profil Pengguna
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.index');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Logout
+    Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    
+    Route::get('/api/user-charts', [App\Http\Controllers\ChartController::class, 'getDataUsers'])->name('api.chart');
+    
+    require __DIR__ . '/admin.php';
+    require __DIR__ . '/auth.php';
+    require __DIR__ . '/auth.php';
+    
 });
-
-Route::get('/api/user-charts', [App\Http\Controllers\ChartController::class, 'getDataUsers'])->name('api.chart');
-
-require __DIR__ . '/admin.php';
-require __DIR__ . '/auth.php';

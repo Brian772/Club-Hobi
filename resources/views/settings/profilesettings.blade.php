@@ -46,8 +46,17 @@
             </div>
           </div>
 
-          <a href="{{ route('posts.index') }}" class="content-control-button"><span
-              class="content-control-icon">▣</span>Kontrol Postingan</a>
+          <div class="profile-avatar-info">
+            <button type="button" class="btn-edit-photo" onclick="openAvatarModal()">
+              <i class="fa-solid fa-pencil"></i>
+              Edit foto
+            </button>
+
+            <span class="photo-hint">JPG/PNG, max 2MB</span>
+          </div>
+          </div>
+
+           <a href="{{ route('posts.index') }}" class="content-control-button"><span class="content-control-icon">▣</span>Riwayat Postingan</a>
         </div>
 
         <div class="form-group-item">
@@ -219,8 +228,6 @@
     </div>
   </div>
 
-  <!-- POPUP HAPUS HOBI -->
-  <!-- Modal Hapus Akun sekarang berada di halaman Account (accountsettings.blade.php) -->
   <div id="deleteHobbyModal" class="delete-hobby-popover">
     <div class="delete-hobby-content" onclick="confirmDeleteHobby(event)">
       <i class="fa-solid fa-trash"></i>
@@ -443,22 +450,13 @@
       const modalWidth = modal.offsetWidth;
       const modalHeight = modal.offsetHeight;
 
-      /*
-       * Posisi default: tepat di atas badge
-       */
       let left = rect.left + (rect.width / 2) - (modalWidth / 2);
       let top = rect.top - modalHeight - 8;
 
-      /*
-       * Jangan sampai keluar layar sebelah kiri
-       */
       if (left < 8) {
         left = 8;
       }
 
-      /*
-       * Jangan sampai keluar layar sebelah kanan
-       */
       if (left + modalWidth > window.innerWidth - 8) {
         left = window.innerWidth - modalWidth - 8;
       }

@@ -25,6 +25,9 @@
             @csrf
             @method('PUT')
 
+            {{-- Input tersembunyi untuk ID media lama yang dihapus --}}
+            <div id="deletedMediaInputs"></div>
+
             <div class="form-group">
                 <label for="club_id">Pilih Club</label>
                 <select name="club_id" id="club_id" required>
@@ -57,43 +60,70 @@
             </div>
 
             <div class="form-group">
-                <label>Ganti Media (Opsional)</label>
-                <div class="file-upload-wrapper relative overflow-hidden">
-                    {{-- Tampilkan Background Samar jika Post Memiliki Media --}}
-                    @if ($post->media_url)
-                        @php
-                            $extension = strtolower(pathinfo($post->media_url, PATHINFO_EXTENSION));
-                            $mediaUrl = asset('storage/' . $post->media_url);
-                        @endphp
+                <label>Lampiran Media</label>
+                
+                {{-- Input File Tersembunyi untuk Tambah File Baru --}}
+                <input type="file" name="media[]" id="mediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple class="hidden" onchange="addNewFiles(this.files)">
 
-                        <div
-                            class="absolute inset-0 z-0 opacity-20 pointer-events-none flex items-center justify-center overflow-hidden">
-                            @if (in_array($extension, ['jpg', 'jpeg', 'png', 'webp']))
-                                <img src="{{ $mediaUrl }}" class="w-full h-full object-cover filter blur-[1px]">
-                            @elseif (in_array($extension, ['mp4', 'mov']))
-                                <video src="{{ $mediaUrl }}" class="w-full h-full object-cover filter blur-[1px]" muted autoplay
-                                    loop></video>
+                {{-- Container Horizontal Blok Media --}}
+                <div class="flex items-center gap-3 overflow-x-auto pb-2" id="mediaContainer">
+
+                    {{-- Render Media Lama (Mendukung $post->media maupun $post->media_url) --}}
+                    @php
+                        $existingMediaList = collect();
+                        if (isset($post->media) && count($post->media) > 0) {
+                            $existingMediaList = $post->media;
+                        } elseif (!empty($post->media_url)) {
+                            $existingMediaList = collect([(object)['id' => 'single', 'file_path' => $post->media_url]]);
+                        }
+                    @endphp
+
+                    @foreach ($existingMediaList as $item)
+                        @php
+                            $filePath = $item->file_path ?? $item;
+                            $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                            $itemUrl = asset('storage/' . $filePath);
+                            $isImg = in_array($ext, ['jpg', 'jpeg', 'png', 'webp']);
+                            $isVideo = in_array($ext, ['mp4', 'mov', 'webm']);
+                            $isAudio = in_array($ext, ['mp3', 'wav', 'ogg']);
+                        @endphp
+                        <div class="existing-media-block relative w-24 h-24 shrink-0 rounded-xl overflow-hidden border border-neutral-200 bg-neutral-100 group" data-id="{{ $item->id ?? '' }}">
+                            
+                            {{-- Tombol Hapus (X) saat hover --}}
+                            <button type="button" onclick="removeExistingMedia('{{ $item->id ?? '' }}', this)" 
+                                class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer hover:bg-red-600">
+                                &times;
+                            </button>
+
+                            @if ($isImg)
+                                <img src="{{ $itemUrl }}" class="w-full h-full object-cover">
+                            @elseif ($isVideo)
+                                <div class="w-full h-full flex flex-col items-center justify-center p-1 text-center">
+                                    <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
+                                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">{{ basename($filePath) }}</span>
+                                </div>
+                            @elseif ($isAudio)
+                                <div class="w-full h-full flex flex-col items-center justify-center p-1 text-center">
+                                    <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
+                                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">{{ basename($filePath) }}</span>
+                                </div>
                             @else
-                                <div class="flex items-center gap-2 text-neutral-600 font-semibold">
-                                    <i class="fa-solid fa-file text-2xl"></i>
-                                    <span class="text-xs">{{ basename($post->media_url) }}</span>
+                                <div class="w-full h-full flex flex-col items-center justify-center p-1 text-center">
+                                    <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
+                                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">{{ basename($filePath) }}</span>
                                 </div>
                             @endif
                         </div>
-                    @endif
+                    @endforeach
 
-                    {{-- Input File dan Teks Penjelas (Berada di Atas Background) --}}
-                    <input type="file" name="media" id="media" accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
-                        class="z-20 relative">
-                    <div class="file-upload-design z-10 relative bg-white/60 p-2 rounded-md backdrop-blur-[2px]">
-                        <i class="fa-solid fa-cloud-arrow-up text-blue-600"></i>
-                        <span class="font-medium text-neutral-800">
-                            {{ $post->media_url ? 'Klik / seret file baru untuk mengganti lampiran' : 'Klik untuk mengunggah media' }}
-                        </span>
-                        @if($post->media_url)
-                        @endif
+                    {{-- Tombol Tambah File (+ di Paling Kanan) --}}
+                    <div onclick="document.getElementById('mediaInput').click()" 
+                        class="w-24 h-24 shrink-0 rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/50 flex flex-col items-center justify-center cursor-pointer transition-colors group">
+                        <i class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-blue-600 transition-colors"></i>
+                        <span class="text-[10px] font-medium text-neutral-500 group-hover:text-blue-600 mt-1">Tambah File</span>
                     </div>
                 </div>
+
                 @error('media')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -107,4 +137,101 @@
             </div>
         </form>
     </div>
+
+<script>
+    let newFiles = [];
+
+    function removeExistingMedia(id, btnElement) {
+        if (id && id !== 'single') {
+            const inputContainer = document.getElementById('deletedMediaInputs');
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'delete_media[]';
+            input.value = id;
+            inputContainer.appendChild(input);
+        }
+        btnElement.closest('.existing-media-block').remove();
+    }
+
+    function addNewFiles(files) {
+        if (!files || files.length === 0) return;
+
+        Array.from(files).forEach(file => {
+            newFiles.push(file);
+        });
+
+        renderNewPreviews();
+        updateNewFileInput();
+    }
+
+    function removeNewFile(index) {
+        newFiles.splice(index, 1);
+        renderNewPreviews();
+        updateNewFileInput();
+    }
+
+    function renderNewPreviews() {
+        const container = document.getElementById('mediaContainer');
+        
+        document.querySelectorAll('.new-media-block').forEach(el => el.remove());
+
+        const addButton = container.lastElementChild;
+
+        newFiles.forEach((file, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'new-media-block relative w-24 h-24 shrink-0 rounded-xl overflow-hidden border border-neutral-200 bg-neutral-100 group';
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer hover:bg-red-600';
+            deleteBtn.innerHTML = '&times;';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                removeNewFile(index);
+            };
+
+            const content = document.createElement('div');
+            content.className = 'w-full h-full flex flex-col items-center justify-center p-1 text-center';
+
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'w-full h-full object-cover';
+                wrapper.appendChild(img);
+            } else if (file.type.startsWith('video/')) {
+                content.innerHTML = `
+                    <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
+                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                `;
+                wrapper.appendChild(content);
+            } else if (file.type.startsWith('audio/')) {
+                content.innerHTML = `
+                    <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
+                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                `;
+                wrapper.appendChild(content);
+            } else {
+                content.innerHTML = `
+                    <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
+                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                `;
+                wrapper.appendChild(content);
+            }
+
+            wrapper.appendChild(deleteBtn);
+            container.insertBefore(wrapper, addButton);
+        });
+    }
+
+    function updateNewFileInput() {
+        const input = document.getElementById('mediaInput');
+        const dataTransfer = new DataTransfer();
+
+        newFiles.forEach(file => {
+            dataTransfer.items.add(file);
+        });
+
+        input.files = dataTransfer.files;
+    }
+</script>
 @endsection

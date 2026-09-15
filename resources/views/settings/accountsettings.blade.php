@@ -7,7 +7,6 @@
 @endsection
 
 @section('content')
-    {{-- Header Halaman --}}
     <div class="page-header">
         <a href="{{ route('settings.index') }}" class="back-link">
             <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -19,37 +18,30 @@
         </a>
     </div>
 
-    {{-- Group Email --}}
     <div class="form-group-item">
         <label class="input-label">Email</label>
         <div class="input-verified-wrapper">
             <input type="email" class="custom-input-box" value="{{ $user->email }}" readonly>
-            <div class="account-status-card">
-                <div class="account-status-icon">
-                    {{-- Pengecekan Real dari Database --}}
-                    @if ($user->hasVerifiedEmail())
-                        <span class="verified-badge">
-                            <i class="fa-solid fa-circle-check"></i>
-                            Verified
-                        </span>
-                    @else
-                        <span class="unverified-badge">
-                            <i class="fa-solid fa-circle-xmark"></i>
-                            Belum Diverifikasi
-                        </span>
-                    @endif
-                </div>
-            </div>
+
+            @if ($user->hasVerifiedEmail())
+                <span class="verified-badge">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Verified
+                </span>
+            @else
+                <span class="unverified-badge">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    Belum Diverifikasi
+                </span>
+            @endif
         </div>
     </div>
 
-    {{-- Group Password --}}
     <div class="form-group-item">
         <label class="input-label">Password</label>
         <input type="password" class="custom-input-box" value="********" readonly>
     </div>
 
-    {{-- Status Akun Card --}}
     <div class="account-status-card">
         <div class="account-status-icon">
             <i class="fa-solid fa-circle-check"></i>
@@ -60,7 +52,6 @@
         </div>
     </div>
 
-    {{-- Tombol Hapus --}}
     <div class="account-danger-actions">
         <button type="button" class="btn-delete-account" onclick="openDeleteAccountModal()">
             <i class="fa-solid fa-trash"></i>
@@ -69,7 +60,6 @@
     </div>
     </div>
 
-    {{-- Modal Hapus Akun --}}
     <div class="profile-modal-overlay" id="deleteAccountModal">
         <div class="profile-modal delete-account-modal">
             <div class="modal-header">
