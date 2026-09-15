@@ -45,59 +45,51 @@
               <span class="photo-hint">JPG/PNG, max 2MB</span>
             </div>
           </div>
-
-          <div class="profile-avatar-info">
-            <button type="button" class="btn-edit-photo" onclick="openAvatarModal()">
-              <i class="fa-solid fa-pencil"></i>
-              Edit foto
-            </button>
-
-            <span class="photo-hint">JPG/PNG, max 2MB</span>
-          </div>
-          </div>
-
-           <a href="{{ route('posts.index') }}" class="content-control-button"><span class="content-control-icon">▣</span>Riwayat Postingan</a>
         </div>
 
-        <div class="form-group-item">
-          <label class="input-label">Nama</label>
-
-          <input type="text" name="name"
-            class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
-            value="{{ old('name', $user->name) }}" maxlength="255" required>
-        </div>
-
-        <div class="form-group-item">
-          <label class="input-label">Bio</label>
-
-          <div class="settings-group bio-group">
-            <textarea name="bio" class="custom-textarea" rows="3" maxlength="150" id="bioInput">{{ old('bio', $user->bio) }}</textarea>
-          </div>
-
-          <div class="char-counter">
-            <span id="bioCounter">{{ strlen($user->bio ?? '') }}</span>/150
-          </div>
-        </div>
-
-        <div class="form-group-item">
-          <label class="input-label">Hobi</label>
-
-          <div class="hobby-list" id="hobbyList">
-            @forelse ($interests as $interest)
-              <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
-                onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
-            @empty
-              <span class="empty-hobby" id="emptyHobby">Belum ada hobi</span>
-            @endforelse
-
-            <button type="button" class="btn-add-hobby" onclick="openHobbyModal()">
-              <i class="fa-solid fa-plus"></i>
-              Tambah
-            </button>
-          </div>
-        </div>
-      </form>
+        <a href="{{ route('posts.index') }}" class="content-control-button"><span
+            class="content-control-icon">▣</span>Riwayat Postingan</a>
     </div>
+
+    <div class="form-group-item">
+      <label class="input-label">Nama</label>
+
+      <input type="text" name="name"
+        class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
+        value="{{ old('name', $user->name) }}" maxlength="255" required>
+    </div>
+
+    <div class="form-group-item">
+      <label class="input-label">Bio</label>
+
+      <div class="settings-group bio-group">
+        <textarea name="bio" class="custom-textarea" rows="3" maxlength="150" id="bioInput">{{ old('bio', $user->bio) }}</textarea>
+      </div>
+
+      <div class="char-counter">
+        <span id="bioCounter">{{ strlen($user->bio ?? '') }}</span>/150
+      </div>
+    </div>
+
+    <div class="form-group-item">
+      <label class="input-label">Hobi</label>
+
+      <div class="hobby-list" id="hobbyList">
+        @forelse ($interests as $interest)
+          <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
+            onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
+        @empty
+          <span class="empty-hobby" id="emptyHobby">Belum ada hobi</span>
+        @endforelse
+
+        <button type="button" class="btn-add-hobby" onclick="openHobbyModal()">
+          <i class="fa-solid fa-plus"></i>
+          Tambah
+        </button>
+      </div>
+    </div>
+    </form>
+  </div>
   </div>
 
   @if ($errors->any())

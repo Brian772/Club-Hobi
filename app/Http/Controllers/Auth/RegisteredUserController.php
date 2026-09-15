@@ -38,6 +38,7 @@ class RegisteredUserController extends Controller
 
         if (
             $step === 3 &&
+            !Auth::check() &&
             (
                 !session()->has('register.email') ||
                 !session()->has('register.name')
@@ -47,10 +48,7 @@ class RegisteredUserController extends Controller
         }
 
         $categories = $step === 3
-            ? DB::table('clubs')
-                ->whereNotNull('category')
-                ->distinct()
-                ->pluck('category')
+            ? DB::table('hobbies')->orderBy('name')->get()
             : collect();
 
         return view(
@@ -68,12 +66,6 @@ class RegisteredUserController extends Controller
                 'email:rfc,dns',
                 'max:255',
                 Rule::unique(User::class, 'email'), // <--- Menolak email duplikat sejak awal
-            ],
-            'username' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique(User::class, 'username'), // Memastikan username belum terdaftar di tabel users
             ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);

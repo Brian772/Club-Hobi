@@ -29,14 +29,6 @@ class SettingsController extends Controller
         $interestNames = $user->interests
         ? array_filter(explode(',', $user->interests))
         : [];
-        
-        $clubs = Club::query()
-            ->selectRaw('MIN(id) as id, category')
-            ->whereNotNull('category')
-            ->where('category', '<>', '')
-            ->groupBy('category')
-            ->orderBy('category')
-            ->get();
 
         $interests = Hobby::whereIn('name', $interestNames)->orderBy('name')->get();
 
@@ -127,11 +119,6 @@ class SettingsController extends Controller
                 'hobby' => $hobby,
             ]);
         }
-        $user->clubs()->syncWithoutDetaching([
-            $request->club_id => [
-                'id' => (string) Str::uuid(),
-            ],
-        ]);
 
         return redirect()
             ->route('settings.profile')

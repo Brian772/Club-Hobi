@@ -26,8 +26,9 @@ Route::get('/', function () {
 })->name('home');
 
 
-    Route::get('/home', [DashboardController::class, 'index'])
-        ->name('dashboard');
+Route::get('/home', [DashboardController::class, 'index'])
+    ->name('dashboard');
+
 Route::middleware(['auth'])->group(function () {
 
     // Dashboard
@@ -135,11 +136,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Logout
     Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
-    
+
     Route::get('/api/user-charts', [App\Http\Controllers\ChartController::class, 'getDataUsers'])->name('api.chart');
-    
-    require __DIR__ . '/admin.php';
-    require __DIR__ . '/auth.php';
-    require __DIR__ . '/auth.php';
-    
 });
+require __DIR__ . '/admin.php';
+require __DIR__ . '/auth.php';
