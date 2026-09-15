@@ -23,7 +23,7 @@ new class extends Component {
     {
         return [
             'reason' => 'required|string|max:255',
-            'suspendDate' => 'required|date',
+            'suspendDate' => $this->showSuspendModal ? 'required|date' : 'nullable',
         ];
     }
 

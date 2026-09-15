@@ -109,7 +109,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/banned', [BannedController::class, 'index'])->name('banned');
-    Route::get('/appeals', [AppealController::class, 'create'])->name('appeal.create');
+    Route::get('/appeals', [AppealController::class, 'index'])->name('appeal');
     Route::post('/appeals/store', [AppealController::class, 'store'])->name('appeal.store');
 });
 

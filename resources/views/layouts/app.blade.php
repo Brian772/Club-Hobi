@@ -20,8 +20,15 @@
 
 <body class="bg-canvas-soft">
 
+
   @if (Route::is('login') || Route::is('register') || Route::is('home'))
     <div class="flex flex-col p-6 lg:p-8 min-h-dvh justify-center">
+      <x-alert />
+
+      @yield('content')
+    </div>
+  @elseif (Route::is('appeal'))
+    <div class="flex flex-col p-6 lg:p-8 min-h-dvh items-center justify-center">
       <x-alert />
 
       @yield('content')
@@ -39,25 +46,15 @@
       <div x-show="sidebarOpen" x-cloak @keydown.escape.window="sidebarOpen = false"
         class="lg:hidden fixed inset-0 z-50">
         {{-- background gelap --}}
-        <div
-          x-transition:enter="transition-opacity ease-out duration-200"
-          x-transition:enter-start="opacity-0"
-          x-transition:enter-end="opacity-100"
-          x-transition:leave="transition-opacity ease-in duration-200"
-          x-transition:leave-start="opacity-100"
-          x-transition:leave-end="opacity-0"
-          @click="sidebarOpen = false"
+        <div x-transition:enter="transition-opacity ease-out duration-200" x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-in duration-200"
+          x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="sidebarOpen = false"
           class="fixed inset-0 z-40 bg-black/30"></div>
 
         {{-- panel --}}
-        <div
-          x-transition:enter="transition ease-out duration-200"
-          x-transition:enter-start="-translate-x-full"
-          x-transition:enter-end="translate-x-0"
-          x-transition:leave="transition ease-in duration-200"
-          x-transition:leave-start="translate-x-0"
-          x-transition:leave-end="-translate-x-full"
-          @click.stop
+        <div x-transition:enter="transition ease-out duration-200" x-transition:enter-start="-translate-x-full"
+          x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" @click.stop
           class="fixed top-16 left-5 h-max rounded-lg z-50 w-60 bg-canvas border border-hairline overflow-hidden">
           <div class="flex items-center justify-start p-4">
             <button type="button" @click="sidebarOpen = false" aria-label="Tutup Menu" class="hover:bg-canvas">

@@ -139,5 +139,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Report::class, 'reported_user_id');
     }
+
+    public function appeal()
+    {
+        return $this->hasMany(Appeal::class, 'user_id');
+    }
     
 }

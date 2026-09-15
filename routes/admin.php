@@ -24,4 +24,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
   Route::get('/moderation/{report}', [ModerationController::class, 'show'])->name('moderation.report.show');
   Route::patch('/moderation/{report}/resolved', [ModerationController::class, 'resolved'])->name('moderation.report.resolved');
   Route::patch('/moderation/{report}/ignored', [ModerationController::class, 'ignored'])->name('moderation.report.ignored');
+  Route::get('/moderation/appeals/{appeal}', [ModerationController::class, 'appeal'])->name('moderation.appeal.show');
+  Route::patch('/moderation/appeals/{appeal}/approve', [ModerationController::class, 'appealApprove'])->name('moderation.appeal.approve');
+  Route::patch('/moderation/appeals/{appeal}/reject', [ModerationController::class, 'appealReject'])->name('moderation.appeal.reject');
 });
