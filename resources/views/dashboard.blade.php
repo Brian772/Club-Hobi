@@ -171,13 +171,15 @@
             @php
               $isLiked = $post->likes->contains('user_id', auth()->id());
             @endphp
-            <form action="{{ route('posts.like', $post->id) }}" method="POST" class="inline">
-              @csrf
-              <button type="submit" class="flex items-center gap-1.5 hover:text-red-500 transition-colors">
-                <i class="{{ $isLiked ? 'fa-solid text-red-500' : 'fa-regular' }} fa-heart text-base"></i>
-                <span>{{ $post->likes_count ?? 0 }} Suka</span>
-              </button>
-            </form>
+            <button type="button" id="likeBtn-{{ $post->id }}"
+              onclick="toggleLike('{{ $post->id }}')"
+              data-liked="{{ $isLiked ? 'true' : 'false' }}"
+              data-like-url="{{ route('posts.like', $post->id) }}"
+              class="flex items-center gap-1.5 hover:text-red-500 transition-colors">
+              <i id="likeIcon-{{ $post->id }}"
+                class="{{ $isLiked ? 'fa-solid text-red-500' : 'fa-regular' }} fa-heart text-base"></i>
+              <span><span id="likeCount-{{ $post->id }}">{{ $post->likes_count ?? 0 }}</span> Suka</span>
+            </button>
 
             <button type="button" onclick="openCommentModal('commentModal-{{ $post->id }}')"
               class="flex items-center gap-1.5 hover:text-blue-600 transition-colors">
@@ -198,12 +200,12 @@
         class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 lg:p-10"
         onclick="closeCommentModal('commentModal-{{ $post->id }}')">
 
-        <button onclick="closeCommentModal('commentModal-{{ $post->id }}')"
-          class="absolute top-4 right-4 text-white hover:text-neutral-300 text-3xl font-bold z-50 cursor-pointer">&times;</button>
-
         <div
-          class="bg-white text-neutral-900 rounded-xl overflow-hidden w-full max-w-5xl h-[85vh] flex flex-col md:flex-row shadow-2xl border border-neutral-200"
+          class="relative bg-white text-neutral-900 rounded-xl overflow-hidden w-full max-w-5xl h-[85vh] flex flex-col md:flex-row shadow-2xl border border-neutral-200"
           onclick="event.stopPropagation()">
+
+          <button onclick="closeCommentModal('commentModal-{{ $post->id }}')"
+            class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-red-500 text-xl font-bold z-20 cursor-pointer">&times;</button>
 
           <div
             class="w-full md:w-1/2 bg-black flex items-center justify-center relative overflow-hidden h-64 md:h-full border-b md:border-b-0 md:border-r border-neutral-200">
@@ -353,15 +355,16 @@
 
             <div class="p-4 border-t border-neutral-100 bg-white shrink-0">
               <div class="flex items-center gap-4 text-neutral-700 mb-2">
-                <form action="{{ route('posts.like', $post->id) }}" method="POST" class="inline">
-                  @csrf
-                  <button type="submit" class="hover:text-red-500 transition-colors">
-                    <i class="{{ $isLiked ? 'fa-solid text-red-500' : 'fa-regular' }} fa-heart text-xl"></i>
-                  </button>
-                </form>
+                <button type="button" id="likeBtnModal-{{ $post->id }}" onclick="toggleLike('{{ $post->id }}')"
+                  class="hover:text-red-500 transition-colors">
+                  <i id="likeIconModal-{{ $post->id }}"
+                    class="{{ $isLiked ? 'fa-solid text-red-500' : 'fa-regular' }} fa-heart text-xl"></i>
+                </button>
                 <i class="fa-regular fa-comment text-xl text-neutral-700"></i>
               </div>
-              <p class="text-xs font-bold text-neutral-900 mb-1">{{ $post->likes_count ?? 0 }} Suka</p>
+              <p class="text-xs font-bold text-neutral-900 mb-1">
+                <span id="likeCountModal-{{ $post->id }}">{{ $post->likes_count ?? 0 }}</span> Suka
+              </p>
               <span
                 class="text-[10px] text-neutral-400 uppercase block mb-3 font-semibold">{{ $post->created_at->format('M d, Y') }}</span>
 
@@ -427,6 +430,61 @@
         modal.querySelectorAll('video, audio').forEach(media => media.pause());
         modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
+      }
+    }
+
+    const likeInFlight = {};
+
+    async function toggleLike(postId) {
+      if (likeInFlight[postId]) return; // cegah klik ganda / race condition
+      likeInFlight[postId] = true;
+
+      const feedBtn = document.getElementById(`likeBtn-${postId}`);
+      const feedIcon = document.getElementById(`likeIcon-${postId}`);
+      const feedCount = document.getElementById(`likeCount-${postId}`);
+      const modalIcon = document.getElementById(`likeIconModal-${postId}`);
+      const modalCount = document.getElementById(`likeCountModal-${postId}`);
+
+      const wasLiked = feedBtn?.dataset.liked === 'true';
+      const currentCount = parseInt(feedCount?.innerText) || 0;
+
+      const applyLikeState = (liked, count) => {
+        if (feedBtn) feedBtn.dataset.liked = liked ? 'true' : 'false';
+        [feedIcon, modalIcon].forEach(icon => {
+          if (!icon) return;
+          icon.classList.toggle('fa-solid', liked);
+          icon.classList.toggle('fa-regular', !liked);
+          icon.classList.toggle('text-red-500', liked);
+        });
+        if (feedCount) feedCount.innerText = count;
+        if (modalCount) modalCount.innerText = count;
+      };
+
+      applyLikeState(!wasLiked, currentCount + (wasLiked ? -1 : 1)); // optimistic UI
+
+      try {
+        const response = await fetch(feedBtn.dataset.likeUrl, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+
+        if (!response.ok) throw new Error('Gagal memproses like.');
+
+        const data = await response.json();
+        // Sesuaikan key ini dengan response controller like kamu yang sebenarnya,
+        // mis. { liked: true, likes_count: 12 }
+        applyLikeState(data.liked, data.likes_count);
+
+      } catch (error) {
+        console.error('Like Error:', error);
+        applyLikeState(wasLiked, currentCount); // rollback kalau request gagal
+        alert('Gagal memproses like, coba lagi.');
+      } finally {
+        likeInFlight[postId] = false;
       }
     }
 
@@ -505,7 +563,17 @@
       };
 
       if (commentData.parent_id) {
-        const parentCommentElement = modal.querySelector(`[data-comment-id="${commentData.parent_id}"]`);
+        let parentCommentElement = modal.querySelector(`[data-comment-id="${commentData.parent_id}"]`);
+
+        // Balasan bisa ditujukan ke balasan lain (nested reply), bukan cuma ke komentar utama.
+        // Elemen reply (class "flex gap-2.5") BUKAN wrapper thread, jadi kalau di-append
+        // langsung ke situ akan merusak layout flex-nya. Naikkan ke wrapper thread utama
+        // (class "space-y-2") supaya semua balasan tetap masuk ke .replies-container yang sama,
+        // persis seperti hasil flatten $getReplies() di server saat halaman di-refresh.
+        if (parentCommentElement && !parentCommentElement.classList.contains('space-y-2')) {
+          parentCommentElement = parentCommentElement.closest('[data-comment-id].space-y-2');
+        }
+
         if (parentCommentElement) {
           let repliesContainer = parentCommentElement.querySelector('.replies-container');
           if (!repliesContainer) {
