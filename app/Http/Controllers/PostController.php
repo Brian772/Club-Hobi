@@ -204,7 +204,7 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Postingan berhasil dikembalikan.');
     }
 
-    public function like(Post $post)
+    public function like(Request $request, Post $post)
     {
         $userId = Auth::id();
 
@@ -214,10 +214,19 @@ class PostController extends Controller
 
         if ($existingLike) {
             $existingLike->delete();
+            $liked = false;
         } else {
             Like::create([
                 'post_id' => $post->id,
                 'user_id' => $userId,
+            ]);
+            $liked = true;
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'liked' => $liked,
+                'likes_count' => $post->likes()->count(),
             ]);
         }
 

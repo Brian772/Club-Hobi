@@ -14,9 +14,6 @@
       </p>
     </div>
   @endif
-  <div class="flex flex-row ">
-
-  </div>
   <div class="post-page">
     <div class="post-page-header">
       <h1 class="header-title">
@@ -37,8 +34,7 @@
 
       <div class="form-group">
         <label for="club_id">Pilih Club</label>
-        <select name="club_id" id="club_id" required
-          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>
+        <select name="club_id" id="club_id" required>
           <option value="">-- Pilih Club --</option>
           @foreach ($clubs as $club)
             <option value="{{ $club->id }}" @selected(old('club_id') == $club->id)>
@@ -54,8 +50,7 @@
       <div class="form-group">
         <label for="title">Judul Postingan</label>
         <input type="text" name="title" id="title" value="{{ old('title') }}"
-          placeholder="Masukkan judul postingan" required
-          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>
+          placeholder="Masukkan judul postingan" required>
         @error('title')
           <span class="form-error">{{ $message }}</span>
         @enderror
@@ -63,8 +58,7 @@
 
       <div class="form-group">
         <label for="content">Isi Postingan</label>
-        <textarea name="content" id="content" placeholder="Apa yang ingin kamu bagikan?" required
-          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>{{ old('content') }}</textarea>
+        <textarea name="content" id="content" placeholder="Apa yang ingin kamu bagikan?" required>{{ old('content') }}</textarea>
         @error('content')
           <span class="form-error">{{ $message }}</span>
         @enderror
@@ -73,25 +67,16 @@
       <div class="form-group">
         <label>Lampiran Media</label>
 
-        {{-- Input File Tersembunyi --}}
-        <input type="file" name="media[]" id="mediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple
-          class="hidden" onchange="addFiles(this.files)"
-          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>
+        <input type="file" id="mediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple class="hidden"
+          onchange="addFiles(this.files)">
 
-        {{-- Container Blok Media (Horisontal) --}}
         <div class="flex items-center gap-3 overflow-x-auto pb-2" id="mediaContainer">
 
-          {{-- Dynamic List File Pratinjau akan masuk di sini via JS --}}
-
-          {{-- Tombol Tambah File (+ di paling kanan) --}}
-          <div @if (!in_array($user->status, ['suspended', 'banned'])) onclick="document.getElementById('mediaInput').click()" @endif
-            class="w-24 h-24 shrink-0 rounded-xl border-2 border-dashed
-              {{ in_array($user->status, ['suspended', 'banned'])
-                  ? 'border-neutral-200 bg-neutral-100 cursor-not-allowed opacity-50'
-                  : 'border-neutral-300 cursor-pointer hover:border-primary bg-neutral-50 hover:bg-blue-50/50' }}
-                  flex flex-col items-center justify-center transition-colors group">
-            <i class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-primary transition-colors"></i>
-            <span class="text-[10px] font-medium text-neutral-500 group-hover:text-primary mt-1">Tambah File</span>
+          <div onclick="document.getElementById('mediaInput').click()"
+            class="w-24 h-24 shrink-0 rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/50 flex flex-col items-center justify-center cursor-pointer transition-colors group">
+            <i class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-blue-600 transition-colors"></i>
+            <span class="text-[10px] font-medium text-neutral-500 group-hover:text-blue-600 mt-1">Tambah
+              File</span>
           </div>
         </div>
 
@@ -102,10 +87,7 @@
 
       <div class="form-actions">
         <a href="{{ route('posts.index') }}" class="cancel-button">Batal</a>
-        <button type="submit"
-          class="publish-button
-        {{ in_array($user->status, ['suspended', 'banned']) ? 'cursor-not-allowed' : 'cursor-pointer' }}"
-          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>
+        <button type="submit" class="publish-button">
           <i class="fa-solid fa-paper-plane"></i> Publikasikan Postingan
         </button>
       </div>
@@ -114,6 +96,36 @@
 
   <script>
     let selectedFiles = [];
+
+    // Bersihkan data saat halaman dimuat (termasuk dari cache browser / tombol back)
+    document.addEventListener("DOMContentLoaded", function() {
+      resetFormMedia();
+    });
+
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted || (performance.getEntriesByType("navigation")[0] && performance.getEntriesByType(
+          "navigation")[0].type === "back_forward")) {
+        resetFormMedia();
+      }
+    });
+
+    function resetFormMedia() {
+      selectedFiles = [];
+      const input = document.getElementById('mediaInput');
+      if (input) input.value = '';
+
+      // Reset seluruh form (termasuk teks judul, isi, dropdown club)
+      const form = document.getElementById('postForm');
+      if (form) form.reset();
+
+      renderPreviews();
+    }
+
+    // Bersihkan juga sesaat sebelum form dikirim (submit)
+    document.getElementById('postForm').addEventListener('submit', function() {
+      selectedFiles = [];
+      updateFileInput();
+    });
 
     function addFiles(files) {
       if (!files || files.length === 0) return;
@@ -124,6 +136,9 @@
 
       renderPreviews();
       updateFileInput();
+
+      // Reset nilai input file agar event 'onchange' tetap terpanggil jika memilih file yang sama
+      document.getElementById('mediaInput').value = '';
     }
 
     function removeFile(index) {
@@ -134,9 +149,12 @@
 
     function renderPreviews() {
       const container = document.getElementById('mediaContainer');
-      const addButton = container.lastElementChild;
+      if (!container) return;
 
-      // Bersihkan seluruh pratinjau sebelum render ulang
+      // Ambil elemen tombol tambah file (elemen yang memiliki class group)
+      const addButton = container.querySelector('.group') || container.lastElementChild;
+
+      // Bersihkan kontainer
       container.innerHTML = '';
 
       selectedFiles.forEach((file, index) => {
@@ -164,21 +182,21 @@
           wrapper.appendChild(img);
         } else if (file.type.startsWith('video/')) {
           content.innerHTML = `
-                    <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
-                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                `;
+                        <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
+                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                    `;
           wrapper.appendChild(content);
         } else if (file.type.startsWith('audio/')) {
           content.innerHTML = `
-                    <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
-                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                `;
+                        <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
+                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                    `;
           wrapper.appendChild(content);
         } else {
           content.innerHTML = `
-                    <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
-                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                `;
+                        <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
+                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                    `;
           wrapper.appendChild(content);
         }
 
@@ -186,11 +204,14 @@
         container.appendChild(wrapper);
       });
 
-      container.appendChild(addButton);
+      if (addButton) {
+        container.appendChild(addButton);
+      }
     }
 
     function updateFileInput() {
       const input = document.getElementById('mediaInput');
+      if (!input) return;
       const dataTransfer = new DataTransfer();
 
       selectedFiles.forEach(file => {
