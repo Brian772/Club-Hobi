@@ -67,12 +67,16 @@
       <div class="form-group">
         <label>Lampiran Media</label>
 
-        <input type="file" id="mediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple class="hidden"
+        {{-- Input file tersembunyi untuk FORM SUBMISSION (dikirim ke server) --}}
+        <input type="file" name="media[]" id="mediaInput" multiple class="hidden">
+
+        {{-- Input file tersembunyi untuk DIALOG PICKER (tidak punya name, tidak dikirim) --}}
+        <input type="file" id="mediaPicker" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple class="hidden"
           onchange="addFiles(this.files)">
 
         <div class="flex items-center gap-3 overflow-x-auto pb-2" id="mediaContainer">
 
-          <div onclick="document.getElementById('mediaInput').click()"
+          <div id="mediaAddButton" onclick="document.getElementById('mediaPicker').click()"
             class="w-24 h-24 shrink-0 rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/50 flex flex-col items-center justify-center cursor-pointer transition-colors group">
             <i class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-blue-600 transition-colors"></i>
             <span class="text-[10px] font-medium text-neutral-500 group-hover:text-blue-600 mt-1">Tambah
@@ -95,35 +99,29 @@
   </div>
 
   <script>
-    let selectedFiles = [];
+    var selectedFiles = [];
 
     // Bersihkan data saat halaman dimuat (termasuk dari cache browser / tombol back)
     document.addEventListener("DOMContentLoaded", function() {
       resetFormMedia();
     });
 
-    window.addEventListener('pageshow', function(event) {
-      if (event.persisted || (performance.getEntriesByType("navigation")[0] && performance.getEntriesByType(
-          "navigation")[0].type === "back_forward")) {
-        resetFormMedia();
-      }
+    window.addEventListener('pageshow', function() {
+      resetFormMedia();
     });
 
     function resetFormMedia() {
       selectedFiles = [];
+      const picker = document.getElementById('mediaPicker');
+      if (picker) picker.value = '';
       const input = document.getElementById('mediaInput');
       if (input) input.value = '';
-
-      // Reset seluruh form (termasuk teks judul, isi, dropdown club)
-      const form = document.getElementById('postForm');
-      if (form) form.reset();
 
       renderPreviews();
     }
 
-    // Bersihkan juga sesaat sebelum form dikirim (submit)
+    // Pastikan file tersinkron ke form input SEBELUM dikirim ke server
     document.getElementById('postForm').addEventListener('submit', function() {
-      selectedFiles = [];
       updateFileInput();
     });
 
@@ -137,8 +135,8 @@
       renderPreviews();
       updateFileInput();
 
-      // Reset nilai input file agar event 'onchange' tetap terpanggil jika memilih file yang sama
-      document.getElementById('mediaInput').value = '';
+      // Reset PICKER (bukan mediaInput) agar onchange terpanggil jika memilih file yang sama
+      document.getElementById('mediaPicker').value = '';
     }
 
     function removeFile(index) {
@@ -151,8 +149,7 @@
       const container = document.getElementById('mediaContainer');
       if (!container) return;
 
-      // Ambil elemen tombol tambah file (elemen yang memiliki class group)
-      const addButton = container.querySelector('.group') || container.lastElementChild;
+      const addButton = document.getElementById('mediaAddButton');
 
       // Bersihkan kontainer
       container.innerHTML = '';
@@ -182,21 +179,21 @@
           wrapper.appendChild(img);
         } else if (file.type.startsWith('video/')) {
           content.innerHTML = `
-                        <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
-                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                    `;
+                          <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
+                          <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                      `;
           wrapper.appendChild(content);
         } else if (file.type.startsWith('audio/')) {
           content.innerHTML = `
-                        <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
-                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                    `;
+                          <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
+                          <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                      `;
           wrapper.appendChild(content);
         } else {
           content.innerHTML = `
-                        <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
-                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                    `;
+                          <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
+                          <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                      `;
           wrapper.appendChild(content);
         }
 
@@ -220,5 +217,7 @@
 
       input.files = dataTransfer.files;
     }
+
+    resetFormMedia();
   </script>
 @endsection

@@ -44,7 +44,7 @@ class PostController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'media' => ['nullable', 'array'],
-            'media.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,mp3,wav,pdf,doc,docx', 'max:20480'],
+            'media.*' => ['file', 'mimes:jpg,jpeg,png,webp,gif,mp4,mov,mp3,wav,pdf,doc,docx', 'max:20480'],
         ]);
 
         $user = Auth::user();
