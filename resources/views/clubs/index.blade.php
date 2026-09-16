@@ -2,27 +2,83 @@
 
 @section('content')
   @if ($isEmpty)
-    <section class="flex flex-col">
+    <section class="flex flex-col h-full">
       <div class="flex flex-row justify-between items-center mb-4">
-        <h2 class="text-heading-1 font-bold mb-4">Tidak Ada Klub</h2>
-        <nav>
-          <a href="{{ route('clubs.request') }}" class="text-primary hover:text-primary-active">+ Ajukan Klub Baru</a>
-          <span class="text-ink-muted mx-2">|</span>
-          <a href="{{ route('clubs.request.list') }}" class="text-primary hover:text-primary-active">Pengajuan Saya</a>
-        </nav>
+        <h2 class="text-2xl font-bold">Belum Ada Klub</h2>
+        <div x-data="{ MenuOpen: false }" class="relative">
+          <button type="button" x-ref="button" @click="MenuOpen = true"
+            class="text-ink-muted text-body-mid rounded-full p-2 hover:bg-hairline">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-ellipsis-vertical">
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="12" cy="5" r="1" />
+              <circle cx="12" cy="19" r="1" />
+            </svg>
+          </button>
+
+          <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
+            <div x-anchor.noflip="$refs.button" x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+              x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0"
+              x-transition:leave-end="opacity-0 -translate-y-2" @click.outside="MenuOpen = false"
+              @click="MenuOpen = false"
+              class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
+              <a href="{{ route('clubs.request') }}"
+                class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                Ajukan Klub Baru
+              </a>
+              <a href="{{ route('clubs.request.list') }}"
+                class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                Pengajuan Saya
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-      <p class="text-caption text-ink-muted">Belum ada klub yang tersedia saat ini. Silakan cek kembali nanti.</p>
+      <div class="flex flex-col w-full h-full justify-center items-center">
+        <p class="text-title text-ink">Tidak ada klub saat ini</p>
+        <span class="text-ink-muted text-body-mid">Buat klub pertama anda</span>
+        <a href="{{ route('clubs.request') }}"
+          class="text-primary bg-primary/10 hover:text-white mt-8 hover:bg-primary rounded-md px-4 py-2">+ Ajukan Klub
+          Baru</a>
+      </div>
     </section>
   @else
     @if ($joinedClub->isNotEmpty())
       <section id="alreadyJoin" class="pb-4 border-b border-hairline">
         <div class="flex flex-row  justify-between items-center mb-4">
           <h2 class="text-title lg:text-heading-2 font-bold">Klub Anda</h2>
-          <nav>
-            <a href="{{ route('clubs.request') }}" class="text-primary hover:text-primary-active">+ Ajukan Klub Baru</a>
-            <span class="text-ink-muted mx-2">|</span>
-            <a href="{{ route('clubs.request.list') }}" class="text-primary hover:text-primary-active">Pengajuan Saya</a>
-          </nav>
+          <div x-data="{ MenuOpen: false }" class="relative">
+            <button type="button" x-ref="button" @click="MenuOpen = true"
+              class="text-ink-muted text-body-mid rounded-full p-2 hover:bg-hairline">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-ellipsis-vertical">
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="12" cy="5" r="1" />
+                <circle cx="12" cy="19" r="1" />
+              </svg>
+            </button>
+
+            <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
+              <div x-anchor.noflip="$refs.button" x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 -translate-y-2" @click.outside="MenuOpen = false"
+                @click="MenuOpen = false"
+                class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
+                <a href="{{ route('clubs.request') }}"
+                  class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                  Ajukan Klub Baru
+                </a>
+                <a href="{{ route('clubs.request.list') }}"
+                  class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                  Pengajuan Saya
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
           :class="notifOpen ? 'lg:grid-cols-1 xl:grid-cols-2' : 'lg:grid-cols-3 xl:grid-cols-3'">
@@ -31,8 +87,8 @@
               class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
                 {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}" loading="lazy"
-                  class="w-full h-48 rounded-t-lg object-cover">
+                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                  loading="lazy" class="w-full h-48 rounded-t-lg object-cover">
               @endif
 
               <div class="p-4 flex flex-col flex-1">

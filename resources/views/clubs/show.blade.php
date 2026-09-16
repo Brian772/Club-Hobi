@@ -123,15 +123,23 @@
 
       {{-- Postingan --}}
       <div x-show="tab === 'post'">
-        <header class="mb-4 flex flex-row items-center justify-between">
-          <h2 class="text-title lg:text-heading-2 text-ink font-bold">Postingan</h2>
-          <a href="{{ route('posts.create') }}"
-            class="hidden lg:inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
-            + Buat Postingan
-          </a>
-        </header>
+        @if ($club->posts->isNotEmpty())
+          <header class="mb-4 flex flex-row items-center justify-between">
+            <h2 class="text-title lg:text-heading-2 text-ink font-bold">Postingan</h2>
+            <a href="{{ route('posts.create') }}"
+              class="hidden lg:inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
+              + Buat Postingan
+            </a>
+          </header>
+        @endif
         @if ($club->posts->isEmpty())
-          <p class="text-caption text-ink-muted">Belum ada postingan di klub ini.</p>
+          <div class="flex flex-col items-center justify-center h-full">
+            <p class="text-body-mid mt-12 text-ink-muted">Belum ada postingan di klub ini.</p>
+            <a href="{{ route('posts.create') }}"
+              class="hidden lg:inline-flex items-center mt-8 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
+              + Buat Postingan
+            </a>
+          </div>
         @else
           <div class="max-w-100 space-y-4">
             @foreach ($posts as $post)

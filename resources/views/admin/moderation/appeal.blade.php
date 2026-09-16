@@ -69,9 +69,15 @@
           @endif
         </div>
         <div class="flex flex-col mt-4 gap-1 items-start">
-          <span class="text-caption text-ink-faint">Reason:</span>
+          <span class="text-caption text-ink-faint">Appeal reason:</span>
           <span class="text-caption text-ink">{{ $appeal->reason }}</span>
         </div>
+        @if ($appeal->status === 'rejected')
+        <div class="flex flex-col gap-1 items-start">
+          <span class="text-caption text-ink-faint">Reject reason:</span>
+          <span class="text-caption text-ink">{{ $appeal->admin_note }}</span>
+        </div>
+        @endif
       </div>
     </div>
 
@@ -80,19 +86,20 @@
         <button type="button" @click="OpenApproveModal = true"
           class="bg-primary/10 text-primary text-caption px-4 py-2 rounded-md hover:bg-primary hover:text-white">Approve
           Appeal</button>
-          <button type="button" @click="OpenRejectModal = true"
-            class="bg-accent-red/10 text-accent-red text-caption px-4 py-2 rounded-md hover:bg-accent-red hover:text-white">Reject
-            Appeal</button>
+        <button type="button" @click="OpenRejectModal = true"
+          class="bg-accent-red/10 text-accent-red text-caption px-4 py-2 rounded-md hover:bg-accent-red hover:text-white">Reject
+          Appeal</button>
       </div>
     @endif
 
-    <div x-show="OpenApproveModal" x-cloak  @keydown.escape.window="OpenApproveModal = false">
+    <div x-show="OpenApproveModal" x-cloak @keydown.escape.window="OpenApproveModal = false">
       <div class="fixed inset-0 bg-black/50 z-40" @click="OpenApproveModal = false"></div>
       <div class="fixed inset-0 z-50 flex items-center justify-center">
         <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
           <div class="flex flex-col gap-2 mb-4">
             <h2 class="text-lg font-semibold">Approve this appeal?</h2>
-            <p>Are you sure you want to approve this appeal? The appeal will be approved, and the user's account will be updated
+            <p>Are you sure you want to approve this appeal? The appeal will be approved, and the user's account will be
+              updated
               accordingly.</p>
           </div>
           <div class="flex justify-end gap-2">
@@ -111,7 +118,7 @@
       </div>
     </div>
 
-    <div x-show="OpenRejectModal" x-cloak  @keydown.escape.window="OpenRejectModal = false">
+    <div x-show="OpenRejectModal" x-cloak @keydown.escape.window="OpenRejectModal = false">
       <div class="fixed inset-0 bg-black/50 z-40" @click="OpenRejectModal = false"></div>
       <div class="fixed inset-0 z-50 flex items-center justify-center">
         <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -120,18 +127,23 @@
             <p>Are you sure you want to reject this appeal? The appeal will be denied, and the user's account will remain
               in its current state.</p>
           </div>
-          <div class="flex justify-end gap-2">
-            <form action="{{ route('admin.moderation.appeal.reject', $appeal->id) }}" method="POST">
-              @csrf
-              @method('PATCH')
+          <form action="{{ route('admin.moderation.appeal.reject', $appeal->id) }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <div class="flex flex-col gap-1 mb-4">
+              <label for="admin_note">Reason:</label>
+              <textarea name="admin_note" id="admin_note" rows="3" class="border border-hairline rounded-md"
+                placeholder="Write the reason for rejecting this appeal" required></textarea>
+            </div>
+            <div class="flex justify-end gap-2">
               <button type="submit"
                 class="px-4 py-2 bg-accent-red/10 text-accent-red hover:bg-accent-red hover:text-white rounded">
                 Reject Appeal
               </button>
-            </form>
-            <button type="button" @click="OpenRejectModal = false"
-              class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
-          </div>
+              <button type="button" @click="OpenRejectModal = false"
+                class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

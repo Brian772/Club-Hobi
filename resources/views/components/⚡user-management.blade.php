@@ -82,7 +82,7 @@ new class extends Component {
         $this->validate();
 
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'suspended', 'reason' => $this->reason, 'suspended_until' => $this->suspendDate]);
+            User::whereKey($this->selectUserId)->update(['status' => 'suspended', 'reason' => $this->reason, 'suspended_until' => $this->suspendDate,'status_updated_at' => now(),]);
         }
 
         $this->reset(['selectUserId', 'showSuspendModal']);
@@ -93,7 +93,7 @@ new class extends Component {
         $this->validate();
 
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'banned', 'reason' => $this->reason]);
+            User::whereKey($this->selectUserId)->update(['status' => 'banned', 'reason' => $this->reason, 'status_updated_at' => now(),]);
         }
 
         $this->reset(['selectUserId', 'showBanModal']);
@@ -102,7 +102,7 @@ new class extends Component {
     public function unbanUser(): void
     {
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'active', 'reason' => null]);
+            User::whereKey($this->selectUserId)->update(['status' => 'active', 'reason' => null, 'status_updated_at' => now(),]);
         }
 
         $this->reset(['selectUserId', 'showUnbanModal']);
@@ -111,7 +111,7 @@ new class extends Component {
     public function UnsuspendUser(): void
     {
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'active', 'suspended_until' => null, 'reason' => null]);
+            User::whereKey($this->selectUserId)->update(['status' => 'active', 'suspended_until' => null, 'reason' => null, 'status_updated_at' => now(),]);
         }
 
         $this->reset(['selectUserId', 'showUnsuspendModal']);

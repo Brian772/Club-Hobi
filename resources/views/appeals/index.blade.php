@@ -5,7 +5,7 @@
     <div
       class="w-caption md:w-md lg:w-2xl flex flex-col justify-start items-center border border-hairline rounded-lg bg-canvas p-6 lg:p-8">
       <header class="w-full flex flex-row justify-start items-center mb-2">
-        <a href="{{ url()->previous() }}"
+        <a href="{{ route('dashboard') }}"
           class="flex items-center text-caption text-ink-muted hover:text-ink transition-colors duration-200">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
             class="w-4 h-4 mr-1">
@@ -21,7 +21,7 @@
     <div
       class="w-caption md:w-md lg:w-2xl flex flex-col justify-start items-center border border-hairline rounded-lg bg-canvas p-6 lg:p-8">
       <header class="w-full flex flex-row justify-between items-center mb-2">
-        <a href="{{ url()->previous() }}"
+        <a href="{{ $user->status === 'banned' ? route('banned') : route('dashboard') }}"
           class="flex items-center text-caption text-ink-muted hover:text-ink transition-colors duration-200">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-4 h-4 mr-1">
@@ -37,6 +37,18 @@
       </header>
       <h1 class="text-lg font-semibold text-ink">Appeal Your Account</h1>
       <p class="text-caption text-ink-muted mt-1">Request a review of the action taken against your account.</p>
+
+      @if ($rejectedAppeal)
+        <div class="w-full p-2 rounded-md border border-hairline mt-4">
+          <h2 class="text-body-mid text-ink font-semibold">Previous Appeal</h2>
+          <p class="text-caption text-ink-muted mt-1">Your previous appeal was rejected. You may submit a new appeal if you
+            believe there are new grounds for review.</p>
+          <div class="mt-2 flexflex-col gap-1">
+            <p class="text-caption text-ink-muted">Rejected Reason:</p>
+            <p class="text-caption text-ink">{{ $rejectedAppeal->admin_note ?? 'No reason provided.' }}</p>
+          </div>
+        </div>
+      @endif
 
       <div class="w-full p-2 rounded-md border border-hairline mt-4">
         <h2 class="text-body-mid text-ink font-semibold">Account Info</h2>

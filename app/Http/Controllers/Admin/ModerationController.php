@@ -33,9 +33,17 @@ class ModerationController extends Controller
         return view("admin.moderation.show", compact('report'));
     }
 
-    public function appealReject(Appeal $appeal)
+    public function appealReject(Request $request, Appeal $appeal)
     {
-        $appeal->update(['status' => 'rejected']);
+        $validated = $request->validate([
+            'admin_note' => ['required', 'string'],
+        ]);
+
+        $appeal->update([
+            'status' => 'rejected',
+            'admin_note' => $validated['admin_note'],
+        ]);
+
         return redirect()->back()->with('success', 'Appeal has been rejected.');
     }
 
@@ -47,10 +55,11 @@ class ModerationController extends Controller
             $appeal->update(['status' => 'approved']);
             User::where('id', $appeal->user_id)->update([
                 'status' => 'active',
+                'status_updated_at' => now(),
                 'reason' => null,
                 'suspended_until' => null,
             ]);
-            
+
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -77,6 +86,7 @@ class ModerationController extends Controller
                 case 'suspend':
                     $report->reportedUser->update([
                         'status' => 'suspended',
+                        'status_updated_at' => now(),
                         'reason' => $reason,
                         'suspended_until' => now()->addDays(7),
                     ]);
@@ -85,6 +95,7 @@ class ModerationController extends Controller
                 case 'ban':
                     $report->reportedUser->update([
                         'status' => 'banned',
+                        'status_updated_at' => now(),
                         'reason' => $reason,
                     ]);
                     $report->update(['status' => 'resolved']);

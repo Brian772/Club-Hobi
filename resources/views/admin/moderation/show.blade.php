@@ -148,34 +148,34 @@
           </div>
         </form>
       </div>
+    </div>
 
-      {{-- Ignore Modal --}}
-      <div x-show="OpenIgnoreModal" x-cloak @keydown.escape.window="OpenIgnoreModal = false"
-        class="fixed flex items-center justify-center inset-0 z-50">
-        <div @click="OpenIgnoreModal = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+    {{-- Ignore Modal --}}
+    <div x-show="OpenIgnoreModal" x-cloak @keydown.escape.window="OpenIgnoreModal = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="OpenIgnoreModal = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Ignore Report
+          </h3>
+          <p class="text-body-mid mb-4 text-ink">Are you sure you want to ignore this report? This action cannot be undone.</p>
         </div>
-        <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
-          <div class="flex flex-col gap-2 mb-4">
-            <h3 class="text-title mb-4 text-ink">
-              Ignore Join Request?
-            </h3>
-            <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin mengabaikan permintaan bergabung ini? Tindakan
-              ini tidak dapat dibatalkan.</p>
-          </div>
-          <div class="flex flex-row justify-end gap-2">
-            <form action="{{ route('admin.moderation.report.ignored', $report->id) }}" method="POST">
-              @csrf
-              @method('PATCH')
-              <button type="submit"
-                class="px-4 py-2 text-accent-red cursor-pointer bg-accent-red/10 hover:bg-accent-red rounded hover:text-white">
-                Ignore
-              </button>
-            </form>
-            <button type="button"
-              class="bg-gray-200 border border-hairline cursor-pointer rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
-              @click="OpenIgnoreModal = false">Cancel</button>
-          </div>
+        <div class="flex flex-row justify-end gap-2">
+          <form action="{{ route('admin.moderation.report.ignored', $report->id) }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <button type="submit"
+              class="px-4 py-2 text-accent-red cursor-pointer bg-accent-red/10 hover:bg-accent-red rounded hover:text-white">
+              Ignore
+            </button>
+          </form>
+          <button type="button"
+            class="bg-gray-200 border border-hairline cursor-pointer rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            @click="OpenIgnoreModal = false">Cancel</button>
         </div>
       </div>
+    </div>
   </main>
 @endsection

@@ -34,6 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'interests',
         'role_global',
         'status',
+        'status_updated_at',
         'reason',
         'suspended_until',
         'email_verified_at',

@@ -11,11 +11,25 @@ class AppealController extends Controller
 {
     public function index()
     {
-        $alreadyAppealed = Appeal::where('user_id', AUTH::user()->id)->where('status', 'pending')->exists();
-        $appeal = Appeal::where('user_id', AUTH::user()->id)->where('status', 'pending')->first();
         $user = AUTH::user();
+        
+        $alreadyAppealed = Appeal::where('user_id', AUTH::user()->id)
+            ->where('status', 'pending')
+            ->where('created_at', '>=', $user->status_updated_at)
+            ->exists();
 
-        return view('appeals.index', compact('user', 'alreadyAppealed', 'appeal'));
+        $appeal = Appeal::where('user_id', AUTH::user()->id)
+            ->where('status', 'pending')->latest()
+            ->where('created_at', '>=', $user->status_updated_at)
+            ->first();
+
+        $rejectedAppeal = Appeal::where('user_id', AUTH::user()->id)
+            ->where('status', 'rejected')
+            ->where('created_at', '>=', $user->status_updated_at)
+            ->latest()
+            ->first();
+
+        return view('appeals.index', compact('user', 'alreadyAppealed', 'appeal', 'rejectedAppeal'));
     }
 
     public function store(Request $request)

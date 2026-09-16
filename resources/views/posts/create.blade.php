@@ -6,6 +6,17 @@
 @endsection
 
 @section('content')
+  @if ($user->status === 'suspended')
+    <div
+      class="w-full flex flex-col justify-start items-center border border-accent-yellow rounded-lg bg-accent-yellow/10 p-6 lg:p-8">
+      <h1 class="text-title text-yellow-900">Account Restricted</h1>
+      <p class="text-body-mid text-yellow-700 text-center mt-1">You cannot create posts while your account is suspended.
+      </p>
+    </div>
+  @endif
+  <div class="flex flex-row ">
+
+  </div>
   <div class="post-page">
     <div class="post-page-header">
       <h1 class="header-title">
@@ -26,7 +37,8 @@
 
       <div class="form-group">
         <label for="club_id">Pilih Club</label>
-        <select name="club_id" id="club_id" required>
+        <select name="club_id" id="club_id" required
+          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>
           <option value="">-- Pilih Club --</option>
           @foreach ($clubs as $club)
             <option value="{{ $club->id }}" @selected(old('club_id') == $club->id)>
@@ -42,7 +54,8 @@
       <div class="form-group">
         <label for="title">Judul Postingan</label>
         <input type="text" name="title" id="title" value="{{ old('title') }}"
-          placeholder="Masukkan judul postingan" required>
+          placeholder="Masukkan judul postingan" required
+          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>
         @error('title')
           <span class="form-error">{{ $message }}</span>
         @enderror
@@ -50,7 +63,8 @@
 
       <div class="form-group">
         <label for="content">Isi Postingan</label>
-        <textarea name="content" id="content" placeholder="Apa yang ingin kamu bagikan?" required>{{ old('content') }}</textarea>
+        <textarea name="content" id="content" placeholder="Apa yang ingin kamu bagikan?" required
+          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>{{ old('content') }}</textarea>
         @error('content')
           <span class="form-error">{{ $message }}</span>
         @enderror
@@ -61,7 +75,8 @@
 
         {{-- Input File Tersembunyi --}}
         <input type="file" name="media[]" id="mediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple
-          class="hidden" onchange="addFiles(this.files)">
+          class="hidden" onchange="addFiles(this.files)"
+          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>
 
         {{-- Container Blok Media (Horisontal) --}}
         <div class="flex items-center gap-3 overflow-x-auto pb-2" id="mediaContainer">
@@ -69,10 +84,14 @@
           {{-- Dynamic List File Pratinjau akan masuk di sini via JS --}}
 
           {{-- Tombol Tambah File (+ di paling kanan) --}}
-          <div onclick="document.getElementById('mediaInput').click()"
-            class="w-24 h-24 shrink-0 rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/50 flex flex-col items-center justify-center cursor-pointer transition-colors group">
-            <i class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-blue-600 transition-colors"></i>
-            <span class="text-[10px] font-medium text-neutral-500 group-hover:text-blue-600 mt-1">Tambah File</span>
+          <div @if (!in_array($user->status, ['suspended', 'banned'])) onclick="document.getElementById('mediaInput').click()" @endif
+            class="w-24 h-24 shrink-0 rounded-xl border-2 border-dashed
+              {{ in_array($user->status, ['suspended', 'banned'])
+                  ? 'border-neutral-200 bg-neutral-100 cursor-not-allowed opacity-50'
+                  : 'border-neutral-300 cursor-pointer hover:border-primary bg-neutral-50 hover:bg-blue-50/50' }}
+                  flex flex-col items-center justify-center transition-colors group">
+            <i class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-[10px] font-medium text-neutral-500 group-hover:text-primary mt-1">Tambah File</span>
           </div>
         </div>
 
@@ -83,7 +102,10 @@
 
       <div class="form-actions">
         <a href="{{ route('posts.index') }}" class="cancel-button">Batal</a>
-        <button type="submit" class="publish-button">
+        <button type="submit"
+          class="publish-button
+        {{ in_array($user->status, ['suspended', 'banned']) ? 'cursor-not-allowed' : 'cursor-pointer' }}"
+          {{ in_array($user->status, ['suspended', 'banned']) ? 'disabled' : '' }}>
           <i class="fa-solid fa-paper-plane"></i> Publikasikan Postingan
         </button>
       </div>

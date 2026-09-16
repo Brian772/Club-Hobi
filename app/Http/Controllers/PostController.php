@@ -33,7 +33,8 @@ class PostController extends Controller
     public function create()
     {
         $clubs = Auth::user()->clubs;
-        return view('posts.create', compact('clubs'));
+        $user = Auth::user();
+        return view('posts.create', compact('clubs', 'user'));
     }
 
     public function store(Request $request)

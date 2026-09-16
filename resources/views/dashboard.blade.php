@@ -5,24 +5,30 @@
 @endsection
 
 @section('content')
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between h-max
+  {{ $joinedClub->isNotEmpty() ? 'mb-6' : '' }}">
     <h1 class="text-title lg:text-heading-2 font-bold text-neutral-900">Halo, {{ auth()->user()->name }} </h1>
-    <a href="{{ route('posts.create') }}"
-      class="hidden lg:inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
-      + Buat Postingan
-    </a>
+    @if ($joinedClub->isNotEmpty())
+      <a href="{{ route('posts.create') }}"
+        class="hidden lg:inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
+        + Buat Postingan
+      </a>
+    @endif
   </div>
-
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-lg font-bold text-neutral-900">Club yang anda ikuti</h2>
-    <a href="{{ route('clubs.index') }}" class="text-sm text-neutral-500 hover:text-neutral-800">Lihat selengkapnya →</a>
-  </div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 border-b border-hairline pb-4">
+  @if ($joinedClub->isNotEmpty())
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-neutral-900">Club yang anda ikuti</h2>
+      <a href="{{ route('clubs.index') }}" class="text-sm text-neutral-500 hover:text-neutral-800">Lihat selengkapnya
+        →</a>
+    </div>
+  @endif
+  <div
+    class="
+  {{ $joinedClub->isNotEmpty() ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8  pb-4 border-b border-hairline' : 'h-full w-full items-center justify-center' }}">
     @if ($joinedClub->isNotEmpty())
       @foreach ($joinedClub as $club)
         <a href="{{ route('clubs.show', $club->id) }}"
           class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-          {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-32 object-cover"> --}}
           <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
             class="w-full h-48 object-cover">
           <div class="p-4">
@@ -34,10 +40,15 @@
         </a>
       @endforeach
     @else
-      <section id="alreadyJoin" class="flex w-full">
-        <div class="mb-12 flex justify-center w-full">
-          <p class="text-caption text-ink-muted">Anda belum bergabung ke klub manapun.</p>
+      <section id="alreadyJoin" class="flex flex-col items-center justify-center w-full h-full">
+        <div class="flex justify-center items-center w-full flex-col gap-1">
+          <h2 class="text-ink text-title">Belum Ada Aktivitas</h2>
+          <p class="text-caption text-ink-muted">Bergabung dengan klub untuk melihat postingan dan aktivitas terbaru
+            di sini.</p>
         </div>
+        <a href="{{ route('clubs.index') }}"
+          class="text-primary mt-8 bg-primary/10 w-max px-4 py-2 rounded-md hover:text-white hover:bg-primary">Jelajahi
+          Club</a>
       </section>
     @endif
   </div>

@@ -13,7 +13,13 @@
     <h2 class="text-title lg:text-heading-2 text-ink-secondary">Pengajuan Klub Saya</h2>
   </header>
   @if ($clubRequests->isEmpty())
-    <p class="text-caption text-ink-muted">Anda belum mengajukan klub apa pun.</p>
+    <div class="flex flex-col h-full justify-center items-center">
+      <h2 class="text-title text-ink">Tidak ada pengajuan</h2>
+      <p class="text-body-mid text-ink-muted">Anda belum mengajukan klub apa pun.</p>
+      <a href="{{ route('clubs.request') }}"
+        class="text-primary bg-primary/10 hover:text-white mt-8 hover:bg-primary rounded-md px-4 py-2">+ Ajukan Klub
+        Baru</a>
+    </div>
   @else
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start 2xl:grid-cols-3">
       @foreach ($clubRequests as $request)
