@@ -41,8 +41,8 @@
 
       <div class="form-group">
         <label for="title">Judul Postingan</label>
-        <input type="text" name="title" id="title" value="{{ old('title') }}"
-          placeholder="Masukkan judul postingan" required>
+        <input type="text" name="title" id="title" value="{{ old('title') }}" placeholder="Masukkan judul postingan"
+          required>
         @error('title')
           <span class="form-error">{{ $message }}</span>
         @enderror
@@ -50,7 +50,8 @@
 
       <div class="form-group">
         <label for="content">Isi Postingan</label>
-        <textarea name="content" id="content" placeholder="Apa yang ingin kamu bagikan?" required>{{ old('content') }}</textarea>
+        <textarea name="content" id="content" placeholder="Apa yang ingin kamu bagikan?"
+          required>{{ old('content') }}</textarea>
         @error('content')
           <span class="form-error">{{ $message }}</span>
         @enderror
@@ -59,16 +60,12 @@
       <div class="form-group">
         <label>Lampiran Media</label>
 
-        {{-- Input File Tersembunyi --}}
         <input type="file" name="media[]" id="mediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple
           class="hidden" onchange="addFiles(this.files)">
 
-        {{-- Container Blok Media (Horisontal) --}}
+
         <div class="flex items-center gap-3 overflow-x-auto pb-2" id="mediaContainer">
 
-          {{-- Dynamic List File Pratinjau akan masuk di sini via JS --}}
-
-          {{-- Tombol Tambah File (+ di paling kanan) --}}
           <div onclick="document.getElementById('mediaInput').click()"
             class="w-24 h-24 shrink-0 rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/50 flex flex-col items-center justify-center cursor-pointer transition-colors group">
             <i class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-blue-600 transition-colors"></i>
@@ -95,6 +92,12 @@
 
     function addFiles(files) {
       if (!files || files.length === 0) return;
+      
+      const maxFiles = 5;
+      if (selectedFiles.length + files.length > maxFiles) {
+        alert(`Maksimal file yang dapat diunggah adalah ${maxFiles} file.`);
+        return;
+      }
 
       Array.from(files).forEach(file => {
         selectedFiles.push(file);
@@ -103,7 +106,6 @@
       renderPreviews();
       updateFileInput();
     }
-
     function removeFile(index) {
       selectedFiles.splice(index, 1);
       renderPreviews();
@@ -142,21 +144,21 @@
           wrapper.appendChild(img);
         } else if (file.type.startsWith('video/')) {
           content.innerHTML = `
-                    <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
-                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                `;
+                      <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
+                      <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                  `;
           wrapper.appendChild(content);
         } else if (file.type.startsWith('audio/')) {
           content.innerHTML = `
-                    <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
-                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                `;
+                      <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
+                      <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                  `;
           wrapper.appendChild(content);
         } else {
           content.innerHTML = `
-                    <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
-                    <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                `;
+                      <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
+                      <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                  `;
           wrapper.appendChild(content);
         }
 

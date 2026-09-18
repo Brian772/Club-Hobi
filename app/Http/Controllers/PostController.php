@@ -114,7 +114,7 @@ class PostController extends Controller
             'club_id' => ['required'],
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
-            'media' => ['nullable', 'array'],
+            'media' => ['nullable', 'array', 'max:5'],
             'media.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,mp3,wav,pdf,doc,docx', 'max:20480'],
             'delete_media' => ['nullable', 'array'],
             'delete_media.*' => ['exists:post_media,id'],

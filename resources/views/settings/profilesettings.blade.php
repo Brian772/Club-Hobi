@@ -45,51 +45,52 @@
               <span class="photo-hint">JPG/PNG, max 2MB</span>
             </div>
           </div>
+
+          <a href="{{ route('posts.index') }}" class="content-control-button">
+            <span class="content-control-icon">▣</span>Riwayat Postingan
+          </a>
+        </div>
+        
+        <div class="form-group-item">
+          <label class="input-label">Nama</label>
+
+          <input type="text" name="name"
+            class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
+            value="{{ old('name', $user->name) }}" maxlength="255" required>
         </div>
 
-        <a href="{{ route('posts.index') }}" class="content-control-button"><span
-            class="content-control-icon">▣</span>Riwayat Postingan</a>
+        <div class="form-group-item">
+          <label class="input-label">Bio</label>
+
+          <div class="settings-group bio-group">
+            <textarea name="bio" class="custom-textarea" rows="3" maxlength="150"
+              id="bioInput">{{ old('bio', $user->bio) }}</textarea>
+          </div>
+
+          <div class="char-counter">
+            <span id="bioCounter">{{ strlen($user->bio ?? '') }}</span>/150
+          </div>
+        </div>
+
+        <div class="form-group-item">
+          <label class="input-label">Hobi</label>
+
+          <div class="hobby-list" id="hobbyList">
+            @forelse ($interests as $interest)
+              <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
+                onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
+            @empty
+              <span class="empty-hobby" id="emptyHobby">Belum ada hobi</span>
+            @endforelse
+
+            <button type="button" class="btn-add-hobby" onclick="openHobbyModal()">
+              <i class="fa-solid fa-plus"></i>
+              Tambah
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
-
-    <div class="form-group-item">
-      <label class="input-label">Nama</label>
-
-      <input type="text" name="name"
-        class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
-        value="{{ old('name', $user->name) }}" maxlength="255" required>
-    </div>
-
-    <div class="form-group-item">
-      <label class="input-label">Bio</label>
-
-      <div class="settings-group bio-group">
-        <textarea name="bio" class="custom-textarea" rows="3" maxlength="150" id="bioInput">{{ old('bio', $user->bio) }}</textarea>
-      </div>
-
-      <div class="char-counter">
-        <span id="bioCounter">{{ strlen($user->bio ?? '') }}</span>/150
-      </div>
-    </div>
-
-    <div class="form-group-item">
-      <label class="input-label">Hobi</label>
-
-      <div class="hobby-list" id="hobbyList">
-        @forelse ($interests as $interest)
-          <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
-            onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
-        @empty
-          <span class="empty-hobby" id="emptyHobby">Belum ada hobi</span>
-        @endforelse
-
-        <button type="button" class="btn-add-hobby" onclick="openHobbyModal()">
-          <i class="fa-solid fa-plus"></i>
-          Tambah
-        </button>
-      </div>
-    </div>
-    </form>
-  </div>
   </div>
 
   @if ($errors->any())
@@ -147,8 +148,7 @@
 
             @csrf
             @method('DELETE')
-            <button type="submit" class="btn-modal-danger"
-              onclick="return confirm('Yakin ingin menghapus foto profil?')">
+            <button type="submit" class="btn-modal-danger" onclick="return confirm('Yakin ingin menghapus foto profil?')">
               <i class="fa-solid fa-trash"></i>
               Hapus Foto
             </button>
@@ -185,8 +185,7 @@
               @endphp
 
               <button type="button" class="hobby-card {{ $alreadyJoined ? 'disabled' : '' }}"
-                data-hobby-name="{{ $hobby->name }}" data-hobby-id="{{ $hobby->id }}"
-                {{ $alreadyJoined ? 'disabled' : '' }}onclick="selectHobby(this)">
+                data-hobby-name="{{ $hobby->name }}" data-hobby-id="{{ $hobby->id }}" {{ $alreadyJoined ? 'disabled' : '' }}onclick="selectHobby(this)">
 
                 <div class="hobby-card-content">
                   <strong class="hobby-title">{{ $hobby->name }}</strong>
@@ -261,7 +260,7 @@
         document.getElementById('addHobbyButton');
       document
         .querySelectorAll('.hobby-card.selected')
-        .forEach(function(card) {
+        .forEach(function (card) {
           card.classList.remove('selected');
         });
       element.classList.add('selected');
@@ -284,7 +283,7 @@
 
       document
         .querySelectorAll('.hobby-card.selected')
-        .forEach(function(card) {
+        .forEach(function (card) {
           card.classList.remove('selected');
         });
 
@@ -315,7 +314,7 @@
         return;
       }
       toast.classList.add('hide');
-      setTimeout(function() {
+      setTimeout(function () {
         if (toast) {
           toast.remove();
         }
@@ -324,7 +323,7 @@
 
     document.addEventListener(
       'click',
-      function(event) {
+      function (event) {
         const avatarModal =
           document.getElementById('avatarModal');
         const hobbyModal =
@@ -349,7 +348,7 @@
     function autoSaveProfile() {
       clearTimeout(saveTimer);
 
-      saveTimer = setTimeout(function() {
+      saveTimer = setTimeout(function () {
 
         const name = nameInput.value.trim();
         const bio = bioInput.value;
@@ -359,17 +358,17 @@
         }
 
         fetch("{{ route('settings.profile.update') }}", {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-              name: name,
-              bio: bio
-            })
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({
+            name: name,
+            bio: bio
           })
+        })
           .then(response => response.json())
           .then(data => {
             if (data.success) {
@@ -389,7 +388,7 @@
     ========================= */
 
     if (nameInput) {
-      nameInput.addEventListener('input', function() {
+      nameInput.addEventListener('input', function () {
         autoSaveProfile();
       });
     }
@@ -400,7 +399,7 @@
     ========================= */
 
     if (bioInput) {
-      bioInput.addEventListener('input', function() {
+      bioInput.addEventListener('input', function () {
 
         if (bioCounter) {
           bioCounter.textContent = this.value.length;
@@ -489,12 +488,12 @@
       const hobbyId = selectedHobbyId;
 
       fetch(`/settings/profile/hobby/${hobbyId}`, {
-          method: 'DELETE',
-          headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          }
-        })
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+      })
         .then(response => response.json())
         .then(data => {
 
@@ -537,7 +536,7 @@
         });
     }
 
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
 
       const deleteHobbyModal =
         document.getElementById('deleteHobbyModal');
@@ -559,19 +558,19 @@
 
     document.addEventListener(
       'DOMContentLoaded',
-      function() {
+      function () {
         const successToast =
           document.getElementById('successToast');
         const errorToast =
           document.getElementById('errorToast');
         if (successToast) {
-          setTimeout(function() {
+          setTimeout(function () {
             closeToast('successToast');
           }, 3500);
         }
 
         if (errorToast) {
-          setTimeout(function() {
+          setTimeout(function () {
             closeToast('errorToast');
           }, 5000);
         }
