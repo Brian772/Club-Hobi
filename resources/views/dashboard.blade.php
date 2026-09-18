@@ -190,9 +190,9 @@
           </div>
 
           @if ($post->title)
-            <h3 class="text-xs font-bold text-neutral-900 mb-1">{{ $post->title }}</h3>
+            <h3 class="text-sm font-bold text-neutral-900 mb-1">{{ $post->title }}</h3>
           @endif
-          <p class="text-neutral-800 text-xs leading-relaxed">{{ $post->content }}</p>
+          <p class="text-neutral-800 text-sm leading-relaxed">{{ $post->content }}</p>
         </div>
       </div>
 
