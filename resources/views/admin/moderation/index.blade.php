@@ -2,7 +2,7 @@
 
 @section('content')
   <header class="mb-4 flex flex-col gap-1">
-    <h1 class="text-2xl font-bold text-ink">Moderation</h1>
+    <h1 class="text-2xl font-semibold text-ink">Moderation</h1>
     <p class="text-body-mid text-ink-muted">Review reports and manage reported content and users.</p>
   </header>
 

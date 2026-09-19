@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminClubController;
 use App\Http\Controllers\Admin\AdminOverviewController;
+use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\AdminUserManagementController;
 use App\Http\Controllers\Admin\AdminClubManagementController;
 use App\Http\Controllers\Admin\AdminClubRequestController;
@@ -27,4 +27,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
   Route::get('/moderation/appeals/{appeal}', [ModerationController::class, 'appeal'])->name('moderation.appeal.show');
   Route::patch('/moderation/appeals/{appeal}/approve', [ModerationController::class, 'appealApprove'])->name('moderation.appeal.approve');
   Route::patch('/moderation/appeals/{appeal}/reject', [ModerationController::class, 'appealReject'])->name('moderation.appeal.reject');
+  Route::get('/audit-logs', [AuditController::class, 'index'])->name('audit-logs');
+  Route::get('/audit-logs/{auditLog}', [AuditController::class, 'show'])->name('audit-logs.show');
 });

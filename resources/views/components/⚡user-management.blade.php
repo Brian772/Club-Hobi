@@ -2,6 +2,7 @@
 
 use Livewire\Component;
 use App\Models\User;
+use App\Models\AuditLog;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 
@@ -82,7 +83,28 @@ new class extends Component {
         $this->validate();
 
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'suspended', 'reason' => $this->reason, 'suspended_until' => $this->suspendDate,'status_updated_at' => now(),]);
+            $targetId = $this->selectUserId;
+
+            User::whereKey($this->selectUserId)->update([
+                'status' => 'suspended',
+                'reason' => $this->reason,
+                'suspended_until' => $this->suspendDate,
+                'status_updated_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Suspend User',
+                'target_type' => 'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'reason' => $this->reason,
+                    'suspend_until' => $this->suspendDate,
+                    'previous_status' => 'active',
+                    'new_status' => 'suspended',
+                ],
+            ]);
         }
 
         $this->reset(['selectUserId', 'showSuspendModal']);
@@ -93,7 +115,26 @@ new class extends Component {
         $this->validate();
 
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'banned', 'reason' => $this->reason, 'status_updated_at' => now(),]);
+            $targetId = $this->selectUserId;
+
+            User::whereKey($this->selectUserId)->update([
+                'status' => 'banned',
+                'reason' => $this->reason,
+                'status_updated_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Ban User',
+                'target_type' => 'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'reason' => $this->reason,
+                    'previous_status' => 'active',
+                    'new_status' => 'banned',
+                ],
+            ]);
         }
 
         $this->reset(['selectUserId', 'showBanModal']);
@@ -102,7 +143,25 @@ new class extends Component {
     public function unbanUser(): void
     {
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'active', 'reason' => null, 'status_updated_at' => now(),]);
+          $targetId = $this->selectUserId;
+
+            User::whereKey($this->selectUserId)->update([
+                'status' => 'active',
+                'reason' => null,
+                'status_updated_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Unban User',
+                'target_type' => 'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'previous_status' => 'banned',
+                    'new_status' => 'active',
+                ],
+            ]);
         }
 
         $this->reset(['selectUserId', 'showUnbanModal']);
@@ -111,7 +170,26 @@ new class extends Component {
     public function UnsuspendUser(): void
     {
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'active', 'suspended_until' => null, 'reason' => null, 'status_updated_at' => now(),]);
+          $targetId = $this->selectUserId;
+
+            User::whereKey($this->selectUserId)->update([
+                'status' => 'active',
+                'suspended_until' => null,
+                'reason' => null,
+                'status_updated_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Unsuspend User',
+                'target_type' =>'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'previous_status' => 'suspended',
+                    'new_status' => 'active',
+                ],
+            ]);
         }
 
         $this->reset(['selectUserId', 'showUnsuspendModal']);
@@ -145,7 +223,7 @@ new class extends Component {
 
 <div>
   <header class="flex flex-col lg:flex-row gap-2 lg:items-center justify-start lg:justify-between mb-4">
-    <h1 class="text-2xl font-bold">User Management</h1>
+    <h1 class="text-2xl font-semibold">User Management</h1>
     <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search users..."
       class="lg:w-1/3 px-4 py-2 w-full border border-hairline rounded-md focus:outline-none focus:ring focus:border-primary" />
   </header>
@@ -432,7 +510,8 @@ new class extends Component {
             <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Unban User</h2>
-                <p>Are you sure you want to unban this user? The ban will be lifted, and his account will be reactivated.</p>
+                <p>Are you sure you want to unban this user? The ban will be lifted, and his account will be
+                  reactivated.</p>
               </div>
               <div class="flex justify-end gap-2">
                 <button type="button" wire:click="unbanUser"

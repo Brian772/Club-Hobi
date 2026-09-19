@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ClubRequest;
 use App\Models\Club;
 use App\Models\ClubMember;
+use App\Models\AuditLog;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class AdminClubRequestController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         $clubRequest = ClubRequest::with('requester', 'hobby')->get();
         return view("admin.clubs.request", compact("clubRequest", "user"));
     }
@@ -60,8 +61,21 @@ class AdminClubRequestController extends Controller
                 'reviewed_at' => now(),
             ]);
 
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Accept Club Request',
+                'target_type' => 'ClubRequest',
+                'target_id' => $clubRequest->id,
+                'metadata' => [
+                    'club_id' => $club->id,
+                    'requester_id' => $clubRequest->user_id,
+                    'result' => 'approved',
+                ],
+            ]);
+
             DB::commit();
-        } catch(\Throwable $e){
+        } catch (\Throwable $e) {
             DB::rollBack();
             return redirect()->route('admin.clubs.request')->with('error', 'Failed to accept club request.');
         }
@@ -85,8 +99,20 @@ class AdminClubRequestController extends Controller
                 'reviewed_at' => now(),
             ]);
 
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Reject Club Request',
+                'target_type' => 'ClubRequest',
+                'target_id' => $clubRequest->id,
+                'metadata' => [
+                    'reason' => request('reason'),
+                    'requester_id' => $clubRequest->user_id,
+                ],
+            ]);
+
             DB::commit();
-        } catch(\Throwable $e){
+        } catch (\Throwable $e) {
             DB::rollBack();
             return redirect()->route('admin.clubs.request')->with('error', 'Failed to reject club request.');
         }

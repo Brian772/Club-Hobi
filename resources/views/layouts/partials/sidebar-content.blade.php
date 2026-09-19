@@ -21,6 +21,7 @@
               ['label' => 'Club Management', 'route' => 'admin.club-management', 'icon' => 'blocks'],
               ['label' => 'Club Request', 'route' => 'admin.clubs.request', 'icon' => 'request'],
               ['label' => 'Moderation', 'route' => 'admin.moderation', 'icon' => 'moderation'],
+              ['label' => 'Audit Logs', 'route' => 'admin.audit-logs', 'icon' => 'audit-logs'],
             ];
         }
       @endphp

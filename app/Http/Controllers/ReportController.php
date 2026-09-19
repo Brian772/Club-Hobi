@@ -54,8 +54,7 @@ class ReportController extends Controller
             return redirect()->back()->with('success', 'Report berhasil dikirim!');
         } catch (\Throwable $th) {
             DB::rollBack();
-            // return redirect()->back()->with('error', 'Gagal membuat report');
-            dd($th);
+            return redirect()->back()->with('error', 'Gagal membuat report');
         }
     }
 }

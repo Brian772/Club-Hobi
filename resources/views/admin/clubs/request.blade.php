@@ -2,7 +2,7 @@
 
 @section('content')
   <header>
-    <h2 class="text-2xl text-ink font-bold">Club Requests</h2>
+    <h2 class="text-2xl text-ink font-semibold">Club Requests</h2>
   </header>
 
   <main x-data="{ tab: 'pending' }" class="mt-6 border borde-hairline p-4 rounded-lg">

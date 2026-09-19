@@ -13,17 +13,11 @@
         d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
     </svg>
   </a>
-  <section class="flex flex-col gap-4">
-    <header class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
-      <img src="{{ $profile->avatar_full_url }}" alt="Logo {{ $profile->name }}"
-        class="rounded-md w-full md:w-100 h-48 md:h-auto object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
-      <div class="flex flex-col justify-between items-start w-full self-stretch">
-        <div class="flex flex-col gap-2">
-          <div class="flex flex-col gap-2 mb-2">
-            <h1 class="text-heading-2 text-ink font-bold">{{ $profile->name }}</h1>
-          </div>
-        </div>
-      </div>
+  <section class="flex flex-col gap-4 mt-6">
+    <header class="flex flex-row gap-3 items-center">
+      <img src="{{ $profile->avatar_full_url ?? asset('images/default-avatar.png') }}" alt="{{ $profile->name }}"
+        class="w-18 h-18 rounded-full object-cover">
+      <h1 class="text-title text-ink font-semibold">{{ $profile->name }}</h1>
     </header>
 
     <main>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\Post;
 use App\Models\Hobby;
+use App\Models\AuditLog;
 use App\Models\ClubJoinRequest;
 use App\Models\ClubMember;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ClubController extends Controller
 {
@@ -201,6 +203,17 @@ class ClubController extends Controller
         if (Gate::denies('isOwner', $club)) {
             return redirect()->route('clubs.show', ['club' => $club->id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
         }
+
+        AuditLog::create([
+            'id' => Str::uuid(),
+            'user_id' => Auth::id(),
+            'action' => 'Delete Club',
+            'target_type' => 'Club',
+            'target_id' => $club->id,
+            'metadata' => [
+                'club_name' => $club->name,
+            ],
+        ]);
 
         $club->delete();
 
