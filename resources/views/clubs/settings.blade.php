@@ -10,18 +10,32 @@
           d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
       </svg>
     </a>
-    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">Settings -
+    <h2 class="text-title lg:text-3xl font-semibold flex flex-row items-center gap-2 justify-center text-ink">Settings -
       {{ $club->name }}
     </h2>
   </header>
 
-  <main x-data="{ openPromote: false, openKick: false, openDemote: false, openDelete: false, openAccept: false, openReject: false,
-    selectedName: '', promoteUrl: '', demoteUrl: '', kickUrl: '', kickRole: '',deleteUrl: '', acceptUrl: '', rejectUrl: '' }" class="flex flex-col mt-4 gap-4">
+  <main x-data="{
+      openPromote: false,
+      openKick: false,
+      openDemote: false,
+      openDelete: false,
+      openAccept: false,
+      openReject: false,
+      selectedName: '',
+      promoteUrl: '',
+      demoteUrl: '',
+      kickUrl: '',
+      kickRole: '',
+      deleteUrl: '',
+      acceptUrl: '',
+      rejectUrl: ''
+  }" class="flex flex-col mt-4 gap-4">
     {{-- Edit Club --}}
     @can('update', $club)
       <section class="border border-hairline rounded-lg p-4">
         <header class="w-full flex flex-col mb-4">
-          <h3 class="text-title lg:text-heading-3 text-ink">Edit Club</h3>
+          <h3 class="text-title lg:text-2xl font-semibold text-ink">Edit Club</h3>
           <p class="text-body text-ink-muted">Update your club information below.</p>
         </header>
         <div class="max-w-4xl">
@@ -90,7 +104,7 @@
     {{-- Manage Member --}}
     <section x-data="{ tab: 'member' }" class="border border-hairline rounded-lg p-4">
       <header class="w-full flex flex-col mb-4">
-        <h3 class="text-title lg:text-heading-3 text-ink">Manage Member</h3>
+        <h3 class="text-title lg:text-2xl font-semibold text-ink">Manage Member</h3>
         <p class="text-body text-ink-muted">Manage your club members and moderators.</p>
       </header>
       <div class="w-full h-max flex flex-row gap-4 border-b border-hairline overflow-x-auto">
@@ -193,7 +207,8 @@
                               @if ($member->role === 'member' || $member->role === 'moderator')
                                 @can('isOwner', $club)
                                   @if ($member->role === 'member')
-                                    <button type="button" @click="openPromote = true
+                                    <button type="button"
+                                      @click="openPromote = true
                                     selectedName = '{{ $member->user->name }}'; promoteUrl = '{{ route('clubs.promote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -209,7 +224,8 @@
                                     </button>
                                   @endif
                                   @if ($member->role === 'moderator')
-                                    <button type="button" @click="openDemote = true
+                                    <button type="button"
+                                      @click="openDemote = true
                                     selectedName = '{{ $member->user->name }}'; demoteUrl = '{{ route('clubs.demote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -226,7 +242,8 @@
                                     </button>
                                   @endif
                                 @endcan
-                                <button type="button" @click="openKick = true
+                                <button type="button"
+                                  @click="openKick = true
                                 selectedName = '{{ $member->user->name }}'; kickUrl = '{{ route('clubs.kick', [$club->id, $member->user->id]) }}'; kickRole = '{{ $member->role }}';"
                                   class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-accent-red hover:bg-accent-red/10">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -300,7 +317,8 @@
                               x-transition:enter-end="opacity-100 translate-y-0"
                               x-transition:leave="transition ease-in duration-200"
                               x-transition:leave-start="opacity-100 translate-y-0"
-                              x-transition:leave-end="opacity-0 -translate-y-2" @click.outside="MenuOpen = false" @click="MenuOpen = false"
+                              x-transition:leave-end="opacity-0 -translate-y-2" @click.outside="MenuOpen = false"
+                              @click="MenuOpen = false"
                               class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
                               <a href="{{ route('profile.show', ['user' => $member->user->id]) }}"
                                 class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
@@ -326,7 +344,8 @@
                               @if ($member->role === 'member' || $member->role === 'moderator')
                                 @can('isOwner', $club)
                                   @if ($member->role === 'member')
-                                    <button type="button" @click="openPromote = true;
+                                    <button type="button"
+                                      @click="openPromote = true;
                                     selectedName = '{{ $member->user->name }}'; promoteUrl = '{{ route('clubs.promote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -342,7 +361,8 @@
                                     </button>
                                   @endif
                                   @if ($member->role === 'moderator')
-                                    <button type="button" @click="openDemote = true
+                                    <button type="button"
+                                      @click="openDemote = true
                                     selectedName = '{{ $member->user->name }}'; demoteUrl = '{{ route('clubs.demote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -359,7 +379,8 @@
                                     </button>
                                   @endif
                                 @endcan
-                                <button type="button" @click="openKick = true
+                                <button type="button"
+                                  @click="openKick = true
                                   selectedName = '{{ $member->user->name }}'; kickUrl = '{{ route('clubs.kick', [$club->id, $member->user->id]) }}'; kickRole = '{{ $member->role }}';"
                                   class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-accent-red hover:bg-accent-red/10">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -411,12 +432,14 @@
                       {{ $request->created_at->format('d M Y') }}
                     </td>
                     <td class="px-6 py-4 h-16 whitespace-nowrap text-caption flex flex-row gap-2">
-                      <button type="button" @click="openAccept = true
+                      <button type="button"
+                        @click="openAccept = true
                         selectedName = '{{ $request->user->name }}'; acceptUrl = '{{ route('clubs.join.request.accept', [$club->id, $request->user->id]) }}';"
                         class="px-2 py-1 text-primary cursor-pointer hover:underline hover:underline-offset-2">
                         Accept
                       </button>
-                      <button type="button" @click="openReject = true
+                      <button type="button"
+                        @click="openReject = true
                         selectedName = '{{ $request->user->name }}'; rejectUrl = '{{ route('clubs.join.request.reject', [$club->id, $request->user->id]) }}';"
                         class="px-2 py-1 text-accent-red cursor-pointer hover:underline hover:underline-offset-2">
                         Reject
@@ -430,11 +453,105 @@
       </div>
     </section>
 
+    @can('isOwnerOrModerator', $club)
+      <section class="border border-hairline rounded-lg p-4">
+        <header class="mb-4 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+          <h1 class="text-2xl text-ink font-semibold">Activity Logs</h1>
+
+          <form method="GET" class="w-full lg:w-1/3">
+            <input type="text" name="search" value="{{ request('search') }}"
+              placeholder="Search by action or target type" class="px-4 py-2 border border-hairline rounded-md w-full">
+          </form>
+        </header>
+
+        <main class="border border-hairline p-4 rounded-lg">
+          <div class="flex flex-col gap-4">
+            <div id="container" class="border mt-2 border-hairline p-2 rounded-lg overflow-x-auto lg:overflow-visible">
+              <table class="min-w-full h-max table-auto">
+                <thead class="border-b border-hairline">
+                  <tr>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      Actor</th>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      Action</th>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      Target</th>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      Date</th>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @forelse ($activities as $activity)
+                    <tr class="odd:bg-gray-100 even:bg-canvas">
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->user?->name ?? 'System' }}</td>
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->action }}</td>
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->target_type ?? 'N/A' }}</td>
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">
+                        {{ $activity->created_at->format('d M Y, h:i') }}
+                      </td>
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">
+                        <div x-data="{ MenuOpen: false }" class="relative">
+                          <button type="button" x-ref="button" @click="MenuOpen = true"
+                            class="text-ink-muted text-body-mid rounded-full p-2 hover:bg-hairline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round" class="lucide lucide-ellipsis-vertical">
+                              <circle cx="12" cy="12" r="1" />
+                              <circle cx="12" cy="5" r="1" />
+                              <circle cx="12" cy="19" r="1" />
+                            </svg>
+                          </button>
+
+                          <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
+                            <div x-anchor.noflip="$refs.button" x-transition:enter="transition ease-out duration-200"
+                              x-transition:enter-start="opacity-0 -translate-y-2"
+                              x-transition:enter-end="opacity-100 translate-y-0"
+                              x-transition:leave="transition ease-in duration-200"
+                              x-transition:leave-start="opacity-100 translate-y-0"
+                              x-transition:leave-end="opacity-0 -translate-y-2" @click.outside="MenuOpen = false"
+                              @click="MenuOpen = false"
+                              class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
+                              <a href="{{ route('clubs.activity.show', [$club->id, $activity->id]) }}"
+                                class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                  <circle cx="12" cy="12" r="10" />
+                                  <path d="M12 16v-4" />
+                                  <path d="M12 8h.01" />
+                                </svg>
+                                View Detail
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="5" class="px-6 py-4 h-16 whitespace-nowrap text-caption text-center">
+                        No Activity logs found.
+                      </td>
+                    </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-4">
+              {{ $activities->links() }}
+            </div>
+          </div>
+        </main>
+      </section>
+    @endcan
+
     {{-- Delete Club --}}
     @can('isOwner', $club)
       <section class="p-4 mt-12">
         <header class="w-full flex flex-col mb-4">
-          <h3 class="text-title lg:text-heading-3 text-ink">Danger Zone</h3>
+          <h3 class="text-title lg:text-2xl font-semibold text-ink">Danger Zone</h3>
         </header>
 
         <main class="flex flex-col gap-2 p-4 border border-accent-red rounded-lg">
@@ -444,7 +561,8 @@
               <p class="text-body-mid text-ink-muted">Delete {{ $club->name }}. If you delete this club, you will not be
                 able to recover it.</p>
             </div>
-            <button type="button" @click="openDelete = true
+            <button type="button"
+              @click="openDelete = true
               selectedName = '{{ $club->name }}'; deleteUrl = '{{ route('clubs.delete', $club->id) }}';"
               class="px-4 py-2 rounded-md text-accent-red hover:underline hover:underline-offset-2">
               Delete
@@ -464,7 +582,8 @@
           <h3 class="text-title mb-4 text-ink">
             Promote <span x-text="selectedName"></span> to Moderator?
           </h3>
-          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan menjadi moderator dan mendapatkan akses
+          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan menjadi moderator dan
+            mendapatkan akses
             untuk mengelola anggota serta konten club.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
@@ -501,7 +620,8 @@
           <h3 class="text-title text-ink mb-4">
             Demote <span x-text="selectedName"></span> to Member?
           </h3>
-          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan kehilangan akses sebagai moderator dan
+          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan kehilangan akses sebagai
+            moderator dan
             kembali menjadi member.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
@@ -539,7 +659,8 @@
           <h3 class="text-title mb-4 text-ink">
             Kick <span x-text="selectedName"></span>?
           </h3>
-          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan dikeluarkan dari club dan harus
+          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan dikeluarkan dari club dan
+            harus
             mengajukan permintaan baru jika ingin bergabung kembali.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">

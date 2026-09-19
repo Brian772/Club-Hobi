@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('club_join_request', function (Blueprint $table) {
+        Schema::create('club_join_requests', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('club_id')->constrained('clubs')->onDelete('cascade');
             $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('club_join_request');
+        Schema::dropIfExists('club_join_requests');
     }
 };

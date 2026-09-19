@@ -17,7 +17,7 @@
     <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">{{ $club->name }}
     </h2>
   </header>
-  <div class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
+  <div x-data="{ OpenLeaveModal: false }" class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
     <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="Logo {{ $club->name }}"
       class="rounded-md w-full md:w-100 h-48 md:h-64 object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
     <div class="flex flex-col justify-between items-start w-full self-stretch">
@@ -55,17 +55,39 @@
           </a>
         @endcan
         @cannot('isOwner', $club)
+            <button type="button" @click="OpenLeaveModal = true"
+              class="lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
+              Keluar
+            </button>
+        @endcannot
+      </div>
+
+    </div>
+    <div x-show="OpenLeaveModal" x-cloak @keydown.escape.window="OpenLeaveModal = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="OpenLeaveModal = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Leave <span x-text="selectedName"></span>?
+          </h3>
+          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin meninggalkan klub ini? Tindakan ini tidak dapat dibatalkan.</p>
+        </div>
+        <div class="flex flex-row justify-end gap-2">
           <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
             @csrf
             @method('DELETE')
             <button type="submit"
-              class="lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
-              Keluar
+              class="px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
+              Leave
             </button>
           </form>
-        @endcannot
+          <button type="button"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            @click="OpenLeaveModal = false">Cancel</button>
+        </div>
       </div>
-
     </div>
   </div>
 
