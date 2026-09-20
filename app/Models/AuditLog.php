@@ -96,6 +96,14 @@ class AuditLog extends Model
                 'New Status' => $meta['new_status'] ?? 'N/A',
             ],
 
+            'Add Hobby' => [
+                'Hobby Name' => $meta['name'] ?? 'N/A',
+            ],
+
+            'Delete Hobby' => [
+                'Hobby Name' => $meta['name'] ?? 'N/A',
+            ],
+
             default => $meta,
         };
     }

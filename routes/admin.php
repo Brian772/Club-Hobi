@@ -29,4 +29,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
   Route::patch('/moderation/appeals/{appeal}/reject', [ModerationController::class, 'appealReject'])->name('moderation.appeal.reject');
   Route::get('/audit-logs', [AuditController::class, 'index'])->name('audit-logs');
   Route::get('/audit-logs/{auditLog}', [AuditController::class, 'show'])->name('audit-logs.show');
+  Route::put('/hobbies/store', [AdminOverviewController::class, 'storeHobby'])->name('hobbies.store');
+  Route::delete('/hobbies/delete/{hobby}', [AdminOverviewController::class, 'deleteHobby'])->name('hobbies.delete');
 });
