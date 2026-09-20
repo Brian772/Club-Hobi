@@ -7,7 +7,7 @@
 @section('content')
   <div class="flex items-center justify-between h-max
   {{ $joinedClub->isNotEmpty() ? 'mb-6' : '' }}">
-    <h1 class="text-title lg:text-heading-2 font-bold text-neutral-900">Halo, {{ auth()->user()->name }} </h1>
+    <h1 class="text-title lg:text-3xl font-semibold text-neutral-900">Halo, {{ auth()->user()->name }} </h1>
     @if ($joinedClub->isNotEmpty())
       <a href="{{ route('posts.create') }}"
         class="hidden lg:inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
@@ -17,7 +17,7 @@
   </div>
   @if ($joinedClub->isNotEmpty())
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-bold text-neutral-900">Club yang anda ikuti</h2>
+      <h2 class="text-lg font-semibold text-neutral-900">Club yang anda ikuti</h2>
       <a href="{{ route('clubs.index') }}" class="text-sm text-neutral-500 hover:text-neutral-800">Lihat selengkapnya
         →</a>
     </div>

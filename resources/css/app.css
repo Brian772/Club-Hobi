@@ -111,3 +111,8 @@
 [x-cloak] {
     display: none !important;
 }
+
+::Selection {
+    background-color: rgba(71, 108, 255, 0.1);
+    color: var(--color-primary);
+}

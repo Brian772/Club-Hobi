@@ -56,7 +56,7 @@
         @endcan
         @cannot('isOwner', $club)
             <button type="button" @click="OpenLeaveModal = true"
-              class="lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
+              class="order-1 lg:order-2 lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
               Keluar
             </button>
         @endcannot
