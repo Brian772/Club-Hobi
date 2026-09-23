@@ -7,7 +7,7 @@
 
 @section('content')
   <div class="flex flex-col md:flex-row items-center justify-center">
-    <div class="order-2 md:order-1 md:w-1/2 max-w-[400px] w-full flex flex-col">
+    <div class="order-2 md:order-1 md:w-120 w-full flex flex-col">
       <h1 class="text-[26px] font-bold text-primary">
         Welcome Back To Orbii
       </h1>
