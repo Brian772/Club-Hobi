@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Club Requests')
+
 @section('content')
   <header>
     <h2 class="text-2xl text-ink font-semibold">Club Requests</h2>

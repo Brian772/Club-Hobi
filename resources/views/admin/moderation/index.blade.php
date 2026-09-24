@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Moderation')
+
 @section('content')
   <header class="mb-4 flex flex-col gap-1">
     <h1 class="text-2xl font-semibold text-ink">Moderation</h1>

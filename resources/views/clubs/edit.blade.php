@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Edit Club')
+
 @section('styles')
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection

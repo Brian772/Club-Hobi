@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Club Settings')
+
 @section('content')
   <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-3">
     <a href="{{ route('clubs.show', $club->id) }}" class="text-ink-muted">

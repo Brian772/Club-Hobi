@@ -52,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/request/list', [ClubRequestController::class, 'listRequest'])->name('request.list');
         Route::get('/request/list/{request}', [ClubRequestController::class, 'detail'])->name('request.detail');
         Route::post('/request/store', [ClubRequestController::class, 'storeRequest'])->name('request.store');
+        Route::delete('/request/{request}/cancel', [ClubRequestController::class, 'destroylRequest'])->name('request.cancel');
         Route::get('/{club}/activity/{activity}', [ClubController::class, 'showActivity'])->name('activity.show');
         Route::get('/{club}', [ClubController::class, 'show'])->name('show');
         Route::get('/{club}/settings', [ClubController::class, 'settings'])->name('settings');

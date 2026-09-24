@@ -69,4 +69,17 @@ class ClubRequestController extends Controller
             return redirect()->route('clubs.index')->with('error', 'Permintaan klub gagal dikirim!');
         }
     }
+
+    public function destroylRequest($id)
+    {
+        $clubRequest = ClubRequest::findOrFail($id);
+
+        if ($clubRequest->status !== 'pending') {
+            return redirect()->route('clubs.request.list')->with('error', 'Hanya permintaan klub yang berstatus pending yang dapat dibatalkan.');
+        }
+
+        $clubRequest->delete();
+
+        return redirect()->route('clubs.request.list')->with('success', 'Permintaan klub berhasil dibatalkan.');
+    }
 }

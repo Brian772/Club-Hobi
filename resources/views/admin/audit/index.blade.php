@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Audit Logs')
+
 @section('content')
   <header class="mb-4 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
     <h1 class="text-2xl text-ink font-semibold">Audit Logs</h1>

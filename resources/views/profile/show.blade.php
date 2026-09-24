@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | '. $profile->name)
+
 @section('styles')
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection

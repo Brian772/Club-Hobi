@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Report Details')
+
 @section('content')
   <header class="flex flex-row gap-1 lg:gap-4 items-center justify-start mb-6">
     <a href="{{ route('admin.moderation') }}" class="text-ink-muted">

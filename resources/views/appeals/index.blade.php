@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Appeal Account')
+
 @section('content')
   @if ($user->status === 'active')
     <div

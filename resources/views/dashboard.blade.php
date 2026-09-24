@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Home')
+
 @section('styles')
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
@@ -24,21 +26,23 @@
   @endif
   <div
     class="
-  {{ $joinedClub->isNotEmpty() ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8  pb-4 border-b border-hairline' : 'h-full w-full items-center justify-center' }}">
+  {{ $joinedClub->isNotEmpty() ? 'overflow-hidden h-max gap-6 mb-8  pb-4 border-b border-hairline' : 'h-full w-full items-center justify-center' }}">
     @if ($joinedClub->isNotEmpty())
-      @foreach ($joinedClub as $club)
-        <a href="{{ route('clubs.show', $club->id) }}"
-          class="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-          <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
-            class="w-full h-48 object-cover">
-          <div class="p-4">
-            <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
-            <h3 class="text-lg font-semibold mb-2">{{ $club->name }}</h3>
-            <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
-            <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
-          </div>
-        </a>
-      @endforeach
+      <div class="flex flex-row gap-6 overflow-x-auto scrollbar-hide h-max pb-4">
+        @foreach ($joinedClub as $club)
+          <a href="{{ route('clubs.show', $club->id) }}"
+            class="bg-white rounded-3xl border border-hairline overflow-hidden items-stretch min-w-75 w-100 hover:shadow-lg transition-shadow duration-300 flex flex-col">
+            <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+              class="w-full h-48 object-cover">
+            <div class="p-4 flex flex-col flex-1">
+              <h3 class="text-body-mid font-semibold mb-2 flex flex-row items-center justify-between">{{ $club->name }}
+                <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span></h3>
+              <p class="text-caption text-ink-secondary mb-2 line-clamp-2">{{ $club->description }}</p>
+              <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+            </div>
+          </a>
+        @endforeach
+      </div>
     @else
       <section id="alreadyJoin" class="flex flex-col items-center justify-center w-full h-full">
         <div class="flex justify-center items-center w-full flex-col gap-1">

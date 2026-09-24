@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Appeal Details')
+
 @section('content')
   <div x-data="{ OpenApproveModal: false, OpenRejectModal: false }">
     <header class="flex flex-row gap-1 lg:gap-4 items-center justify-start mb-6">

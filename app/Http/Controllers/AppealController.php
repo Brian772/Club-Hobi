@@ -16,17 +16,17 @@ class AppealController extends Controller
 
         $alreadyAppealed = Appeal::where('user_id', AUTH::user()->id)
             ->where('status', 'pending')
-            ->where('created_at', '>=', $user->status_updated_at)
+            ->where('created_at', '>=', $user->status_updated_at ?? now())
             ->exists();
 
         $appeal = Appeal::where('user_id', AUTH::user()->id)
             ->where('status', 'pending')->latest()
-            ->where('created_at', '>=', $user->status_updated_at)
+            ->where('created_at', '>=', $user->status_updated_at ?? now())
             ->first();
 
         $rejectedAppeal = Appeal::where('user_id', AUTH::user()->id)
             ->where('status', 'rejected')
-            ->where('created_at', '>=', $user->status_updated_at)
+            ->where('created_at', '>=', $user->status_updated_at ?? now())
             ->latest()
             ->first();
 

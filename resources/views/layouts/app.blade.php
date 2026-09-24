@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-title" content="Orbii" />
   <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}" />
 
-  <title>Club Hobi</title>
+  <title>@yield('title', 'Orbii')</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @yield('styles')
   @livewireStyles()
@@ -41,7 +41,7 @@
           class="fixed top-20 right-4 w-xs h-max max-h-[calc(100dvh-6rem)] overflow-y-auto rounded-lg z-50 max-w-sm bg-canvas border border-hairline">
           <div class="flex items-center justify-between p-4">
             <a href="{{ route('home') }}">
-              <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" alt="Orbii Logo" height="32"
+              <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" draggable="false" alt="Orbii Logo" height="32"
                 class="h-9 w-max object-contain">
             </a>
             <button type="button" @click="navOpen = false" aria-label="Tutup Menu" class="hover:bg-canvas">
@@ -72,7 +72,7 @@
         <div class="w-full px-4 sm:px-6 lg:px-8">
           <div class="flex flex-col md:flex-row justify-around items-start md:items-center">
             <div class="mb-4 md:mb-0">
-              <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" class="w-max h-16 object-contain mb-2">
+              <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" draggable="false" class="w-max h-16 object-contain mb-2">
               <p class="text-body-mid text-ink">Find your people. Your hobby, your space.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 w-max gap-6 xl:gap-16">
