@@ -79,6 +79,10 @@
   --text-caption--line-height: 1.43;
   --text-caption--letter-spacing: 0em;
   --text-caption--font-weight: 400;
+  --text-small: 12px;
+  --text-small--line-height: 1.33;
+  --text-small--letter-spacing: 0em;
+  --text-small--font-weight: 400;
   --text-overline: 10px;
   --text-overline--line-height: 1.33;
   --text-overline--letter-spacing: 0.05em;

@@ -7,78 +7,108 @@
 @endsection
 
 @section('content')
-  <div class="flex items-center justify-between h-max
+  <div x-data="{
+      openReportModal: false,
+      contentType: null,
+      contentId: null,
+      reportedUserId: null,
+      reportUrl: null,
+      reportTarget: null,
+  
+      openReport(type, contentId, reportedUserId = null, url = null, target = null) {
+          this.contentType = type;
+          this.contentId = contentId;
+          this.reportedUserId = reportedUserId;
+          this.reportUrl = url;
+          this.reportTarget = target;
+          this.openReportModal = true;
+      },
+  
+      closeReport() {
+          this.contentType = null;
+          this.contentId = null;
+          this.reportedUserId = null;
+          this.reportUrl = null;
+          this.openReportModal = false;
+      },
+  }">
+    <div class="flex items-center justify-between h-max
   {{ $joinedClub->isNotEmpty() ? 'mb-6' : '' }}">
-    <h1 class="text-title lg:text-3xl font-semibold text-neutral-900">Halo, {{ auth()->user()->name }} </h1>
-    @if ($joinedClub->isNotEmpty())
-      <a href="{{ route('posts.create') }}"
-        class="hidden lg:inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
-        + Buat Postingan
-      </a>
-    @endif
-  </div>
-  @if ($joinedClub->isNotEmpty())
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold text-neutral-900">Club yang anda ikuti</h2>
-      <a href="{{ route('clubs.index') }}" class="text-sm text-neutral-500 hover:text-neutral-800">Lihat selengkapnya
-        →</a>
+      <h1 class="text-title lg:text-3xl font-semibold text-neutral-900">Halo, {{ auth()->user()->name }} </h1>
+      @if ($joinedClub->isNotEmpty())
+        <a href="{{ route('posts.create') }}"
+          class="hidden lg:inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
+          + Buat Postingan
+        </a>
+      @endif
     </div>
-  @endif
-  <div
-    class="
+    @if ($joinedClub->isNotEmpty())
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-neutral-900">Club yang anda ikuti</h2>
+        <a href="{{ route('clubs.index') }}" class="text-sm text-neutral-500 hover:text-neutral-800">Lihat selengkapnya
+          →</a>
+      </div>
+    @endif
+    <div
+      class="
   {{ $joinedClub->isNotEmpty() ? 'overflow-hidden h-max gap-6 mb-8  pb-4 border-b border-hairline' : 'h-full w-full items-center justify-center' }}">
-    @if ($joinedClub->isNotEmpty())
-      <div class="flex flex-row gap-6 overflow-x-auto scrollbar-hide h-max pb-4">
-        @foreach ($joinedClub as $club)
-          <a href="{{ route('clubs.show', $club->id) }}"
-            class="bg-white rounded-3xl border border-hairline overflow-hidden items-stretch min-w-75 w-100 hover:shadow-lg transition-shadow duration-300 flex flex-col">
-            <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
-              class="w-full h-48 object-cover">
-            <div class="p-4 flex flex-col flex-1">
-              <h3 class="text-body-mid font-semibold mb-2 flex flex-row items-center justify-between">{{ $club->name }}
-                <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span></h3>
-              <p class="text-caption text-ink-secondary mb-2 line-clamp-2">{{ $club->description }}</p>
-              <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
-            </div>
-          </a>
-        @endforeach
-      </div>
-    @else
-      <section id="alreadyJoin" class="flex flex-col items-center justify-center w-full h-full">
-        <div class="flex justify-center items-center w-full flex-col gap-1">
-          <h2 class="text-ink text-title">Belum Ada Aktivitas</h2>
-          <p class="text-caption text-ink-muted">Bergabung dengan klub untuk melihat postingan dan aktivitas terbaru
-            di sini.</p>
+      @if ($joinedClub->isNotEmpty())
+        <div class="flex flex-row gap-6 overflow-x-auto scrollbar-hide h-max pb-4">
+          @foreach ($joinedClub as $club)
+            <a href="{{ route('clubs.show', $club->id) }}"
+              class="bg-white rounded-3xl border border-hairline overflow-hidden items-stretch min-w-75 w-100 hover:shadow-lg transition-shadow duration-300 flex flex-col">
+              <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                class="w-full h-48 object-cover">
+              <div class="p-4 flex flex-col flex-1">
+                <h3 class="text-body-mid font-semibold mb-2 flex flex-row items-center justify-between">
+                  {{ $club->name }}
+                  <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
+                </h3>
+                <p class="text-caption text-ink-secondary mb-2 line-clamp-2">{{ $club->description }}</p>
+                <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+              </div>
+            </a>
+          @endforeach
         </div>
-        <a href="{{ route('clubs.index') }}"
-          class="text-primary mt-8 bg-primary/10 w-max px-4 py-2 rounded-md hover:text-white hover:bg-primary">Jelajahi
-          Club</a>
-      </section>
-    @endif
-  </div>
+      @else
+        <section id="alreadyJoin" class="flex flex-col items-center justify-center w-full h-full">
+          <div class="flex justify-center items-center w-full flex-col gap-1">
+            <h2 class="text-ink text-title">Belum Ada Aktivitas</h2>
+            <p class="text-caption text-ink-muted">Bergabung dengan klub untuk melihat postingan dan aktivitas terbaru
+              di sini.</p>
+          </div>
+          <a href="{{ route('clubs.index') }}"
+            class="text-primary mt-8 bg-primary/10 w-max px-4 py-2 rounded-md hover:text-white hover:bg-primary">Jelajahi
+            Club</a>
+        </section>
+      @endif
+    </div>
 
-  <div class="max-w-100 space-y-4">
-    @foreach ($feedPosts as $post)
-      <x-post :post="$post" />
-    @endforeach
+    <div class="max-w-150 space-y-4">
+      @foreach ($feedPosts as $post)
+        <x-post :post="$post" />
+      @endforeach
 
-    <div id="mediaModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4"
-      onclick="closeMediaModal()">
-      <button onclick="closeMediaModal()"
-        class="absolute top-4 right-4 text-white text-3xl font-bold z-50 cursor-pointer">&times;</button>
+      <div id="mediaModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4"
+        onclick="closeMediaModal()">
+        <button onclick="closeMediaModal()"
+          class="absolute top-4 right-4 text-white text-3xl font-bold z-50 cursor-pointer">&times;</button>
 
-      <button id="modalPrevBtn" onclick="event.stopPropagation(); changeModalSlide(-1)"
-        class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">‹</button>
+        <button id="modalPrevBtn" onclick="event.stopPropagation(); changeModalSlide(-1)"
+          class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">‹</button>
 
-      <button id="modalNextBtn" onclick="event.stopPropagation(); changeModalSlide(1)"
-        class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">›</button>
+        <button id="modalNextBtn" onclick="event.stopPropagation(); changeModalSlide(1)"
+          class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">›</button>
 
-      <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center"
-        onclick="event.stopPropagation()">
-        <div id="modalCounter" class="absolute -top-8 text-white/80 text-xs font-semibold"></div>
-        <div id="modalContent" class="w-full flex flex-col items-center justify-center"></div>
+        <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center"
+          onclick="event.stopPropagation()">
+          <div id="modalCounter" class="absolute -top-8 text-white/80 text-xs font-semibold"></div>
+          <div id="modalContent" class="w-full flex flex-col items-center justify-center"></div>
+        </div>
       </div>
     </div>
+
+    <x-report-modal />
   </div>
 
   <script>
@@ -252,16 +282,16 @@
           replyWrapper.className = 'flex gap-2.5';
           replyWrapper.setAttribute('data-comment-id', commentData.id);
           replyWrapper.innerHTML = `
-                <img src="${userAvatar}" class="w-6 h-6 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
+                <img src="${userAvatar}" class="size-8 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
                 <div class="flex-1 min-w-0">
-                  <p class="text-xs text-neutral-800 leading-snug break-words">
-                    <span class="font-bold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
+                  <p class="text-caption text-ink-secondary leading-snug break-words">
+                    <span class="font-semibold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
                     <span>${escapeHtml(commentData.content)}</span>
                   </p>
-                  <div class="flex items-center gap-3 mt-1 text-[10px] text-neutral-400 font-medium">
+                  <div class="flex items-center gap-3 mt-1 text-[10px] text-ink-muted font-medium">
                     <span>Baru saja</span>
-                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer font-semibold">Balas</button>
-                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer font-semibold">Hapus</button>
+                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer">Balas</button>
+                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer">Hapus</button>
                   </div>
                 </div>`;
 
@@ -280,16 +310,16 @@
         newCommentWrapper.setAttribute('data-comment-id', commentData.id);
         newCommentWrapper.innerHTML = `
               <div class="flex gap-3">
-                <img src="${userAvatar}" class="w-7 h-7 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
+                <img src="${userAvatar}" class="size-8 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
                 <div class="flex-1 min-w-0">
-                  <p class="text-xs text-neutral-800 leading-snug break-words">
-                    <span class="font-bold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
+                  <p class="text-caption text-ink-secondary leading-snug break-words">
+                    <span class="font-semibold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
                     <span>${escapeHtml(commentData.content)}</span>
                   </p>
-                  <div class="flex items-center gap-3 mt-1 text-[10px] text-neutral-400 font-medium">
+                  <div class="flex items-center gap-3 mt-1 text-[10px] text-ink-muted font-medium">
                     <span>Baru saja</span>
-                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer font-semibold">Balas</button>
-                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer font-semibold">Hapus</button>
+                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer">Balas</button>
+                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer">Hapus</button>
                   </div>
                 </div>
               </div>`;

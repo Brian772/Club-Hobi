@@ -61,6 +61,6 @@ class Post extends Model
 
     public function reports()
     {
-        return $this->morphMany(Report::class, 'content');
+        return $this->morphMany(Report::class, 'reportable',  'content_type', 'content_id');
     }
 }

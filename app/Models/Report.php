@@ -27,7 +27,6 @@ class Report extends Model
         'created_at' => 'datetime'
     ];
 
-
     public function reporter()
     {
         return $this->belongsTo(User::class, 'reporter_id');
@@ -41,5 +40,10 @@ class Report extends Model
     public function content()
     {
         return $this->morphTo();
+    }
+
+    public function reportable() 
+    {
+        return $this->morphTo(__FUNCTION__, 'content_type', 'content_id')->withTrashed();
     }
 }

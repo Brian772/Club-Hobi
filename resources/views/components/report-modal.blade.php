@@ -12,7 +12,7 @@
           </h3>
           <p x-show="contentType === 'user'" class="text-ink-muted text-caption">Laporkan pengguna ini jika melanggar
             aturan dan ketentuan yang berlaku di orbii.</p>
-          <p x-show="contentType === 'postingan'" class="text-ink-muted text-caption">Laporkan postingan ini jika
+          <p x-show="contentType === 'post'" class="text-ink-muted text-caption">Laporkan postingan ini jika
             melanggar aturan dan ketentuan yang berlaku di orbii.</p>
           <p x-show="contentType === 'comment'" class="text-ink-muted text-caption">Laporkan komentar ini jika melanggar
             aturan dan ketentuan yang berlaku di orbii.</p>

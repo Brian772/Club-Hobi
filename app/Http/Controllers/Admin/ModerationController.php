@@ -105,7 +105,7 @@ class ModerationController extends Controller
     public function resolved(Request $request, Report $report)
     {
         $validated = $request->validate([
-            'action' => ['required', 'in:suspend,ban'],
+            'action' => ['required', 'in:suspend,ban,delete_post,delete_comment'],
             'reason' => ['required', 'string'],
         ]);
 
@@ -159,6 +159,38 @@ class ModerationController extends Controller
                         ],
                     ]);
                     break;
+                case 'delete_post':
+                    $report->reportable->delete();
+                    $report->update(['status' => 'resolved']);
+
+                    AuditLog::create([
+                        'id' => Str::uuid(),
+                        'user_id' => Auth::id(),
+                        'action' => 'Resolve Delete Post Report',
+                        'target_type' => 'Report',
+                        'target_id' => $report->id,
+                        'metadata' => [
+                            'action_taken' => 'Delete Post',
+                            'reason' => $reason,
+                        ],
+                    ]);
+                    break;
+                case 'delete_comment':
+                    $report->reportable->delete();
+                    $report->update(['status' => 'resolved']);
+
+                    AuditLog::create([
+                        'id' => Str::uuid(),
+                        'user_id' => Auth::id(),
+                        'action' => 'Resolve Delete Comment Report',
+                        'target_type' => 'Report',
+                        'target_id' => $report->id,
+                        'metadata' => [
+                            'action_taken' => 'Delete Comment',
+                            'reason' => $reason,
+                        ],
+                    ]);
+                    break;
             }
 
             DB::commit();
@@ -167,7 +199,7 @@ class ModerationController extends Controller
             return redirect()->back()->with('error', 'An error occurred while processing the report.');
         }
 
-        return redirect()->back()->with('success', 'Report has been resolved.');
+        return redirect()->route('admin.moderation')->with('success', 'Report has been resolved.');
     }
 
     public function ignored(Report $report)

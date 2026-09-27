@@ -70,18 +70,13 @@
         </form>
 
         <div class="divider">
-          <span>Login With SSO</span>
+          <span>Or Register With</span>
         </div>
 
         <div class="social-login">
           <a href="{{ route('social.redirect', 'google') }}" class="social-button">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
             <span>Continue With Google</span>
-          </a>
-
-          <a href="{{ route('social.redirect', 'facebook') }}" class="social-button">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
-            <span>Continue With Facebook</span>
           </a>
         </div>
       </div>

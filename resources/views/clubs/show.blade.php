@@ -165,7 +165,7 @@
             </a>
           </div>
         @else
-          <div class="max-w-100 space-y-4">
+          <div class="max-w-150 space-y-4">
             @foreach ($posts as $post)
               <x-post :post="$post" />
             @endforeach
