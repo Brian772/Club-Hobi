@@ -6,103 +6,101 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class MessageController extends Controller
 {
-    public function index(?string $conversation = null)
+    public function index()
     {
-        $user = Auth::user();
+        $authId = Auth::id();
 
-        $messages = Message::query()
-            ->where('sender_id', $user->id)
-            ->orWhere('receiver_id', $user->id)
-            ->with(['sender', 'receiver'])
-            ->orderBy('send_at', 'asc')
-            ->get();
+        // Get all partner IDs involved in messages with auth user
+        $sentTo = Message::where('sender_id', $authId)->pluck('receiver_id');
+        $receivedFrom = Message::where('receiver_id', $authId)->pluck('sender_id');
+        $partnerIds = $sentTo->merge($receivedFrom)->unique()->values();
 
-        $conversations = [];
+        $conversations = collect();
 
-        foreach ($messages as $message) {
-            $otherUser = $message->sender_id === $user->id ? $message->receiver : $message->sender;
-
-            if (!$otherUser) {
+        foreach ($partnerIds as $partnerId) {
+            $partner = User::find($partnerId);
+            if (!$partner) {
                 continue;
             }
 
-            $otherUserId = $otherUser->id;
+            $lastMessage = Message::where(function ($q) use ($authId, $partnerId) {
+                $q->where('sender_id', $authId)->where('receiver_id', $partnerId);
+            })->orWhere(function ($q) use ($authId, $partnerId) {
+                $q->where('sender_id', $partnerId)->where('receiver_id', $authId);
+            })->orderByDesc('send_at')->first();
 
-            if (!isset($conversations[$otherUserId])) {
-                $conversations[$otherUserId] = [
-                    'id' => $otherUserId,
-                    'name' => $otherUser->name,
-                    'username' => '@' . Str::slug($otherUser->name),
-                    'last_message' => '',
-                    'time' => '',
-                    'messages' => [],
-                ];
-            }
+            $unreadCount = Message::where('sender_id', $partnerId)
+                ->where('receiver_id', $authId)
+                ->where('is_read', false)
+                ->count();
 
-            $conversations[$otherUserId]['messages'][] = [
-                'from' => $message->sender_id === $user->id ? 'me' : 'them',
-                'text' => $message->content,
-                'time' => $message->send_at ? $message->send_at->format('H:i') : now()->format('H:i'),
-            ];
-
-            $conversations[$otherUserId]['last_message'] = $message->content;
-            $conversations[$otherUserId]['time'] = $message->send_at ? $message->send_at->diffForHumans() : 'baru';
+            $conversations->push((object)[
+                'user' => $partner,
+                'last_message' => $lastMessage,
+                'unread_count' => $unreadCount,
+            ]);
         }
 
-        $conversations = array_values($conversations);
-        usort($conversations, function ($a, $b) {
-            $timeA = $a['messages'][array_key_last($a['messages'])]['time'] ?? '';
-            $timeB = $b['messages'][array_key_last($b['messages'])]['time'] ?? '';
+        // Sort by last message send_at desc
+        $conversations = $conversations->sortByDesc(fn($c) => $c->last_message?->send_at)->values();
 
-            return $timeB <=> $timeA;
-        });
+        // Suggested users to start new chat
+        $suggestedUsers = User::where('id', '!=', $authId)
+            ->whereNotIn('id', $partnerIds)
+            ->limit(6)
+            ->get();
 
-        $selectedConversation = null;
+        return view('messages.index', compact('conversations', 'suggestedUsers'));
+    }
 
-        if (!empty($conversations)) {
-            $selectedConversation = $conversation
-                ? collect($conversations)->firstWhere('id', $conversation)
-                : $conversations[0];
+    public function show($conversation)
+    {
+        $authId = Auth::id();
+        $otherUser = User::findOrFail($conversation);
 
-            if (!$selectedConversation) {
-                $selectedConversation = $conversations[0];
-            }
-        }
+        // Mark unread messages from this user as read
+        Message::where('sender_id', $otherUser->id)
+            ->where('receiver_id', $authId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
 
-        return view('messages.index', [
-            'user' => $user,
-            'conversations' => $conversations,
-            'selectedConversation' => $selectedConversation,
+        // Retrieve conversation messages
+        $messages = Message::where(function ($q) use ($authId, $otherUser) {
+            $q->where('sender_id', $authId)->where('receiver_id', $otherUser->id);
+        })->orWhere(function ($q) use ($authId, $otherUser) {
+            $q->where('sender_id', $otherUser->id)->where('receiver_id', $authId);
+        })->orderBy('send_at', 'asc')->get();
+
+        return view('messages.show', compact('otherUser', 'messages'));
+    }
+
+    public function store(Request $request, $conversation)
+    {
+        $request->validate([
+            'content' => 'required|string|max:5000',
         ]);
-    }
 
-    public function show(string $conversation)
-    {
-        return $this->index($conversation);
-    }
+        $authId = Auth::id();
+        $otherUser = User::findOrFail($conversation);
 
-    public function store(Request $request, string $conversation)
-    {
-        $user = Auth::user();
-        $receiver = User::findOrFail($conversation);
-
-        $message = trim((string) $request->input('message', ''));
-
-        if ($message === '') {
-            return redirect()->route('messages.index', ['conversation' => $receiver->id]);
-        }
-
-        Message::create([
-            'sender_id' => $user->id,
-            'receiver_id' => $receiver->id,
-            'content' => $message,
+        $message = Message::create([
+            'sender_id' => $authId,
+            'receiver_id' => $otherUser->id,
+            'content' => trim($request->content),
             'is_read' => false,
+            'send_at' => now(),
         ]);
 
-        return redirect()->route('messages.index', ['conversation' => $receiver->id]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+            ]);
+        }
+
+        return redirect()->route('messages.show', $otherUser->id);
     }
 }

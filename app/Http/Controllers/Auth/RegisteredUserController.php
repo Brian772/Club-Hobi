@@ -116,9 +116,16 @@ class RegisteredUserController extends Controller
      */
     public function step3(Request $request): RedirectResponse
     {
+<<<<<<< Updated upstream
         $request->validate([
             'hobbies' => ['required', 'array', 'min:1'],
             'hobbies.*' => ['string', 'exists:clubs,category'],
+=======
+
+        $validated = $request->validate([
+            'hobbies'   => ['nullable', 'array'],
+            'hobbies.*' => ['string'],
+>>>>>>> Stashed changes
         ]);
 
         $selectedHobbies = $request->input('hobbies');

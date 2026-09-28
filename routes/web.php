@@ -10,9 +10,15 @@ Route::get('/dashboard', function () {
     return view('mobile.dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+<<<<<<< Updated upstream
 Route::get('/mobile/dashboard', function () {
     return view('mobile.dashboard');
 })->name('mobile.dashboard');
+=======
+Route::get('/home', function () {
+    return redirect()->route('dashboard');
+});
+>>>>>>> Stashed changes
 
 Route::get('/mobile/club', function () {
     return view('mobile.club');
