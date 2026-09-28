@@ -20,7 +20,7 @@ class MessageSeeder extends Seeder
         $rangga = User::where('email', 'rangga@example.com')->first();
         $sinta = User::where('email', 'sinta@example.com')->first();
 
-        // Seed messages for both Richard and Jhon so whichever the user logs in as, it matches Figma!
+        // Seed messagees
         $targetUsers = array_filter([$richard, $jhon]);
 
         foreach ($targetUsers as $targetUser) {
