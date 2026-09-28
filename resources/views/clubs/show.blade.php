@@ -18,7 +18,7 @@
     </h2>
   </header>
   <div class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
-    <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="Logo {{ $club->name }}"
+    <img src="{{ $club->cover_display_url }}" alt="Logo {{ $club->name }}"
       class="rounded-md w-full md:w-100 h-48 md:h-64 object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
     <div class="flex flex-col justify-between items-start w-full self-stretch">
       <div class="flex flex-col gap-2">

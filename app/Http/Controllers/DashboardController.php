@@ -2,24 +2,67 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\View;
 use App\Models\Club;
 use App\Models\ClubMember;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index()
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        return $this->renderDashboard('home');
+    }
+
+    public function profile()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        return $this->renderDashboard('profile');
+    }
+
+    public function posts()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        return $this->renderDashboard('posts');
+    }
+
+    public function clubFiles()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        return $this->renderDashboard('club_files');
+    }
+
+    private function renderDashboard(string $activeMenu = 'home')
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        /** @var User|null $user */
         $user = Auth::user();
+        $userId = Auth::id();
 
         // 1. Ambil list ID klub yang diikuti user
-        $userClubIds = ClubMember::where('user_id', $user->id)->pluck('club_id');
+        $userClubIds = ClubMember::where('user_id', $userId)->pluck('club_id');
 
         // 2. Ambil data klub untuk widget/sidebar
-        $joinedClub = Club::whereIn('id', $userClubIds->take(3))->withCount('members')->get();
-        
+        $joinedClub = Club::query()
+            ->whereIn('id', $userClubIds->take(3))
+            ->withCount('members')
+            ->get();
+
+        // 3. Tarik postingan dari klub yang diikuti user
         $feedPosts = Post::query()
             ->whereIn('club_id', $userClubIds)
             ->with([
@@ -36,27 +79,24 @@ class DashboardController extends Controller
             ->take(20)
             ->get();
 
-        return view('dashboard', compact('user', 'joinedClub', 'feedPosts'));
-    }
+        // Fallback jika belum ada postingan dari klub yang diikuti
+        if ($feedPosts->isEmpty()) {
+            $feedPosts = Post::query()
+                ->with([
+                    'author',
+                    'club',
+                    'media',
+                    'comments' => function ($query) {
+                        $query->with('user')->oldest();
+                    },
+                    'likes'
+                ])
+                ->withCount(['comments', 'likes'])
+                ->latest()
+                ->take(20)
+                ->get();
+        }
 
-    public function profile(): View
-    {
-        return view('dashboard', [
-            'activeMenu' => 'profile'
-        ]);
-    }
-
-    public function posts(): View
-    {
-        return view('dashboard', [
-            'activeMenu' => 'posts'
-        ]);
-    }
-
-    public function clubFiles(): View
-    {
-        return view('dashboard', [
-            'activeMenu' => 'club_files'
-        ]);
+        return view('dashboard', compact('user', 'joinedClub', 'feedPosts', 'activeMenu'));
     }
 }

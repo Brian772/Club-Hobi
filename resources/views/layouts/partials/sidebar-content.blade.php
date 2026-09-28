@@ -1,11 +1,10 @@
-<div class="flex flex-col h-full w-full justify-between">
-  <div class="flex flex-col gap-2">
-    {{-- Logo --}}
-    <div class="hidden lg:flex items-start mx-4 gap-2 pt-2 border-b border-hairline">
-      <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" height="53" class="h-12.5 w-max object-contain">
+<div class="flex h-full w-full flex-col justify-between bg-white">
+  <div class="flex flex-col gap-3 p-3">
+    <div class="hidden lg:flex items-center justify-start rounded-xl border border-hairline bg-slate-50/80 px-3 py-3">
+      <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" class="h-10 w-auto object-contain">
     </div>
 
-    <nav class="flex flex-col items-start mx-2 md:px-2 space-y-1 bg-canvas">
+    <nav class="flex w-full flex-col gap-1.5">
       @php
         $navItems = [
             ['label' => 'Home', 'route' => 'dashboard', 'icon' => 'home'],
@@ -14,7 +13,10 @@
             ['label' => 'Notification', 'route' => 'notifications.index', 'icon' => 'notif'],
             ['label' => 'Settings', 'route' => 'settings.index', 'icon' => 'cog'],
         ];
-        if (Auth::user()->role_global === 'admin') {
+
+        $isAdmin = false;
+        if (Auth::check() && Auth::user()->role_global === 'admin') {
+            $isAdmin = true;
             $navAdminItems = [
               ['label' => 'Overview', 'route' => 'admin.overview', 'icon' => 'overview'],
               ['label' => 'User Management', 'route' => 'admin.user-management', 'icon' => 'user'],
@@ -24,34 +26,39 @@
             ];
         }
       @endphp
+
       @foreach ($navItems as $item)
         @php $active = request()->routeIs($item['route']); @endphp
         <a href="{{ route($item['route']) }}"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors w-full
-                      {{ $active ? 'bg-canvas text-primary font-bold' : 'hover:bg-primary/10 hover:text-primary' }}">
+          class="group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150
+            {{ $active ? 'bg-primary/10 text-primary shadow-[inset_0_0_0_1px_rgba(71,108,255,0.08)]' : 'text-slate-700 hover:bg-slate-100 hover:text-primary' }}">
           @if ($active)
-            <span class="absolute left-0 w-1 h-6 rounded-r-full bg-primary"></span>
+            <span class="absolute left-1.5 top-1/2 h-6 w-1.5 -translate-y-1/2 rounded-full bg-primary"></span>
           @endif
-          @include('layouts.partials.icons.' . $item['icon'])
-          {{ $item['label'] }}
+          <span class="flex h-6 w-6 items-center justify-center rounded-md {{ $active ? 'bg-primary/10 text-primary' : 'bg-slate-100 text-slate-600 group-hover:bg-primary/10 group-hover:text-primary' }}">
+            @include('layouts.partials.icons.' . $item['icon'])
+          </span>
+          <span class="{{ $active ? 'font-semibold' : '' }}">{{ $item['label'] }}</span>
         </a>
 
-        @if (Auth::user()->role_global === 'admin' && $loop->last)
-          <div class="border-t border-hairline w-full mt-4"></div>
-          <span class="text-sm mx-2 mt-8 mb-2 font-semibold text-ink-muted select-none">Admin</span>
+        @if ($isAdmin && $loop->last)
+          <div class="mt-2 border-t border-hairline pt-3"></div>
+          <span class="mx-1 mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Admin</span>
 
           @foreach ($navAdminItems as $adminItem)
             @php
               $activeAdmin = request()->routeIs($adminItem['route']);
             @endphp
             <a href="{{ route($adminItem['route']) }}"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors w-full
-                      {{ $activeAdmin ? 'bg-canvas text-primary font-bold' : 'hover:bg-primary/10 hover:text-primary' }}">
+              class="group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150
+                {{ $activeAdmin ? 'bg-primary/10 text-primary shadow-[inset_0_0_0_1px_rgba(71,108,255,0.08)]' : 'text-slate-700 hover:bg-slate-100 hover:text-primary' }}">
               @if ($activeAdmin)
-                <span class="absolute left-0 w-1 h-6 rounded-r-full bg-primary"></span>
+                <span class="absolute left-1.5 top-1/2 h-6 w-1.5 -translate-y-1/2 rounded-full bg-primary"></span>
               @endif
-              @include('layouts.partials.icons.' . $adminItem['icon'])
-              {{ $adminItem['label'] }}
+              <span class="flex h-6 w-6 items-center justify-center rounded-md {{ $activeAdmin ? 'bg-primary/10 text-primary' : 'bg-slate-100 text-slate-600 group-hover:bg-primary/10 group-hover:text-primary' }}">
+                @include('layouts.partials.icons.' . $adminItem['icon'])
+              </span>
+              <span class="{{ $activeAdmin ? 'font-semibold' : '' }}">{{ $adminItem['label'] }}</span>
             </a>
           @endforeach
         @endif
@@ -59,12 +66,16 @@
     </nav>
   </div>
 
-  {{-- User profile bawah --}}
-  <div class="border-t border-hairline mt-4 mx-4 px-4 py-4">
-    <div class="flex items-center gap-3">
-      <img src="{{ auth()->user()->avatar_full_url ?? asset('images/default-avatar.png') }}"
-        alt="{{ auth()->user()->name }}" class="w-9 h-9 rounded-full object-cover">
-      <span class="text-sm font-semibold text-neutral-900">{{ auth()->user()->name }}</span>
+  @if(Auth::check())
+    <div class="border-t border-hairline p-3">
+      <div class="flex items-center gap-3 rounded-xl bg-slate-50 px-2.5 py-2.5">
+        <img src="{{ auth()->user()->avatar_full_url ?? asset('images/default-avatar.svg') }}"
+          alt="{{ auth()->user()->name }}" class="h-10 w-10 rounded-full object-cover ring-2 ring-white shadow-sm">
+        <div class="min-w-0">
+          <p class="truncate text-sm font-semibold text-slate-800">{{ auth()->user()->name }}</p>
+          <p class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Member</p>
+        </div>
+      </div>
     </div>
-  </div>
+  @endif
 </div>

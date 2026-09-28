@@ -68,7 +68,7 @@
                   '{{ route('reports.store') }}',
                   @js([
                     'name' => $member->user->name,
-                    'avatar' => $member->user->avatar_full_url ?? asset('images/default-avatar.png'),
+                    'avatar' => $member->user->avatar_full_url ?? asset('images/default-avatar.svg'),
                     'joined' => $member->user->created_at->format('d M Y'),
                   ])
                 )"

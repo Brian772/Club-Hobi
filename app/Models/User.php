@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -70,21 +71,45 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getAvatarFullUrlAttribute(): ?string
     {
-        $avatar = (string) ($this->avatar_url ?? '');
-        if (!$avatar === '') {
+        $avatar = trim((string) ($this->avatar_url ?? ''));
+
+        if ($avatar === '') {
             return null;
         }
 
-        if (str_starts_with($this->avatar_url, 'http://') || str_starts_with($avatar, 'https://')) {
-            return $this->avatar_url;
+        if (filter_var($avatar, FILTER_VALIDATE_URL) !== false) {
+            return $avatar;
         }
 
-        return Storage::disk('public')->url($this->avatar_url);
+        if (!Storage::disk('public')->exists($avatar)) {
+            return null;
+        }
+
+        return url('storage/' . ltrim($avatar, '/'));
     }
 
     public function getAuthPassword(): string
     {
         return $this->password_hash ?? $this->password ?? '';
+    }
+
+    public function passwordMatches(string $plainPassword): bool
+    {
+        $storedPassword = $this->password_hash ?? $this->password ?? null;
+
+        if (blank($storedPassword)) {
+            return false;
+        }
+
+        try {
+            if (Hash::check($plainPassword, $storedPassword)) {
+                return true;
+            }
+        } catch (\RuntimeException $e) {
+            // Allow legacy or manually inserted values that are not BCrypt hashes.
+        }
+
+        return hash_equals((string) $storedPassword, $plainPassword);
     }
 
     public function setPasswordAttribute($value): void

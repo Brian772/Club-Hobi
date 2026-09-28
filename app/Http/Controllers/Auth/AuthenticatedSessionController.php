@@ -30,7 +30,7 @@ class AuthenticatedSessionController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
 
-        if (!$user || !Hash::check($credentials['password'], $user->getAuthPassword())) {
+        if (!$user || !$user->passwordMatches($credentials['password'])) {
             return back()->withErrors([
                 'email' => 'Email atau kata sandi yang Anda masukkan salah.',
             ])->onlyInput('email');

@@ -30,8 +30,7 @@
             <div
               class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
-                {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}" loading="lazy"
+                <img src="{{ $club->cover_display_url }}" alt="{{ $club->name }}" loading="lazy"
                   class="w-full h-48 rounded-t-lg object-cover">
               @endif
 
@@ -78,8 +77,7 @@
             <div
               class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
-                {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                <img src="{{ $club->cover_display_url }}" alt="{{ $club->name }}"
                   class="w-full h-48 rounded-t-lg object-cover" loading="lazy">
               @endif
 

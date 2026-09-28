@@ -27,8 +27,8 @@
 
           <div class="form-group">
             <x-input-label for="email" :value="__('Email')" />
-            <input type="email" id="email" name="email" value="{{ old('email') }}"
-              placeholder="example@example.com" required autofocus>
+            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="example@example.com"
+              required autofocus>
             @error('email')
               <small class="error-text">{{ $message }}</small>
             @enderror
@@ -44,8 +44,7 @@
 
           <div class="form-group">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="••••••••"
-              required>
+            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="••••••••" required>
           </div>
 
           <div class="remember-me my-2 mt-6">
@@ -108,9 +107,9 @@
           $avatarPreviewUrl = null;
 
           if ($avatarPath) {
-              $avatarPreviewUrl = str_starts_with($avatarPath, 'http')
-                  ? $avatarPath
-                  : \Illuminate\Support\Facades\Storage::disk('public')->url($avatarPath);
+            $avatarPreviewUrl = str_starts_with($avatarPath, 'http')
+              ? $avatarPath
+              : asset('storage/' . $avatarPath);
           }
         @endphp
 
@@ -119,14 +118,10 @@
           @csrf
 
           <div class="flex items-center gap-4 justify-start w-full mb-2 profile-upload">
-            {{-- <input type="file" id="avatar_url" name="avatar_url" accept=".jpg,.jpeg,.png" hidden> --}}
-
             <div class="flex flex-row justify-start mb-2">
-              <label for="avatar_url" class="w-max h-max cursor-pointer relative block">
-                <span
-                  class="upload-icon w-24 h-24 border border-solid rounded-full flex items-center justify-center overflow-hidden m-0"
-                  id="avatar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <label for="avatar_url" class="relative block h-24 w-24 cursor-pointer">
+                <span id="avatar-icon" class="upload-icon flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-solid text-slate-500 {{ $avatarPreviewUrl ? 'hidden' : '' }}">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-12 w-12">
                     <path
                       d="M4 7.5C4 6.67 4.67 6 5.5 6H8L9.2 4.5H14.8L16 6H18.5C19.33 6 20 6.67 20 7.5V17.5C20 18.33 19.33 19 18.5 19H5.5C4.67 19 4 18.33 4 17.5V7.5Z"
                       stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
@@ -134,18 +129,16 @@
                   </svg>
                 </span>
 
-                <span id="avatar-preview-wrap"
-                  class="{{ $avatarPreviewUrl ? '' : 'hidden' }} w-24 h-24 overflow-hidden m-0 rounded-full">
-                  <img id="avatar-preview" src="{{ $avatarPreviewUrl }}" alt="{{ session('register.name') }}"
-                    class="w-full h-full object-cover block">
+                <span id="avatar-preview-wrap" class="{{ $avatarPreviewUrl ? '' : 'hidden' }} flex h-24 w-24 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                  <img id="avatar-preview" src="{{ $avatarPreviewUrl ?? asset('images/default-avatar.svg') }}" alt="Preview foto profil"
+                    class="h-full w-full object-cover block">
                 </span>
 
                 <input type="file" id="avatar_url" name="avatar_url" accept="image/*" class="hidden">
               </label>
             </div>
 
-            </label class="w-max h-max">
-            <span class="upload-copy ml-2 justify-center items-start" id="avatar-copy">
+            <span class="upload-copy ml-2 justify-center items-start" id="avatar-copy" style="display: {{ $avatarPreviewUrl ? 'none' : 'flex' }};">
               <strong>Upload Photo Profile</strong>
               <small>Choose File · JPG/PNG, max 5MB</small>
             </span>
@@ -156,8 +149,8 @@
 
           <div class="form-group">
             <x-input-label for="name" :value="__('Full Name')" />
-            <input type="text" id="name" name="name" class="rounded-md border-outline"
-              value="{{ old('name') }}" placeholder="@username" required>
+            <input type="text" id="name" name="name" class="rounded-md border-outline" value="{{ old('name') }}"
+              placeholder="@username" required>
             @error('name')
               <small class="error-text">{{ $message }}</small>
             @enderror
@@ -180,24 +173,29 @@
         </form>
 
         <script>
-          document.getElementById('avatar_url').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+          const avatarInput = document.getElementById('avatar_url');
+          if (avatarInput) {
+            avatarInput.addEventListener('change', function (event) {
+              const file = event.target.files && event.target.files[0];
+              if (!file) return;
 
-            const preview = document.getElementById('avatar-preview');
-            const previewWrap = document.getElementById('avatar-preview-wrap');
-            const icon = document.getElementById('avatar-icon');
-            const copy = document.getElementById('avatar-copy');
+              const preview = document.getElementById('avatar-preview');
+              const previewWrap = document.getElementById('avatar-preview-wrap');
+              const icon = document.getElementById('avatar-icon');
+              const copy = document.getElementById('avatar-copy');
 
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-              preview.src = ev.target.result;
-              previewWrap.style.display = 'block';
-              icon.style.display = 'none';
-              copy.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-          });
+              const reader = new FileReader();
+              reader.onload = function (ev) {
+                preview.src = ev.target.result;
+                previewWrap.classList.remove('hidden');
+                icon.classList.add('hidden');
+                if (copy) {
+                  copy.style.display = 'none';
+                }
+              };
+              reader.readAsDataURL(file);
+            });
+          }
         </script>
       </div>
 
@@ -226,9 +224,8 @@
           <div class="hobby-grid">
             @forelse($categories as $hobby)
               <label class="hobby-option">
-                <input type="checkbox" name="hobbies[]" value="{{ $hobby->name }}"
-                  {{ in_array($hobby->name, old('hobbies', [])) ? 'checked' : '' }}>
-                <span>{{ $hobby->name }}</span>
+                <input type="checkbox" name="hobbies[]" value="{{ $hobby }}" {{ in_array($hobby, old('hobbies', [])) ? 'checked' : '' }}>
+                <span>{{ $hobby }}</span>
               </label>
             @empty
               <p>Belum ada kategori hobi yang tersedia.</p>

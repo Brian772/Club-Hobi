@@ -26,6 +26,17 @@ class Club extends Model
         'cover_url',
     ];
 
+    public function getCoverDisplayUrlAttribute(): string
+    {
+        if (empty($this->cover_url)) {
+            return 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80';
+        }
+        if (str_starts_with($this->cover_url, 'http://') || str_starts_with($this->cover_url, 'https://')) {
+            return $this->cover_url;
+        }
+        return \Illuminate\Support\Facades\Storage::url($this->cover_url);
+    }
+
     public function hobby()
     {
         return $this->belongsTo(Hobby::class);
