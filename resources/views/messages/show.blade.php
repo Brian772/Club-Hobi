@@ -47,7 +47,7 @@
       </button>
       <div x-show="open" @click.outside="open = false" x-cloak
            class="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-20">
-        <a href="{{ route('profile.dashboard') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-50">
+        <a href="{{ route('profile.show', ['user' => $otherUser->id]) }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-50">
           Lihat Profil
         </a>
         <a href="{{ route('messages.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-50">
@@ -114,20 +114,19 @@
 
   {{-- Chat Input Form matching Figma --}}
   <div class="pt-3 pb-1 border-t border-gray-100 bg-white/70 backdrop-blur-sm">
-    <form action="{{ route('messages.store', $otherUser->id) }}" method="POST" data-turbo="false" class="relative flex items-center" id="chatForm">
+    <form action="{{ route('messages.store', $otherUser->id) }}" method="POST" data-turbo="false" class="w-full flex items-center gap-3" id="chatForm">
       @csrf
-      <input type="text" 
-             name="content" 
+      <input type="text"
+             name="content"
              id="messageInput"
              required
              autocomplete="off"
-             placeholder="Ketik Pesan..." 
-             class="w-full bg-white border border-gray-200 rounded-full py-3.5 pl-6 pr-14 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm transition">
-      
-      {{-- Send Button with Figma Arrow Icon --}}
-      <button type="submit" 
-              class="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:scale-95 text-gray-900 transition">
-        <svg class="w-5 h-5 -rotate-45 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+             placeholder="Ketik Pesan..."
+             class="flex-1 bg-white border border-gray-200 rounded-full py-3.5 pl-6 pr-4 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm transition">
+
+      <button type="submit"
+              class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:scale-95 text-gray-900 transition">
+        <svg class="w-5 h-5 -rotate-45" fill="currentColor" viewBox="0 0 24 24">
           <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
         </svg>
       </button>

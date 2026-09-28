@@ -28,6 +28,7 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // Richard (User from screenshot)
         User::firstOrCreate(
             ['email' => 'richard@example.com'],
             [
@@ -42,6 +43,7 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // Jhon (User from Figma design)
         User::firstOrCreate(
             ['email' => 'jhon@example.com'],
             [
@@ -56,6 +58,7 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // Rangga P. (from Figma chat)
         User::firstOrCreate(
             ['email' => 'rangga@example.com'],
             [
@@ -70,6 +73,7 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // Sinta W. (from Figma chat)
         User::firstOrCreate(
             ['email' => 'sinta@example.com'],
             [

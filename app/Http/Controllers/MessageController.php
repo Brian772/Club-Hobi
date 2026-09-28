@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class MessageController extends Controller
 {
@@ -37,7 +39,7 @@ class MessageController extends Controller
                 ->where('is_read', false)
                 ->count();
 
-            $conversations->push((object)[
+            $conversations->push((object) [
                 'user' => $partner,
                 'last_message' => $lastMessage,
                 'unread_count' => $unreadCount,
@@ -67,6 +69,11 @@ class MessageController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
+        Notification::where('user_id', $authId)
+            ->where('type', 'message')
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
         // Retrieve conversation messages
         $messages = Message::where(function ($q) use ($authId, $otherUser) {
             $q->where('sender_id', $authId)->where('receiver_id', $otherUser->id);
@@ -77,6 +84,9 @@ class MessageController extends Controller
         return view('messages.show', compact('otherUser', 'messages'));
     }
 
+    /**
+     * Menyimpan pesan baru ke database.
+     */
     public function store(Request $request, $conversation)
     {
         $request->validate([
@@ -86,18 +96,29 @@ class MessageController extends Controller
         $authId = Auth::id();
         $otherUser = User::findOrFail($conversation);
 
-        $message = Message::create([
-            'sender_id' => $authId,
+        $chatData = [
+            'sender_id'   => $authId,
             'receiver_id' => $otherUser->id,
-            'content' => trim($request->content),
+            'content'     => trim($request->input('content')),
+            'is_read'     => false,
+            'send_at'     => now(),
+        ];
+
+        $chat = Message::create($chatData);
+
+        Notification::create([
+            'user_id' => $otherUser->id,
+            'title' => 'Pesan baru',
+            'content' => auth()->user()->name . ': ' . Str::limit($chatData['content'], 80),
+            'type' => 'message',
+            'source_id' => $chat->id,
             'is_read' => false,
-            'send_at' => now(),
         ]);
 
-        if ($request->wantsJson()) {
+        if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => $message,
+                'chat_message' => $chat,
             ]);
         }
 

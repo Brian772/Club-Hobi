@@ -14,20 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-<<<<<<< Updated upstream
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-=======
         $this->call([
             HobbySeeder::class,
             UserSeeder::class,
             ClubSeeder::class,
             PostSeeder::class,
             MessageSeeder::class,
->>>>>>> Stashed changes
         ]);
     }
 }

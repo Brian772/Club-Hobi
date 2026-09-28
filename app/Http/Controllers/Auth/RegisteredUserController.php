@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -54,9 +55,6 @@ class RegisteredUserController extends Controller
     public function step1(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-<<<<<<< Updated upstream
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-=======
             'email' => [
                 'required',
                 'string',
@@ -64,7 +62,6 @@ class RegisteredUserController extends Controller
                 'max:255',
                 Rule::unique(User::class, 'email'),
             ],
->>>>>>> Stashed changes
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
@@ -91,6 +88,7 @@ class RegisteredUserController extends Controller
 
         if ($request->hasFile('avatar_url')) {
             $avatarUrl = $request->file('avatar_url')->store('avatars', 'public');
+            session(['register.avatar_url' => $avatarUrl]);
         }
 
         $user = User::create([
@@ -116,33 +114,29 @@ class RegisteredUserController extends Controller
      */
     public function step3(Request $request): RedirectResponse
     {
-<<<<<<< Updated upstream
         $request->validate([
-            'hobbies' => ['required', 'array', 'min:1'],
-            'hobbies.*' => ['string', 'exists:clubs,category'],
-=======
-
-        $validated = $request->validate([
-            'hobbies'   => ['nullable', 'array'],
-            'hobbies.*' => ['string'],
->>>>>>> Stashed changes
+            'hobbies' => ['nullable', 'array'],
+            'hobbies.*' => ['nullable', 'string'],
         ]);
 
-        $selectedHobbies = $request->input('hobbies');
+        $selectedHobbies = collect($request->input('hobbies', []))
+            ->map(fn ($hobby) => trim((string) $hobby))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
         session(['user_hobbies' => $selectedHobbies]);
 
-<<<<<<< Updated upstream
-        return redirect()->route('dashboard')->with('success', 'Registrasi berhasil!');
-=======
-        // 4. Auto Login & Redirect ke Dashboard
-        Auth::login($user);
-        $request->session()->regenerate();
-        $request->session()->forget('register');
+        $user = Auth::user();
+
+        if ($user) {
+            $user->interests = implode(',', $selectedHobbies);
+            $user->save();
+        }
 
         return redirect()
             ->route('dashboard')
-            ->with('success', 'Registrasi berhasil! Selamat datang, ' . $user->name . '!');
->>>>>>> Stashed changes
+            ->with('success', 'Registrasi berhasil! Selamat datang, ' . ($user ? $user->name : '') . '!');
     }
 }

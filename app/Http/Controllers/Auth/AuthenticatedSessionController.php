@@ -12,9 +12,6 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Tampilkan form login.
-     */
     public function create(): View|RedirectResponse
     {
         if (Auth::check()) {
@@ -24,9 +21,6 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-    /**
-     * Proses otentikasi login.
-     */
     public function store(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
@@ -36,39 +30,39 @@ class AuthenticatedSessionController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
 
-        // Cek user dan password_hash
-        if (!$user || !Hash::check($credentials['password'], $user->password_hash)) {
+        if (!$user || !$user->passwordMatches($credentials['password'])) {
             return back()->withErrors([
                 'email' => 'Email atau kata sandi yang Anda masukkan salah.',
             ])->onlyInput('email');
         }
 
-        // Cek status suspended
-        if ($user->status === 'suspended') {
-            $until = $user->suspended_until?->translatedFormat('d M Y H:i');
-            return back()->withErrors([
-                'email' => 'Akun Anda ditangguhkan' . ($until ? " hingga {$until}." : '.'),
-            ])->onlyInput('email');
-        }
+        // if ($user->status === 'suspended') {
+        //     $until = $user->suspended_until
+        //         ? $user->suspended_until->format('d M Y H:i')
+        //         : null;
 
-        // Cek status banned
-        if ($user->status === 'banned') {
-            return back()->withErrors([
-                'email' => 'Akun Anda telah dinonaktifkan.',
-            ])->onlyInput('email');
-        }
+        //     return back()
+        //         ->withErrors([
+        //             'email' => 'Akun Anda sedang ditangguhkan' . ($until ? " hingga {$until}." : '.'),
+        //         ])
+        //         ->onlyInput('email');
+        // }
 
-        Auth::login($user, $request->boolean('remember'));
+        // if (in_array($user->status, ['banned', 'inactive'], true)) {
+        //     return back()
+        //         ->withErrors([
+        //             'email' => 'Akun Anda telah dinonaktifkan.',
+        //         ])
+        //         ->onlyInput('email');
+        // }
 
+        Auth::login($user);
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'))
             ->with('success', 'Berhasil masuk. Selamat datang kembali, ' . $user->name . '!');
     }
-
-    /**
-     * Keluar dari sesi (Logout).
-     */
+    
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
@@ -76,6 +70,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Anda telah keluar.');
+        return redirect('/')->with('success', 'Anda telah keluar.');
     }
 }

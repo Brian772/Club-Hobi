@@ -1,77 +1,75 @@
 @extends('layouts.app')
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 @endsection
 
 @section('content')
-<div class="auth-shell auth-shell-register">
-    <div class="auth-box">
-        <header class="auth-topbar">
-            <div class="orbii-brand">
-                <span class="brand-mark">◉</span>
-                <span>orbii</span>
-            </div>
-            <a href="{{ route('login') }}" class="top-link">Have an account? <strong>Login</strong></a>
-        </header>
 
-        @if($step == 1)
-            <div class="auth-panel">
-                <section class="auth-form-area">
-                    <h1 class="auth-title">Join the orbii</h1>
-                    <p class="auth-subtext">Start finding a hobby club that's right for you.</p>
+  @if ($step == 1)
+    <div class="flex flex-col md:flex-row items-center justify-center">
+      <div class="order-2 md:order-1 md:w-1/2 max-w-100 w-full flex flex-col">
+        <div class="flex flex-col w-full justify-center items-start my-2">
+          <h2 class="text-primary text-heading-2 font-bold md:text-heading-1">Join the orbii</h2>
+          <p class="text-ink-muted text-caption">Start finding a hobby club that's right for you.</p>
+        </div>
 
-                    <div class="progress-steps" aria-label="Registration progress">
-                        <span class="progress-step active"></span>
-                        <span class="progress-step"></span>
-                        <span class="progress-step"></span>
-                    </div>
+        <div class="register-progress" aria-label="Registration progress">
+          <span class="progress-item active"></span>
+          <span class="progress-item"></span>
+          <span class="progress-item"></span>
+        </div>
 
-                    <form method="POST" action="{{ route('register.step1') }}" class="auth-form">
-                        @csrf
+        <form method="POST" action="{{ route('register.step1') }}" data-turbo="false" class="form">
+          @csrf
 
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="Example@example.com" required autofocus>
-                        </div>
+          <div class="form-group">
+            <x-input-label for="email" :value="__('Email')" />
+            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="example@example.com"
+              required autofocus>
+            @error('email')
+              <small class="error-text">{{ $message }}</small>
+            @enderror
+          </div>
 
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" id="password" name="password" placeholder="********" required>
-                        </div>
+          <div class="form-group">
+            <x-input-label for="password" :value="__('Password')" />
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
+            @error('password')
+              <small class="error-text">{{ $message }}</small>
+            @enderror
+          </div>
 
-                        <div class="form-group">
-                            <label for="password_confirmation">Confirm Password</label>
-                            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="********" required>
-                        </div>
+          <div class="form-group">
+            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="••••••••" required>
+          </div>
 
-                        <label class="checkbox-row">
-                            <input type="checkbox" name="agree" value="1">
-                            <span>I agree to the Terms &amp; Conditions and Privacy Policy</span>
-                        </label>
+          <div class="remember-me my-2 mt-6">
+            <label class="flex gap-2 flex-row">
+              <input type="checkbox" name="remember" class="rounded-sm border-ink-faint srink-0">
+              <span class="text-ink-muted text-caption">I agree to the Terms &amp; Conditions and Privacy Policy</span>
+            </label>
+          </div>
 
-                        <button type="submit" class="button-primary">Next <span>→</span></button>
-                    </form>
+          <x-secondary-button class="w-full" type="submit">
+            Next
+          </x-secondary-button>
 
-                    <div class="divider"><span>Login With SSO</span></div>
+          <p class="register-text">
+            Have an Account?
+            <a href="{{ route('login') }}">
+              Login here
+            </a>
+          </p>
+        </form>
 
-                    <div class="social-login">
-                        <a href="{{ route('auth.google') }}" class="social-button">
-                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
-                            <span>Continue With Google</span>
-                        </a>
-                        <a href="{{ route('auth.facebook') }}" class="social-button">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
-                            <span>Continue With Facebook</span>
-                        </a>
-                    </div>
-                </section>
+        <div class="divider">
+          <span>Login With SSO</span>
+        </div>
 
-<<<<<<< Updated upstream
-                <aside class="auth-media">
-                    <img src="{{ asset('image/amico1.png') }}" alt="Registration Illustration">
-                </aside>
-=======
         <div class="social-login">
           <a href="{{ route('social.redirect', 'google') }}" class="social-button">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
@@ -85,15 +83,14 @@
         </div>
       </div>
 
-      <div class=" flex order-1 justify-center md:order-2 md:w-1/2 max-w-[400px] w-full">
-        <img src="{{ asset('images/amico1.png') }}" alt="Registration Illustration"
-          class="w-[150px] md:w-full max-w-[400px]"
+      <div class=" flex order-1 justify-center md:order-2 md:w-1/2 max-w-100 w-full">
+        <img src="{{ asset('images/amico1.png') }}" alt="Registration Illustration" class="w-37.5 md:w-full max-w-100"
           onerror="this.onerror=null; this.src='{{ asset('images/pana.png') }}';">
       </div>
     </div>
   @elseif($step == 2)
     <div class="flex flex-col md:flex-row items-center justify-center">
-      <div class="order-2 md:order-1 md:w-1/2 max-w-[400px] w-full flex flex-col">
+      <div class="order-2 md:order-1 md:w-1/2 max-w-100 w-full flex flex-col">
         <div class="flex flex-col justify-center items-start mb-2">
           <h2 class="text-primary text-heading-2 font-bold md:text-heading-1">Tell us about yourself</h2>
           <p class="text-ink-muted text-caption">This information will appear on your profile within the club.</p>
@@ -110,14 +107,9 @@
           $avatarPreviewUrl = null;
 
           if ($avatarPath) {
-              $avatarPreviewUrl = str_starts_with($avatarPath, 'http')
-                  ? $avatarPath
-                  : ((function () use ($avatarPath) {
-                      /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-                      $disk = \Illuminate\Support\Facades\Storage::disk('public');
-
-                      return $disk->url($avatarPath);
-                  })());
+            $avatarPreviewUrl = str_starts_with($avatarPath, 'http')
+              ? $avatarPath
+              : asset('storage/' . $avatarPath);
           }
         @endphp
 
@@ -125,15 +117,11 @@
           enctype="multipart/form-data">
           @csrf
 
-          <div class="flex items-center justify-start mb-2 profile-upload">
-            {{-- <input type="file" id="avatar_url" name="avatar_url" accept=".jpg,.jpeg,.png" hidden> --}}
-
-            <div class="flex flex-row justify-center mb-2">
-              <label for="avatar_url" class="w-[96px] h-[96px] cursor-pointer relative block">
-                <span
-                  class="upload-icon w-[96px] h-[96px] border border-solid rounded-full flex items-center justify-center overflow-hidden m-0"
-                  id="avatar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div class="flex items-center gap-4 justify-start w-full mb-2 profile-upload">
+            <div class="flex flex-row justify-start mb-2">
+              <label for="avatar_url" class="relative block h-24 w-24 cursor-pointer">
+                <span id="avatar-icon" class="upload-icon flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-solid text-slate-500 {{ $avatarPreviewUrl ? 'hidden' : '' }}">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-12 w-12">
                     <path
                       d="M4 7.5C4 6.67 4.67 6 5.5 6H8L9.2 4.5H14.8L16 6H18.5C19.33 6 20 6.67 20 7.5V17.5C20 18.33 19.33 19 18.5 19H5.5C4.67 19 4 18.33 4 17.5V7.5Z"
                       stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
@@ -141,96 +129,120 @@
                   </svg>
                 </span>
 
-                <span id="avatar-preview-wrap"
-                  class="{{ $avatarPreviewUrl ? '' : 'hidden' }} w-[96px] h-[96px] overflow-hidden m-0 rounded-full">
-                  <img id="avatar-preview" src="{{ $avatarPreviewUrl }}" alt="{{ session('register.name') }}"
-                    class="w-full h-full object-cover block">
+                <span id="avatar-preview-wrap" class="{{ $avatarPreviewUrl ? '' : 'hidden' }} flex h-24 w-24 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                  <img id="avatar-preview" src="{{ $avatarPreviewUrl ?? asset('images/default-avatar.svg') }}" alt="Preview foto profil"
+                    class="h-full w-full object-cover block">
                 </span>
 
                 <input type="file" id="avatar_url" name="avatar_url" accept="image/*" class="hidden">
               </label>
->>>>>>> Stashed changes
             </div>
 
-        @elseif($step == 2)
-            <div class="auth-panel">
-                <section class="auth-form-area">
-                    <h1 class="auth-title">Tell us about yourself</h1>
-                    <p class="auth-subtext">This information will appear on your profile within the club.</p>
+            <span class="upload-copy ml-2 justify-center items-start" id="avatar-copy" style="display: {{ $avatarPreviewUrl ? 'none' : 'flex' }};">
+              <strong>Upload Photo Profile</strong>
+              <small>Choose File · JPG/PNG, max 5MB</small>
+            </span>
+            @error('avatar_url')
+              <small class="error-text">{{ $message }}</small>
+            @enderror
+          </div>
 
-                    <div class="progress-steps" aria-label="Registration progress">
-                        <span class="progress-step"></span>
-                        <span class="progress-step active"></span>
-                        <span class="progress-step"></span>
-                    </div>
+          <div class="form-group">
+            <x-input-label for="name" :value="__('Full Name')" />
+            <input type="text" id="name" name="name" class="rounded-md border-outline" value="{{ old('name') }}"
+              placeholder="@username" required>
+            @error('name')
+              <small class="error-text">{{ $message }}</small>
+            @enderror
+          </div>
 
-                    <form method="POST" action="{{ route('register.step2') }}" class="auth-form" enctype="multipart/form-data">
-                        @csrf
+          <div class="form-group">
+            <x-input-label for="bio" :value="__('Bio')" />
+            <textarea id="bio" name="bio" placeholder="Tell us a little about yourself..."
+              class="rounded-md border-outline">{{ old('bio') }}</textarea>
+            @error('bio')
+              <small class="error-text">{{ $message }}</small>
+            @enderror
+          </div>
 
-                        <label for="avatar_url" class="upload-box">
-                            <span class="upload-icon">📷</span>
-                            <span class="upload-copy">
-                                <strong>Upload Photo Profile</strong>
-                                <small>Choose File · JPG/PNG, max 2MB</small>
-                            </span>
-                        </label>
-                        <input type="file" id="avatar_url" name="avatar_url" accept=".jpg,.jpeg,.png" hidden>
+          <div class="flex flex-col justify-center mt-2 items-center">
+            <x-secondary-button type="submit">
+              Next
+            </x-secondary-button>
+          </div>
+        </form>
 
-                        <div class="form-group">
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="@username" required>
-                        </div>
+        <script>
+          const avatarInput = document.getElementById('avatar_url');
+          if (avatarInput) {
+            avatarInput.addEventListener('change', function (event) {
+              const file = event.target.files && event.target.files[0];
+              if (!file) return;
 
-                        <div class="form-group">
-                            <label for="bio">Bio</label>
-                            <textarea id="bio" name="bio" rows="4" placeholder="Tell us a little about yourself...">{{ old('bio') }}</textarea>
-                        </div>
+              const preview = document.getElementById('avatar-preview');
+              const previewWrap = document.getElementById('avatar-preview-wrap');
+              const icon = document.getElementById('avatar-icon');
+              const copy = document.getElementById('avatar-copy');
 
-                        <button type="submit" class="button-primary">Next <span>→</span></button>
-                        <a href="{{ route('register', ['step' => 3]) }}" class="skip-link">Skip For Now</a>
-                    </form>
-                </section>
+              const reader = new FileReader();
+              reader.onload = function (ev) {
+                preview.src = ev.target.result;
+                previewWrap.classList.remove('hidden');
+                icon.classList.add('hidden');
+                if (copy) {
+                  copy.style.display = 'none';
+                }
+              };
+              reader.readAsDataURL(file);
+            });
+          }
+        </script>
+      </div>
 
-                <aside class="auth-media">
-                    <img src="{{ asset('image/amico2.png') }}" alt="Profile Illustration" onerror="this.onerror=null;this.src='{{ asset('image/pana.png') }}';">
-                </aside>
-            </div>
-
-        @elseif($step == 3)
-            <div class="auth-panel">
-                <section class="auth-form-area">
-                    <h1 class="auth-title">Choose your hobby</h1>
-                    <p class="auth-subtext">We’ll recommend clubs based on your interests.</p>
-
-                    <div class="progress-steps" aria-label="Registration progress">
-                        <span class="progress-step"></span>
-                        <span class="progress-step"></span>
-                        <span class="progress-step active"></span>
-                    </div>
-
-                    <form method="POST" action="{{ route('register.step3') }}" class="auth-form hobby-form">
-                        @csrf
-
-                        <div class="hobby-grid">
-                            @forelse($categories as $category)
-                                <label class="hobby-option">
-                                    <input type="checkbox" name="hobbies[]" value="{{ $category }}">
-                                    <span>{{ $category }}</span>
-                                </label>
-                            @empty
-                                <p>Belum ada kategori hobi yang tersedia.</p>
-                            @endforelse
-                        </div>
-
-                        <button type="submit" class="button-primary">Done &amp; Go to Dashboard <span>→</span></button>
-                    </form>
-                </section>
-
-                <aside class="auth-media">
-                    <img src="{{ asset('image/rafiki.png') }}" alt="Hobby Illustration" onerror="this.onerror=null;this.src='{{ asset('image/pana.png') }}';">
-                </aside>
-            </div>
-        @endif
+      <div class="flex order-1 justify-center md:order-2 md:w-1/2 max-w-100 w-full">
+        <img src="{{ asset('images/amico2.png') }}" alt="Profile Illustration" class="w-37.5 md:w-full max-w-100"
+          onerror="this.onerror=null; this.src='{{ asset('images/pana.png') }}';">
+      </div>
     </div>
-</div>
+  @elseif($step == 3)
+    <div class="flex flex-col md:flex-row items-center justify-center">
+      <div class="order-2 md:order-1 md:w-1/2 max-w-100 w-full flex flex-col">
+        <div class="flex flex-col justify-center items-start mb-2">
+          <h2 class="text-primary text-heading-2 md:text-heading-1 font-bold">Choose your hobby</h2>
+          <p class="text-ink-muted text-caption">We'll recommend clubs based on your interests.</p>
+        </div>
+
+        <div class="register-progress" aria-label="Registration progress">
+          <span class="progress-item"></span>
+          <span class="progress-item"></span>
+          <span class="progress-item active"></span>
+        </div>
+
+        <form method="POST" action="{{ route('register.step3') }}" data-turbo="false" class="form hobby-form">
+          @csrf
+
+          <div class="hobby-grid">
+            @forelse($categories as $hobby)
+              <label class="hobby-option">
+                <input type="checkbox" name="hobbies[]" value="{{ $hobby }}" {{ in_array($hobby, old('hobbies', [])) ? 'checked' : '' }}>
+                <span>{{ $hobby }}</span>
+              </label>
+            @empty
+              <p>Belum ada kategori hobi yang tersedia.</p>
+            @endforelse
+          </div>
+
+          <x-secondary-button type="submit">
+            Done &amp; Go to Dashboard <span class="button-arrow">→</span>
+          </x-secondary-button>
+        </form>
+      </div>
+
+      <div class="order-1 md:order-2 md:w-1/2 max-w-100 w-full flex justify-center items-center">
+        <img src="{{ asset('images/rafiki.png') }}" alt="Hobby Illustration" class="w-37.5 md:w-full max-w-100"
+          onerror="this.onerror=null; this.src='{{ asset('images/pana.png') }}';">
+      </div>
+    </div>
+  @endif
+
 @endsection

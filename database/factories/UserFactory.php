@@ -22,15 +22,37 @@ class UserFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition(): array
+        public function definition(): array
     {
         return [
+            'id' => (string) Str::uuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'password_hash' => Hash::make('password'),
+            'avatar_url' => fake()->imageUrl(300, 300, 'people', true),
+            'bio' => fake()->paragraph(),
+            'role_global' => 'member',
+            'status' => 'active',
+            'suspended_until' => null,
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
+            'updated_at' => fake()->dateTimeBetween('-1 year', 'now')
         ];
+    }
+
+    public function suspended(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'suspended',
+            'suspended_until' => now()->addDays(fake()->numberBetween(1, 30)),
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role_global' => 'admin',
+        ]);
     }
 
     /**

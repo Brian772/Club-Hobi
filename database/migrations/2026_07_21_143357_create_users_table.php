@@ -15,12 +15,16 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password_hash');
+            $table->string('password_hash')->nullable();
             $table->string('avatar_url')->nullable();
             $table->text('bio')->nullable();
+            $table->text('interests')->nullable();
             $table->enum('role_global', ['admin', 'member'])->default('member');
             $table->enum('status', ['active', 'suspended', 'banned'])->default('active');
+            $table->text('reason')->nullable();
             $table->timestamp('suspended_until')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }

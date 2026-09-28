@@ -98,6 +98,7 @@ class ClubSeeder extends Seeder
                 'joined_at' => now()->subMonths(3),
             ]);
 
+            // Add Richard and Jhon as members to popular clubs so "Club yang anda ikuti" has data
             foreach (array_filter([$richard, $jhon]) as $keyUser) {
                 if ($keyUser->id !== $clubData['creator_id']) {
                     DB::table('club_members')->insertOrIgnore([

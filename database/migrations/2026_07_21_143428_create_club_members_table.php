@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('club_id')->constrained('clubs')->onDelete('cascade');
             $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('role', ['member', 'moderator', 'owner'])->default('member');
             $table->timestamp('joined_at')->useCurrent();
         });
     }
