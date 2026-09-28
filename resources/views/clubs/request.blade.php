@@ -15,34 +15,44 @@
     <h2 class="text-title lg:text-heading-2 text-ink-secondary">Ajukan Klub</h2>
   </header>
 
-  <main class="max-w-4xl" x-data="{ submitForm: false }">
-    <form action="{{ route('clubs.request.store') }}" method="POST" enctype="multipart/form-data" x-ref="clubForm"
-      @submit.prevent="submitForm = true">
-      @csrf
-      <div class="flex flex-col lg:flex-row gap-4 w-full" x-data="{
-          isDragging: false,
-          preview: null,
-          error: '',
-          handleFile(file) {
-              this.error = '';
-              if (!file) return;
-              if (!['image/jpeg', 'image/png'].includes(file.type)) {
-                  this.error = 'Hanya file JPEG, PNG, dan JPG yang diperbolehkan.';
-                  return;
-              }
-              if (file.size > 2 * 2048 * 1024) {
-                  this.error = 'Ukuran file tidak boleh lebih dari 2MB.';
-                  return;
-              }
-              const dt = new DataTransfer();
-              dt.items.add(file);
-              this.$refs.cover.files = dt.files;
-      
-              const reader = new FileReader();
-              reader.onload = (e) => this.preview = e.target.result;
-              reader.readAsDataURL(file);
+  <main class="max-w-4xl" x-data="{
+      submitForm: false,
+      coverError: '',
+      isDragging: false,
+      preview: null,
+      error: '',
+      handleFile(file) {
+          this.error = '';
+          this.coverError = '';
+          if (!file) return;
+          if (!['image/jpeg', 'image/png'].includes(file.type)) {
+              this.error = 'Hanya file JPEG dan PNG yang diperbolehkan.';
+              return;
           }
-      }">
+          if (file.size > 2 * 1024 * 1024) {
+              this.error = 'Ukuran file tidak boleh lebih dari 2MB.';
+              return;
+          }
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          this.$refs.cover.files = dt.files;
+  
+          const reader = new FileReader();
+          reader.onload = (e) => this.preview = e.target.result;
+          reader.readAsDataURL(file);
+      },
+      trySubmit() {
+          if (!this.$refs.cover.files.length) {
+              this.coverError = 'Cover klub wajib diunggah.';
+              return;
+          }
+          this.submitForm = true;
+      }
+  }">
+    <form action="{{ route('clubs.request.store') }}" method="POST" enctype="multipart/form-data" x-ref="clubForm"
+      @submit.prevent="trySubmit()">
+      @csrf
+      <div class="flex flex-col gap-4 w-full">
         <input type="file" x-ref="cover" name="cover" accept="image/jpeg, image/png" class="hidden"
           @change="handleFile($event.target.files[0])">
 
@@ -83,47 +93,58 @@
           </template>
         </div>
         <p class="text-caption text-accent-red" x-show="error" x-text="error"></p>
-
+        <p class="text-caption text-accent-red" x-show="coverError" x-text="coverError"></p>
+        @error('cover')
+          <p class="text-accent-red text-caption">{{ $message }}</p>
+        @enderror
       </div>
-      <div class="flex flex-col gap-2 mb-4">
+      <div class="flex flex-col gap-2 mt-4 mb-4">
         <label for="name" class="text-body-mid">Nama Klub <span class="text-accent-red">*</span></label>
         <input type="text" id="name" name="name" placeholder="Klub..."
           class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          required>
+          value="{{ old('name') }}">
+        @error('name')
+          <p class="text-accent-red text-caption">{{ $message }}</p>
+        @enderror
       </div>
       <div class="flex flex-col gap-2 mb-4">
         <label for="description" class="text-body-mid">Deskripsi Klub</label>
         <textarea id="description" name="description" placeholder="Deskripsi klub..."
-          class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
-      </div>
-      <div class="flex flex-col gap-2 mb-4">
-        <label for="hobby" class="text-body-mid">Kategori Klub <span class="text-accent-red">*</span></label>
+          class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">{{ old('description ') }}</textarea>
+        @error('description')
+          <p class="text-accent-red text-caption">{{ $message }}</p>
+        @enderror
+        <div class="flex flex-col gap-2 mb-4">
+          <label for="hobby" class="text-body-mid">Kategori Klub <span class="text-accent-red">*</span></label>
 
-        <div class="relative">
-          <select id="hobby" name="hobby_id" required
-            class="w-1/3 appearance-none rounded-lg px-4 py-2 pr-10 border border-hairline bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="" disabled {{ old('hobby_id') ? '' : 'selected' }}>Pilih Kategori</option>
-            @foreach ($hobbies as $hobby)
-              <option value="{{ $hobby->id }}" @selected(old('hobby_id') == $hobby->id)>
-                {{ $hobby->name }}
-              </option>
-            @endforeach
-          </select>
+          <div class="relative">
+            <select id="hobby" name="hobby_id" value="{{ old('hobby_id') }}"
+              class="w-1/3 appearance-none rounded-lg px-4 py-2 pr-10 border border-hairline bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              <option value="" disabled {{ old('hobby_id') ? '' : 'selected' }}>Pilih Kategori</option>
+              @foreach ($hobbies as $hobby)
+                <option value="{{ $hobby->id }}" @selected(old('hobby_id') == $hobby->id)>
+                  {{ $hobby->name }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+
+          @error('hobby_id')
+            <p class="text-accent-red text-caption">{{ $message }}</p>
+          @enderror
+        </div>
+        <div class="flex flex-col gap-2 mb-4">
+          <label for="reason" class="text-body-mid">Alasan Pengajuan <span class="text-accent-red">*</span></label>
+          <textarea id="reason" name="reason" placeholder="Deskripsikan alasan pengajuan anda..."
+            class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">{{ old('reason') }}</textarea>
+          @error('reason')
+            <p class="text-accent-red text-caption">{{ $message }}</p>
+          @enderror
         </div>
 
-        @error('hobby_id')
-          <p class="text-accent-red text-sm">{{ $message }}</p>
-        @enderror
-      </div>
-      <div class="flex flex-col gap-2 mb-4">
-        <label for="reason" class="text-body-mid">Alasan Pengajuan <span class="text-accent-red">*</span></label>
-        <textarea id="reason" name="reason" placeholder="Deskripsikan alasan pengajuan anda..."
-          class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          required></textarea>
-      </div>
-
-      <button type="submit"
-        class="bg-primary/10 text-primary hover:text-white rounded-md px-4 py-2 hover:bg-primary">Ajukan Klub</button>
+        <button type="submit"
+          class="bg-primary/10 text-primary hover:text-white w-max rounded-md px-4 py-2 hover:bg-primary">Ajukan
+          Klub</button>
     </form>
 
     {{-- Confirm Modal --}}

@@ -89,12 +89,22 @@ class AdminClubRequestController extends Controller
         if ($clubRequest->status !== 'pending') {
             return redirect()->route('admin.clubs.request')->with('error', 'Request already processed or an error occurred while processing the request.');
         }
+
+        $validatedData = request()->validateWithBag('reject', [
+            'reason' => ['required', 'string', 'min:5', 'max:255'],
+        ], [
+            'reason.required' => 'Alasan penolakan harus diisi.',
+            'reason.string' => 'Alasan penolakan harus berupa teks.',
+            'reason.max' => 'Alasan penolakan tidak boleh lebih dari 255 karakter.',
+            'reason.min' => 'Alasan penolakan harus lebih dari 5 karakter.',
+        ]);
+
         DB::beginTransaction();
 
         try {
             $clubRequest->update([
                 'status' => 'rejected',
-                'rejected_reason' => request('reason'),
+                'rejected_reason' => $validatedData['reason'],
                 'reviewed_by' => Auth::id(),
                 'reviewed_at' => now(),
             ]);
@@ -106,7 +116,7 @@ class AdminClubRequestController extends Controller
                 'target_type' => 'ClubRequest',
                 'target_id' => $clubRequest->id,
                 'metadata' => [
-                    'reason' => request('reason'),
+                    'reason' => $validatedData['reason'],
                     'requester_id' => $clubRequest->user_id,
                 ],
             ]);

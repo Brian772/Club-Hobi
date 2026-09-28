@@ -72,7 +72,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getAvatarFullUrlAttribute(): ?string
     {
         $avatar = (string) ($this->avatar_url ?? '');
-        if (!$avatar === '') {
+        if (empty($avatar)) {
             return null;
         }
 

@@ -63,8 +63,20 @@
   {{-- User profile bawah --}}
   <div class="border-t border-hairline mt-4 mx-4 px-4 py-4">
     <div class="flex items-center gap-3">
-      <img src="{{ auth()->user()->avatar_full_url ?? asset('images/default-avatar.png') }}"
-        alt="{{ auth()->user()->name }}" class="w-9 h-9 rounded-full object-cover">
+      @if (auth()->user()->avatar_full_url)
+      <img 
+        src="{{ auth()->user()->avatar_full_url }}"
+        alt="{{ auth()->user()->name }}"
+        class="rounded-full size-9 object-cover"
+        onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+        <div class="hidden size-9 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+          {{ Str::upper(Str::substr(auth()->user()->name, 0, 1)) }}
+        </div>
+      @else
+        <div class="size-9 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+          {{ Str::upper(Str::substr(auth()->user()->name, 0, 1)) }}
+        </div>
+      @endif
       <span class="text-sm font-semibold text-neutral-900">{{ auth()->user()->name }}</span>
     </div>
   </div>

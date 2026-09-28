@@ -75,7 +75,7 @@
               <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" draggable="false" class="w-max h-16 object-contain mb-2">
               <p class="text-body-mid text-ink">Find your people. Your hobby, your space.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 w-max gap-6 xl:gap-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 w-max gap-6 xl:gap-16">
               <div class="flex flex-col gap-2 items-start">
                 <span class="text-ink text-body-mid font-semibold mb-2">Navigation</span>
                 <a href="#explore" class="text-body-mid text-ink hover:text-primary">Explore</a>
@@ -87,12 +87,6 @@
                 <span class="text-ink text-body-mid font-semibold mb-2">Account</span>
                 <a href="{{ route('login') }}" class="text-body-mid text-ink hover:text-primary">Login</a>
                 <a href="{{ route('register') }}" class="text-body-mid text-ink hover:text-primary">Register</a>
-              </div>
-              <div class="flex flex-col gap-2 items-start">
-                <span class="text-ink text-body-mid font-semibold mb-2">Support</span>
-                <a href="#" class="text-body-mid text-ink hover:text-primary">Terms of Service</a>
-                <a href="#" class="text-body-mid text-ink hover:text-primary">Privacy Policy</a>
-                <a href="#" class="text-body-mid text-ink hover:text-primary">Contact Us</a>
               </div>
             </div>
           </div>

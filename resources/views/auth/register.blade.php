@@ -50,14 +50,7 @@
               required>
           </div>
 
-          <div class="remember-me my-2 mt-6">
-            <label class="flex gap-2 flex-row">
-              <input type="checkbox" name="remember" class="rounded-sm border-ink-faint srink-0">
-              <span class="text-ink-muted text-caption">I agree to the Terms &amp; Conditions and Privacy Policy</span>
-            </label>
-          </div>
-
-          <x-secondary-button class="w-full" type="submit">
+          <x-secondary-button class="w-full mt-6" type="submit">
             Next
           </x-secondary-button>
 

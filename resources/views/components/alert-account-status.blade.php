@@ -12,7 +12,7 @@
       </svg>
     </div>
     <div>
-      Akun Anda sedang suspend hingga {{ optional(auth()->user()->suspended_until)->format('d M Y') ?? 'tanggal tidak diketahui' }}.
+      Akun Anda sedang ditangguhkan hingga {{ optional(auth()->user()->suspended_until)->format('d M Y') ?? 'tanggal tidak diketahui' }}.
       Anda hanya bisa melihat konten. <a href="{{ route('appeal') }}" class="text-primary underline">Ajukan
         banding</a>.
     </div>

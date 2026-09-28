@@ -26,7 +26,7 @@
     </h2>
   </header>
 
-  <main x-data="{ showReject: false, showAccept: false }" class="mt-6 max-w-4xl">
+  <main x-data="{ showReject: {{ $errors->reject->any() ? 'true' : 'false' }}, showAccept: false }" class="mt-6 max-w-4xl">
 
 
     <div class="flex flex-col gap-4 rounded-3xl border border-hairline p-4">
@@ -97,7 +97,7 @@
           <p class="text-body-mid mb-4 text-ink">Apakah anda yakin ingin menerima pengajuan klub ini?</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <button type="button" @click="showAccept = false; $refs.cancelForm.submit();"
+          <button type="button" @click="showAccept = false; $refs.acceptForm.submit();"
             class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary">
             Ya, Terima
           </button>
@@ -127,8 +127,10 @@
           <div class="flex flex-col gap-2 mb-4">
             <label for="reason" class="text-body-mid font-semibold text-ink">Alasan Ditolak :</label>
             <textarea id="reason" name="reason" placeholder="Deskripsikan alasan pengajuan anda..."
-              class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              required></textarea>
+              class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">{{ old('reason') }}</textarea>
+              @if ($errors->reject->has('reason'))
+              <span class="text-caption text-accent-red">{{ $errors->reject->first('reason') }}</span>
+              @endif
           </div>
           <div class="flex w-full flex-row items-center justify-end gap-2 mt-4">
             <button type="submit"

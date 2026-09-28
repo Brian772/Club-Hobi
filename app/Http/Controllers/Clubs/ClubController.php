@@ -103,7 +103,9 @@ class ClubController extends Controller
 
         $club = Club::findOrFail($id);
 
-        $this->authorize('view', $club);
+        if ($request->user()->cannot('view', $club)) {
+            return redirect()->route('clubs.show', ['club' => $id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
+        }
 
         $members = ClubMember::with('user')
             ->orderByRaw('user_id = ? DESC', [Auth::user()->id])
@@ -122,7 +124,7 @@ class ClubController extends Controller
             ->withCount('user')
             ->get();
 
-            $activities = ClubActivity::query()
+        $activities = ClubActivity::query()
             ->with('user')
             ->where('club_id', $id)
             ->when($request->search, function ($query, $search) {
@@ -142,7 +144,7 @@ class ClubController extends Controller
     {
         $club = Club::findOrFail($clubId);
         $activity = ClubActivity::with('user')->findOrFail($activityId);
-    
+
         $this->authorize('view', $club);
 
         return view('clubs.show-activity', compact('club', 'activity'));
@@ -155,8 +157,8 @@ class ClubController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string',
-            'description' => 'required|string',
+            'name' => 'required|string|max:100',
+            'description' => 'required|string|max:255',
             'cover_url' => 'nullable|image|mimes:jpeg,png|max:2048',
         ]);
 
@@ -203,6 +205,10 @@ class ClubController extends Controller
 
         DB::beginTransaction();
 
+        if (ClubMember::where('club_id', $id)->where('user_id', $userId)->value('role') === 'owner') {
+            return redirect()->back()->with('error', 'The club owner cannot leave this club.');
+        }
+
         try {
             ClubActivity::create([
                 'id' => Str::uuid(),
@@ -231,8 +237,8 @@ class ClubController extends Controller
 
     public function kickMember(Request $request, $clubId, $userId)
     {
-        if (Auth::user()->role_global !== 'admin') {
-            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melakukan tindakan ini.');
+        if (Gate::denies('ManageMembers', Club::findOrFail($clubId))) {
+            return redirect()->back()->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
         }
 
         DB::beginTransaction();

@@ -34,8 +34,8 @@ class ClubPolicy
 
     public function isAdmin(User $user): bool
     {
-        return User::where('user_id', $user->id)
-            ->where('role', 'admin')
+        return User::where('id', $user->id)
+            ->where('role_global', 'admin')
             ->exists();
     }
     /**
