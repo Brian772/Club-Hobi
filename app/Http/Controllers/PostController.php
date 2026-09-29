@@ -73,10 +73,10 @@ class PostController extends Controller
                     $outputPath = storage_path('app/public/posts/' . $fileName);
 
                     $ffmpeg = FFMpeg::create([
-                        'ffmpeg.binaries' => 'D:/laragon/bin/ffmpeg/ffmpeg.exe',
-                        'ffprobe.binaries' => 'D:/laragon/bin/ffmpeg/ffprobe.exe',
-                        'timeout' => 3600,
-                        'ffmpeg.threads' => 12,
+                        'ffmpeg.binaries'  => config('ffmpeg.binaries.ffmpeg'),
+                        'ffprobe.binaries' => config('ffmpeg.binaries.ffprobe'),
+                        'timeout'          => config('ffmpeg.timeout'),
+                        'ffmpeg.threads'   => config('ffmpeg.threads'),
                     ]);
 
                     $video = $ffmpeg->open($file->getRealPath());
