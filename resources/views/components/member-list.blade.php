@@ -24,8 +24,6 @@
             class="text-overline text-primary bg-primary/10 rounded-full px-2 py-1 border border-primary font-semibold">Admin</span>
         @endif
       </h3>
-      <p class="text-caption text-ink-muted"><span class="text-ink font-semibold">Hobi:
-        </span>{{ implode(', ', $member->user->interest_array ?? []) }}</p>
     </div>
   </div>
 

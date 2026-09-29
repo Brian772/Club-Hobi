@@ -115,17 +115,27 @@
       <div x-show="sidebarOpen" x-cloak @keydown.escape.window="sidebarOpen = false"
         class="lg:hidden fixed inset-0 z-50">
         {{-- background gelap --}}
-        <div x-transition:enter="transition-opacity ease-out duration-200" x-transition:enter-start="opacity-0"
-          x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-in duration-200"
-          x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="sidebarOpen = false"
+        <div
+          x-transition:enter="transition-opacity ease-out duration-200"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          x-transition:leave="transition-opacity ease-in duration-200"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
+          @click="sidebarOpen = false"
           class="fixed inset-0 z-40 bg-black/30"></div>
 
         {{-- panel --}}
-        <div x-transition:enter="transition ease-out duration-200" x-transition:enter-start="-translate-x-full"
-          x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200"
-          x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" @click.stop
-          class="fixed top-16 left-5 h-max rounded-lg z-50 w-60 bg-canvas border border-hairline overflow-hidden">
-          <div class="flex items-center justify-start p-4">
+        <div
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="-translate-x-8 opacity-0"
+          x-transition:enter-end="translate-x-0 opacity-100"
+          x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="translate-x-0 opacity-100"
+          x-transition:leave-end="-translate-x-8 opacity-0"
+          @click.stop
+          class="lg:hidden fixed top-16 bottom-5 left-5 rounded-lg z-50 w-60 flex flex-col bg-canvas border border-hairline overflow-hidden">
+          <div class="shrink-0 flex items-center justify-start p-4">
             <button type="button" @click="sidebarOpen = false" aria-label="Tutup Menu" class="hover:bg-canvas">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
@@ -135,7 +145,7 @@
               </svg>
             </button>
           </div>
-          <div>
+          <div class="flex-1 min-h-0">
             @include('layouts.partials.sidebar-content')
           </div>
         </div>
