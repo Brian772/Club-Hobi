@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('interests')->nullable();
             $table->enum('role_global', ['admin', 'member'])->default('member');
             $table->enum('status', ['active', 'suspended', 'banned'])->default('active');
+            $table->timestamp('status_updated_at')->nullable();
             $table->text('reason')->nullable();
             $table->timestamp('suspended_until')->nullable();
             $table->timestamp('email_verified_at')->nullable();

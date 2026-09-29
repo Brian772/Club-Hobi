@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClubActivity;
 use App\Models\Post;
 use App\Models\PostMedia;
 use App\Models\Comment;
 use App\Models\Like;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use FFMpeg\FFMpeg;
 use FFMpeg\Format\Video\X264;
@@ -33,7 +36,8 @@ class PostController extends Controller
     public function create()
     {
         $clubs = Auth::user()->clubs;
-        return view('posts.create', compact('clubs'));
+        $user = Auth::user();
+        return view('posts.create', compact('clubs', 'user'));
     }
 
     public function store(Request $request)
@@ -43,12 +47,15 @@ class PostController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'media' => ['nullable', 'array'],
-            'media.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,mp3,wav,pdf,doc,docx', 'max:20480'],
+            'media.*' => ['file', 'mimes:jpg,jpeg,png,webp,gif,mp4,mov,mp3,wav,pdf,doc,docx', 'max:20480'],
         ]);
 
         $user = Auth::user();
         $club = $user->clubs()->where('clubs.id', $validated['club_id'])->firstOrFail();
 
+        DB::beginTransaction();
+        try {
+            
         $post = Post::create([
             'club_id' => $club->id,
             'user_id' => $user->id,
@@ -88,6 +95,25 @@ class PostController extends Controller
                     'file_type' => $extension,
                 ]);
             }
+        }
+
+        ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $club->id,
+                'action' => 'Create Post',
+                'target_type' => 'Post',
+                'target_id' => $post->id,
+                'metadata' => [
+                    'title' => $validated['title'],
+                    'content' => $validated['content'],
+                ],
+            ]);
+
+        DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'An error occurred while creating the post.');
         }
 
         return redirect()->route('posts.index')->with('success', 'Postingan berhasil dibuat.');
@@ -159,7 +185,28 @@ class PostController extends Controller
             abort(403);
         }
 
-        $post->delete();
+        DB::beginTransaction();
+        try {
+            ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $post->club_id,
+                'action' => 'Delete Post',
+                'target_type' => 'Post',
+                'target_id' => $post->id,
+                'metadata' => [
+                    'title' => $post->title,
+                    'content' => $post->content,
+                ],
+            ]);
+
+            $post->delete();
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'An error occurred while deleting the post.');
+        }
 
         return redirect()->route('posts.index')->with('success', 'Postingan dipindahkan ke sampah.');
     }
@@ -203,7 +250,7 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Postingan berhasil dikembalikan.');
     }
 
-    public function like(Post $post)
+    public function like(Request $request, Post $post)
     {
         $userId = Auth::id();
 
@@ -213,10 +260,19 @@ class PostController extends Controller
 
         if ($existingLike) {
             $existingLike->delete();
+            $liked = false;
         } else {
             Like::create([
                 'post_id' => $post->id,
                 'user_id' => $userId,
+            ]);
+            $liked = true;
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'liked' => $liked,
+                'likes_count' => $post->likes()->count(),
             ]);
         }
 

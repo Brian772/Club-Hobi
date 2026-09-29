@@ -1,11 +1,21 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Create Post')
+
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/post.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endsection
 
 @section('content')
+  @if ($user->status === 'suspended')
+    <div
+      class="w-full flex flex-col justify-start items-center border border-accent-yellow rounded-lg bg-accent-yellow/10 p-6 lg:p-8">
+      <h1 class="text-title text-yellow-900">Account Restricted</h1>
+      <p class="text-body-mid text-yellow-700 text-center mt-1">You cannot create posts while your account is suspended.
+      </p>
+    </div>
+  @endif
   <div class="post-page">
     <div class="post-page-header">
       <h1 class="header-title">
@@ -69,7 +79,8 @@
           <div onclick="document.getElementById('mediaInput').click()"
             class="w-24 h-24 shrink-0 rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/50 flex flex-col items-center justify-center cursor-pointer transition-colors group">
             <i class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-blue-600 transition-colors"></i>
-            <span class="text-[10px] font-medium text-neutral-500 group-hover:text-blue-600 mt-1">Tambah File</span>
+            <span class="text-[10px] font-medium text-neutral-500 group-hover:text-blue-600 mt-1">Tambah
+              File</span>
           </div>
         </div>
 
@@ -88,11 +99,35 @@
   </div>
 
   <script>
-    let selectedFiles = [];
+    var selectedFiles = [];
+
+    // Bersihkan data saat halaman dimuat (termasuk dari cache browser / tombol back)
+    document.addEventListener("DOMContentLoaded", function () {
+      resetFormMedia();
+    });
+
+    window.addEventListener('pageshow', function () {
+      resetFormMedia();
+    });
+
+    function resetFormMedia() {
+      selectedFiles = [];
+      const picker = document.getElementById('mediaPicker');
+      if (picker) picker.value = '';
+      const input = document.getElementById('mediaInput');
+      if (input) input.value = '';
+
+      renderPreviews();
+    }
+
+    // Pastikan file tersinkron ke form input SEBELUM dikirim ke server
+    document.getElementById('postForm').addEventListener('submit', function () {
+      updateFileInput();
+    });
 
     function addFiles(files) {
       if (!files || files.length === 0) return;
-      
+
       const maxFiles = 5;
       if (selectedFiles.length + files.length > maxFiles) {
         alert(`Maksimal file yang dapat diunggah adalah ${maxFiles} file.`);
@@ -105,6 +140,9 @@
 
       renderPreviews();
       updateFileInput();
+
+      // Reset PICKER (bukan mediaInput) agar onchange terpanggil jika memilih file yang sama
+      document.getElementById('mediaPicker').value = '';
     }
     function removeFile(index) {
       selectedFiles.splice(index, 1);
@@ -114,9 +152,11 @@
 
     function renderPreviews() {
       const container = document.getElementById('mediaContainer');
-      const addButton = container.lastElementChild;
+      if (!container) return;
 
-      // Bersihkan seluruh pratinjau sebelum render ulang
+      const addButton = document.getElementById('mediaAddButton');
+
+      // Bersihkan kontainer
       container.innerHTML = '';
 
       selectedFiles.forEach((file, index) => {
@@ -144,21 +184,21 @@
           wrapper.appendChild(img);
         } else if (file.type.startsWith('video/')) {
           content.innerHTML = `
-                      <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
-                      <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                  `;
+                        <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
+                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                    `;
           wrapper.appendChild(content);
         } else if (file.type.startsWith('audio/')) {
           content.innerHTML = `
-                      <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
-                      <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                  `;
+                        <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
+                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                    `;
           wrapper.appendChild(content);
         } else {
           content.innerHTML = `
-                      <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
-                      <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                  `;
+                        <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
+                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                    `;
           wrapper.appendChild(content);
         }
 
@@ -166,11 +206,14 @@
         container.appendChild(wrapper);
       });
 
-      container.appendChild(addButton);
+      if (addButton) {
+        container.appendChild(addButton);
+      }
     }
 
     function updateFileInput() {
       const input = document.getElementById('mediaInput');
+      if (!input) return;
       const dataTransfer = new DataTransfer();
 
       selectedFiles.forEach(file => {
@@ -179,5 +222,7 @@
 
       input.files = dataTransfer.files;
     }
+
+    resetFormMedia();
   </script>
 @endsection

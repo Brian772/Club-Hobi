@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Request List')
+
 @section('content')
   <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-6">
     <a href="{{ route('clubs.index') }}" class="text-ink-muted">
@@ -13,11 +15,18 @@
     <h2 class="text-title lg:text-heading-2 text-ink-secondary">Pengajuan Klub Saya</h2>
   </header>
   @if ($clubRequests->isEmpty())
-    <p class="text-caption text-ink-muted">Anda belum mengajukan klub apa pun.</p>
+    <div class="flex flex-col h-full justify-center items-center">
+      <h2 class="text-title text-ink">Tidak ada pengajuan</h2>
+      <p class="text-body-mid text-ink-muted">Anda belum mengajukan klub apa pun.</p>
+      <a href="{{ route('clubs.request') }}"
+        class="text-primary bg-primary/10 hover:text-white mt-8 hover:bg-primary rounded-md px-4 py-2">+ Ajukan Klub
+        Baru</a>
+    </div>
   @else
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start 2xl:grid-cols-3">
       @foreach ($clubRequests as $request)
-        <div class="border border-hairline rounded-lg h-max w-full p-4 hover:shadow-lg transition-shadow duration-300">
+        <a href="{{ route('clubs.request.detail', $request->id) }}"
+          class="group border border-hairline rounded-lg h-max w-full p-4 hover:shadow-lg transition-shadow duration-300">
           <div class="flex flex-col mb-2 w-full">
             <h3 class="text-ink text-heading-3 mb-4">{{ $request->name }}</h3>
             <p class="text-ink-muted text-body-mid">{{ $request->description }}</p>
@@ -36,16 +45,17 @@
                 <span class="text-accent-red font-semibold">{{ ucfirst($request->status) }}</span>
               @endif
             </p>
-            <a href="{{ route('clubs.request.detail', $request->id) }}"
-              class="font-semibold text-ink-muted p-2 hover:translate-x-2 transition-transform duration-300">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            <span href="{{ route('clubs.request.detail', $request->id) }}"
+              class="font-semibold text-ink-muted p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-arrow-right-icon lucide-arrow-right">
+                class="lucide lucide-arrow-right preview-icon group-hover:translate-x-1 transition-transform duration-300">
+                <path d="M5 12h14" />
                 <path d="m12 5 7 7-7 7" />
               </svg>
-            </a>
+            </span>
           </div>
-        </div>
+        </a>
       @endforeach
     </div>
   @endif

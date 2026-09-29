@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Club Management')
+
 @section('styles')
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
@@ -7,7 +9,7 @@
 @section('content')
   <section class="mx-auto">
     <header class="mb-4">
-      <h1 class="text-2xl font-bold">Club Management</h1>
+      <h1 class="text-2xl font-semibold">Club Management</h1>
     </header>
 
     <main x-data="{ tab: 'all' }" class="border border-hairline p-4 rounded-lg">

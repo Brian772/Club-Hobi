@@ -2,8 +2,20 @@
   class="flex flex-row w-full lg:px-4 py-2 items-center justify-between gap-4 mx-auto border border-canvas hover:border-hairline rounded-lg transition-colors duration-300">
   <div class="flex flex-row gap-2 items-center justify-start w-max">
     <div class="min-w-10 mr-2">
-      <img src="{{ $member->user->avatar_full_url }}" alt="{{ $member->user->name }}"
-        class="rounded-full w-10 h-10 object-cover">
+      @if ($member->user->avatar_full_url)
+      <img 
+        src="{{ $member->user->avatar_full_url }}"
+        alt="{{ $member->user->name }}"
+        class="rounded-full size-10 object-cover"
+        onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+        <div class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+          {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
+        </div>
+      @else
+        <div class="size-10 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+          {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
+        </div>
+      @endif
     </div>
     <div class="flex flex-col gap-2">
       <h3 class="text-body-mid font-semibold text-ink">{{ $member->user->name }}

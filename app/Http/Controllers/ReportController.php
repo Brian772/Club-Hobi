@@ -51,11 +51,10 @@ class ReportController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->back()->with('success', 'Report berhasil dikirim!');
+            return redirect()->back()->with('success', 'Laporan berhasil dikirim!');
         } catch (\Throwable $th) {
             DB::rollBack();
-            // return redirect()->back()->with('error', 'Gagal membuat report');
-            dd($th);
+            return redirect()->back()->with('error', 'Gagal membuat laporan');
         }
     }
 }

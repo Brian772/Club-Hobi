@@ -34,10 +34,42 @@ class ClubRequestController extends Controller
         return view('clubs.request-detail', compact('clubRequest'));
     }
 
+    public function rules(): array
+    {
+        return [
+            'cover' => ['required', 'image', 'mimes:jpeg,png', 'max:2048'],
+            'name' => ['required', 'string', 'min:5', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'hobby_id' => ['required', 'exists:hobbies,id'],
+            'reason' => ['required', 'string', 'min:5', 'max:255'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'cover.required' => 'Gambar cover harus dipilih.',
+            'cover.image' => 'File harus berupa gambar.',
+            'cover.mimes' => 'Format gambar harus berupa jpeg, png, jpg, atau gif.',
+            'cover.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+            'name.required' => 'Nama klub harus diisi.',
+            'name.string' => 'Nama klub harus berupa teks.',
+            'name.max' => 'Nama klub tidak boleh lebih dari 255 karakter.',
+            'name.min' => 'Nama klub harus lebih dari 5 karakter.',
+            'description.string' => 'Deskripsi klub harus berupa teks.',
+            'description.max' => 'Deskripsi klub tidak boleh lebih dari 1000 karakter.',
+            'hobby_id.required' => 'Hobi harus dipilih.',
+            'hobby_id.exists' => 'Hobi yang dipilih tidak valid.',
+            'reason.required' => 'Alasan pengajuan harus diisi.',
+            'reason.string' => 'Alasan pengajuan harus berupa teks.',
+            'reason.max' => 'Alasan pengajuan tidak boleh lebih dari 255 karakter.',
+            'reason.min' => 'Alasan pengajuan harus lebih dari 5 karakter.',
+        ];
+    }
+
     public function storeRequest(StoreClubRequestRequest $request)
     {
         $validated = $request->validated();
-
         DB::beginTransaction();
 
         try {
@@ -68,5 +100,18 @@ class ClubRequestController extends Controller
 
             return redirect()->route('clubs.index')->with('error', 'Permintaan klub gagal dikirim!');
         }
+    }
+
+    public function destroylRequest($id)
+    {
+        $clubRequest = ClubRequest::findOrFail($id);
+
+        if ($clubRequest->status !== 'pending') {
+            return redirect()->route('clubs.request.list')->with('error', 'Hanya permintaan klub yang berstatus pending yang dapat dibatalkan.');
+        }
+
+        $clubRequest->delete();
+
+        return redirect()->route('clubs.request.list')->with('success', 'Permintaan klub berhasil dibatalkan.');
     }
 }

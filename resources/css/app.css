@@ -24,6 +24,8 @@
   --color-canvas: #ffffff;
   --color-canvas-soft: #fafafa;
   --color-canvas-muted: #cccccc;
+  --color-canvas-faint: #E6E2DE;
+  --color-canvas-light: #F7F3EF;
 
   --color-hairline: #e6e6e6;
 
@@ -77,6 +79,10 @@
   --text-caption--line-height: 1.43;
   --text-caption--letter-spacing: 0em;
   --text-caption--font-weight: 400;
+  --text-small: 12px;
+  --text-small--line-height: 1.33;
+  --text-small--letter-spacing: 0em;
+  --text-small--font-weight: 400;
   --text-overline: 10px;
   --text-overline--line-height: 1.33;
   --text-overline--letter-spacing: 0.05em;
@@ -87,6 +93,8 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
   --radius-full: 200px;
 }
 
@@ -110,4 +118,9 @@
 
 [x-cloak] {
     display: none !important;
+}
+
+::Selection {
+    background-color: rgba(71, 108, 255, 0.1);
+    color: var(--color-primary);
 }

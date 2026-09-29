@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Club Details')
+
 @section('content')
   <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-6">
     <a href="{{ route('admin.club-management') }}" class="text-ink-muted">
@@ -10,7 +12,7 @@
           d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
       </svg>
     </a>
-    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">Club
+    <h2 class="text-title lg:text-2xl font-semibold flex flex-row items-center gap-2 justify-center text-ink">Club
       {{ $clubs->name }} Details</h2>
     </h2>
   </header>

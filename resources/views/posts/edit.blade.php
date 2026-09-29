@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Edit Post')
+
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/post.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -165,6 +167,8 @@
                 alert(`Maksimal file yang dapat diunggah adalah ${maxFiles} file.`);
                 return;
             }
+            btnElement.closest('.existing-media-block').remove();
+        }
 
             Array.from(files).forEach(file => {
                 selectedFiles.push(file);

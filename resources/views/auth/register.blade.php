@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Register')
+
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -48,14 +50,7 @@
               required>
           </div>
 
-          <div class="remember-me my-2 mt-6">
-            <label class="flex gap-2 flex-row">
-              <input type="checkbox" name="remember" class="rounded-sm border-ink-faint srink-0">
-              <span class="text-ink-muted text-caption">I agree to the Terms &amp; Conditions and Privacy Policy</span>
-            </label>
-          </div>
-
-          <x-secondary-button class="w-full" type="submit">
+          <x-secondary-button class="w-full mt-6" type="submit">
             Next
           </x-secondary-button>
 
@@ -68,18 +63,13 @@
         </form>
 
         <div class="divider">
-          <span>Login With SSO</span>
+          <span>Or Register With</span>
         </div>
 
         <div class="social-login">
           <a href="{{ route('social.redirect', 'google') }}" class="social-button">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
             <span>Continue With Google</span>
-          </a>
-
-          <a href="{{ route('social.redirect', 'facebook') }}" class="social-button">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
-            <span>Continue With Facebook</span>
           </a>
         </div>
       </div>

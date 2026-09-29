@@ -5,6 +5,10 @@ namespace App\Providers;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Models\Post;
+use App\Models\User;
+use App\Models\Comment;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,5 +34,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('admin', function($user) {
             return $user->role_global === 'admin';
         });
+
+        Relation::enforceMorphMap([
+            'user' => User::class,
+            'post' => Post::class,
+            'comment' => Comment::class,
+        ]);
     }
 }
