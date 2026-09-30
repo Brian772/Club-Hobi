@@ -61,9 +61,15 @@
   </div>
 
   {{-- Chat Messages Area --}}
-  <div id="chatMessages" class="flex-1 overflow-y-auto py-6 px-2 space-y-4">
+  <div id="chatMessages"
+       data-chat-updates-url="{{ route('messages.updates', $otherUser->id) }}"
+       data-current-user-id="{{ $currentUserId }}"
+       data-current-initial="{{ $myInitial }}"
+       data-other-initial="{{ $otherInitial }}"
+       data-after="{{ $messages->last()?->send_at?->toIso8601String() }}"
+       class="flex-1 overflow-y-auto py-6 px-2 space-y-4">
     @if($messages->isEmpty())
-      <div class="flex flex-col items-center justify-center h-full text-center text-gray-400">
+      <div data-chat-empty class="flex flex-col items-center justify-center h-full text-center text-gray-400">
         <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
           <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -80,7 +86,7 @@
 
         @if(!$isMe)
           {{-- Received Message (Left) --}}
-          <div class="flex items-start gap-2.5 max-w-[80%] md:max-w-[70%]">
+          <div data-message-id="{{ $msg->id }}" class="flex items-start gap-2.5 max-w-[80%] md:max-w-[70%]">
             {{-- Partner Initial Avatar --}}
             <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-xs shrink-0 select-none mt-0.5">
               {{ $otherInitial }}
@@ -96,7 +102,7 @@
           </div>
         @else
           {{-- Sent Message (Right) --}}
-          <div class="flex items-start justify-end gap-2.5 max-w-[80%] md:max-w-[70%] ml-auto">
+          <div data-message-id="{{ $msg->id }}" class="flex items-start justify-end gap-2.5 max-w-[80%] md:max-w-[70%] ml-auto">
             <div class="flex flex-col items-end">
               <div class="bg-[#0070F3] text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm">
                 {{ $msg->content }}
@@ -137,20 +143,4 @@
   </div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const chatContainer = document.getElementById('chatMessages');
-    const messageInput = document.getElementById('messageInput');
-    
-    // Auto scroll to bottom
-    if (chatContainer) {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    // Auto focus message input
-    if (messageInput) {
-      messageInput.focus();
-    }
-  });
-</script>
 @endsection

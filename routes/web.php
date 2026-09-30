@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/presence/status', [PresenceController::class, 'index'])->name('presence.index');
     
     // Fitur Pesan / Messages
+    Route::get('/messages/{conversation}/updates', [MessageController::class, 'updates'])->name('messages.updates');
     Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/{conversation}/show', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
@@ -74,6 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{post}/comments', [PostController::class, 'storeComment'])->name('posts.comments.store');
 
     // Fitur Notifikasi
+    Route::get('/notifications/updates', [NotificationController::class, 'updates'])->name('notifications.updates');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');

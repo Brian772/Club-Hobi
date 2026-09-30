@@ -13,11 +13,9 @@
         d="M10.268 21a2 2 0 0 0 3.464 0m-10.47-5.674A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
     </svg>
 
-    @if (($unreadNotificationsCount ?? 0) > 0)
-      <span class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white">
-        {{ $unreadNotificationsCount > 99 ? '99+' : $unreadNotificationsCount }}
-      </span>
-    @endif
+    <span data-notification-count class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white {{ ($unreadNotificationsCount ?? 0) > 0 ? '' : 'hidden' }}">
+      {{ ($unreadNotificationsCount ?? 0) > 99 ? '99+' : ($unreadNotificationsCount ?? 0) }}
+    </span>
   </button>
 </header>
 
@@ -36,10 +34,8 @@
         d="M10.268 21a2 2 0 0 0 3.464 0m-10.47-5.674A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
     </svg>
 
-    @if (($unreadNotificationsCount ?? 0) > 0)
-      <span class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white">
-        {{ $unreadNotificationsCount > 99 ? '99+' : $unreadNotificationsCount }}
-      </span>
-    @endif
+    <span data-notification-count class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white {{ ($unreadNotificationsCount ?? 0) > 0 ? '' : 'hidden' }}">
+      {{ ($unreadNotificationsCount ?? 0) > 99 ? '99+' : ($unreadNotificationsCount ?? 0) }}
+    </span>
   </button>
 </div>

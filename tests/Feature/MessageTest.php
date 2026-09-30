@@ -103,4 +103,44 @@ it('shows notifications from every supported type', function () {
         ->assertSee('Notifikasi account_status')
         ->assertSee('Notifikasi comment')
         ->assertSee('Notifikasi other');
+
+    $response = $this->get(route('notifications.updates'))
+        ->assertOk()
+            ->assertJsonPath('unread_count', 5);
+
+    expect($response->json('html'))->toBeString()
+        ->and($response->json('page_html'))->toBeString()
+        ->and($response->json('page_html'))->toContain('Notifikasi account_status');
+});
+
+it('returns new messages and marks their message notifications as read', function () {
+    $sender = User::factory()->create();
+    $receiver = User::factory()->create();
+    $message = Message::create([
+        'sender_id' => $sender->id,
+        'receiver_id' => $receiver->id,
+        'content' => 'Pesan real-time',
+        'is_read' => false,
+        'send_at' => now(),
+    ]);
+    $notification = Notification::create([
+        'user_id' => $receiver->id,
+        'title' => 'Pesan baru',
+        'content' => 'Pesan masuk',
+        'type' => 'message',
+        'source_id' => $message->id,
+        'is_read' => false,
+    ]);
+
+    actingAs($receiver)
+        ->get(route('messages.updates', [
+            'conversation' => $sender->id,
+            'after' => now()->subMinute()->toIso8601String(),
+        ]))
+        ->assertOk()
+        ->assertJsonPath('messages.0.id', $message->id)
+        ->assertJsonPath('messages.0.content', 'Pesan real-time');
+
+    expect($message->fresh()->is_read)->toBeTrue()
+        ->and($notification->fresh()->is_read)->toBeTrue();
 });

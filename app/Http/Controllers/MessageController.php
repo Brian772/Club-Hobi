@@ -6,6 +6,8 @@ use App\Models\Message;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -64,15 +66,18 @@ class MessageController extends Controller
         $otherUser = User::findOrFail($conversation);
 
         // Mark unread messages from this user as read
-        Message::where('sender_id', $otherUser->id)
+        $unreadIds = Message::where('sender_id', $otherUser->id)
             ->where('receiver_id', $authId)
             ->where('is_read', false)
-            ->update(['is_read' => true]);
+            ->pluck('id');
 
-        Notification::where('user_id', $authId)
-            ->where('type', 'message')
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
+        if ($unreadIds->isNotEmpty()) {
+            Message::whereIn('id', $unreadIds)->update(['is_read' => true]);
+            Notification::where('user_id', $authId)
+                ->where('type', 'message')
+                ->whereIn('source_id', $unreadIds)
+                ->update(['is_read' => true]);
+        }
 
         // Retrieve conversation messages
         $messages = Message::where(function ($q) use ($authId, $otherUser) {
@@ -82,6 +87,53 @@ class MessageController extends Controller
         })->orderBy('send_at', 'asc')->get();
 
         return view('messages.show', compact('otherUser', 'messages'));
+    }
+
+    public function updates(Request $request, string $conversation): JsonResponse
+    {
+        $validated = $request->validate([
+            'after' => ['nullable', 'date'],
+        ]);
+
+        $authId = Auth::id();
+        $otherUser = User::findOrFail($conversation);
+        $messages = Message::where(function ($query) use ($authId, $otherUser) {
+            $query->where('sender_id', $authId)->where('receiver_id', $otherUser->id);
+        })->orWhere(function ($query) use ($authId, $otherUser) {
+            $query->where('sender_id', $otherUser->id)->where('receiver_id', $authId);
+        })
+                ->when($validated['after'] ?? null, fn ($query, $after) => $query->where(
+                    'send_at',
+                    '>=',
+                    Carbon::parse($after)->toDateTimeString()
+                ))
+            ->orderBy('send_at')
+            ->orderBy('id')
+            ->limit(100)
+            ->get();
+
+        $unreadIds = Message::where('sender_id', $otherUser->id)
+            ->where('receiver_id', $authId)
+            ->where('is_read', false)
+            ->pluck('id');
+
+        if ($unreadIds->isNotEmpty()) {
+            Message::whereIn('id', $unreadIds)->update(['is_read' => true]);
+            Notification::where('user_id', $authId)
+                ->where('type', 'message')
+                ->whereIn('source_id', $unreadIds)
+                ->update(['is_read' => true]);
+        }
+
+        return response()->json([
+            'messages' => $messages->map(fn (Message $message) => [
+                'id' => $message->id,
+                'sender_id' => $message->sender_id,
+                'content' => $message->content,
+                'send_at' => $message->send_at?->toIso8601String(),
+                'is_read' => $message->is_read,
+            ]),
+        ]);
     }
 
     /**
