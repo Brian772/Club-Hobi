@@ -7,45 +7,53 @@
 @endsection
 
 @section('content')
-  <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-3">
-    <a href="{{ route('clubs.index', $club->id) }}" class="text-ink-muted">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 16 9">
-        <path d="M0 0h16v9H0z" fill="none" />
-        <path fill="currentColor" d="M12.5 5h-9c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h9c.28 0 .5.22.5.5s-.22.5-.5.5" />
-        <path fill="currentColor"
-          d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
-      </svg>
-    </a>
-    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">{{ $club->name }}
-    </h2>
-  </header>
-  <div x-data="{ OpenLeaveModal: false }" class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
-    <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="Logo {{ $club->name }}"
-      class="rounded-md w-full md:w-100 h-48 md:h-64 object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
-    <div class="flex flex-col justify-between items-start w-full self-stretch">
-      <div class="flex flex-col gap-2">
-        <div class="flex flex-col mb-2">
-          <span class="text-caption lg:text-body-mid text-ink-muted">{{ $club->hobby->name }} <span
-              class="font-extrabold">·</span>
-            {{ $club->members_count }} Anggota</span>
-          <p class="text-caption text-ink-muted">Owner : {{ $creator->user->name ?? 'Tidak Diketahui' }}</p>
-        </div>
-        <p class="text-caption lg:text-body-mid text-ink-muted">{{ $club->description }}</p>
+  <section x-data="{ OpenLeaveModal: false }">
+    <header class="relative w-full rounded-2xl h-64">
+      @if ($club->cover_url)
+        <img src="{{ Storage::url($club->cover_url) }}" alt="{{ $club->name }}"
+          class="w-full h-full object-cover rounded-2xl border border-hairline">
+      @endif
+      <div class="absolute bg-linear-to-t from-black/60 via-black/20 to-transparent inset-0 rounded-2xl"></div>
+
+      {{-- Back --}}
+      <a href="{{ route('clubs.index', $club->id) }}"
+        class="absolute top-4 left-4 flex flex-row gap-2 rounded-full bg-canvas/30 p-2 items-center text-ink hover:bg-white/60 backdrop-blur-md transition-all duration-150">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-arrow-left-icon lucide-arrow-left">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </a>
+
+      {{-- Club Title --}}
+      <div class="flex flex-col gap-2 justify-center items-start absolute bottom-4 left-4">
+        <span class="text-small rounded-full px-2 py-1 bg-white/50 backdrop-blur-md text-ink-ink font-semibold">
+          {{ $club->hobby->name }}
+        </span>
+        <h1 class="text-title lg:text-heading-1 font-semibold text-white">
+          {{ $club->name }}
+        </h1>
       </div>
-      <?php
-      use App\Models\ClubMember;
-      
-      $isOwnerOrModerator = ClubMember::where('club_id', $club->id)
-          ->where('user_id', auth()->user()->id)
-          ->whereIn('role', ['owner', 'moderator'])
-          ->first();
-      ?>
-      <div
-        class="mt-2 flex flex-row gap-4 items-center w-full justify-start
-        {{ $isOwnerOrModerator ? 'lg:justify-between' : 'lg:justify-end' }}">
+
+      {{-- Settings --}}
+      <div class="flex flex-row gap-2 items-center absolute top-4 right-4">
+        @cannot('isOwner', $club)
+          <button type="button" @click="OpenLeaveModal = true"
+            class="text-accent-red bg-canvas/30 items-center flex flex-row gap-2 rounded-full text-body-mid px-4 py-2 cursor-pointer hover:bg-white/60 backdrop-blur-md transition-all duration-150">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-log-out preview-icon">
+              <path d="m16 17 5-5-5-5" />
+              <path d="M21 12H9" />
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            </svg>
+            Keluar
+          </button>
+        @endcannot
         @can('view', $club)
           <a href="{{ route('clubs.settings', $club->id) }}"
-            class="order-2 lg:order-1 rounded-md text-body-mid text-ink hover:bg-primary/10 hover:text-primary py-2 px-4 flex flex-row gap-2 items-center">
+            class="flex flex-row gap-2 rounded-full bg-canvas/30 px-4 py-2 items-center text-ink hover:bg-white/60 backdrop-blur-md transition-all duration-150">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="lucide lucide-settings-icon lucide-settings">
@@ -56,42 +64,67 @@
             Settings
           </a>
         @endcan
-        @cannot('isOwner', $club)
-            <button type="button" @click="OpenLeaveModal = true"
-              class="order-1 lg:order-2 lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
-              Keluar
-            </button>
-        @endcannot
+      </div>
+    </header>
+
+    {{-- Club Info --}}
+    <div class="mt-4 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <div class="min-w-0">
+        <div class="mt-2 flex flex-wrap items-center gap-2 text-caption lg:text-body-mid text-ink">
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            {{ $club->members_count }} Anggota
+          </span>
+
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
+            @if ($creator?->user?->avatar_full_url)
+              <img src="{{ $creator->user->avatar_full_url }}" alt="" class="size-5 rounded-full object-cover">
+            @endif
+            Owner: {{ $creator->user->name ?? 'Tidak Diketahui' }}
+          </span>
+        </div>
+        <div class="my-4">
+          @if ($club->description)
+            <p class="text-body-mid text-ink-muted max-w-2xl">{{ $club->description }}</p>
+          @endif
+        </div>
       </div>
 
-    </div>
-    <div x-show="OpenLeaveModal" x-cloak @keydown.escape.window="OpenLeaveModal = false"
-      class="fixed flex items-center justify-center inset-0 z-50">
-      <div @click="OpenLeaveModal = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
-      </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
-        <div class="flex flex-col gap-2 mb-4">
-          <h3 class="text-title mb-4 text-ink">
-            Leave <span x-text="selectedName"></span>?
-          </h3>
-          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin meninggalkan klub ini? Tindakan ini tidak dapat dibatalkan.</p>
+      {{-- Leave Modal --}}
+      <div x-show="OpenLeaveModal" x-cloak @keydown.escape.window="OpenLeaveModal = false"
+        class="fixed flex items-center justify-center inset-0 z-50">
+        <div @click="OpenLeaveModal = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
         </div>
-        <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
-            @csrf
-            @method('DELETE')
-            <button type="submit"
-              class="px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
-              Leave
-            </button>
-          </form>
-          <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
-            @click="OpenLeaveModal = false">Cancel</button>
+        <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+          <div class="flex flex-col gap-2 mb-4">
+            <h3 class="text-title mb-4 text-ink">
+              Leave <span x-text="selectedName"></span>?
+            </h3>
+            <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin meninggalkan klub ini? Tindakan ini tidak dapat
+              dibatalkan.</p>
+          </div>
+          <div class="flex flex-row justify-end gap-2">
+            <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
+              @csrf
+              @method('DELETE')
+              <button type="submit"
+                class="px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
+                Leave
+              </button>
+            </form>
+            <button type="button"
+              class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+              @click="OpenLeaveModal = false">Cancel</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <section id="postingan" x-data="{
       openReportModal: false,
@@ -119,9 +152,9 @@
       },
   }">
     <main x-data="{ tab: 'post' }" class="flex flex-col gap-4">
-      <div class="w-full h-max flex felx-row gap-6 border-b border-hairline">
-        <button @click="tab = 'post'" :class="tab === 'post' ? 'text-primary border-b-2 border-primary' : 'text-ink'"
-          class="w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2">
+      <div class="w-full md:w-max h-max flex felx-row gap-6 p-2 rounded-full border border-hairline">
+        <button @click="tab = 'post'" :class="tab === 'post' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
+          class="w-1/2 md:w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="lucide lucide-text-align-start-icon lucide-text-align-start">
@@ -132,8 +165,8 @@
           Postingan
         </button>
         <button @click="tab = 'member'"
-          :class="tab === 'member' ? 'text-primary border-b-2 border-primary' : 'text-ink'"
-          class="w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2">
+          :class="tab === 'member' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
+          class="w-1/2 md:w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="lucide lucide-users-round-icon lucide-users-round">
@@ -149,7 +182,7 @@
       <div x-show="tab === 'post'">
         @if ($club->posts->isNotEmpty())
           <header class="mb-4 flex flex-row items-center justify-between">
-            <h2 class="text-title lg:text-heading-2 text-ink font-bold">Postingan</h2>
+            <h2 class="text-title lg:text-heading-3 text-ink font-semibold">Postingan</h2>
             <a href="{{ route('posts.create') }}"
               class="inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
               + Buat Postingan
@@ -194,7 +227,7 @@
       {{-- Member --}}
       <div x-show="tab === 'member'">
         <header class="mb-4">
-          <h2 class="text-title lg:text-heading-2 text-ink font-bold">Member</h2>
+          <h2 class="text-title lg:text-heading-3 text-ink font-semibold">Member</h2>
         </header>
         @if (empty($members))
           <p class="text-caption text-ink-muted">Belum ada member di klub ini.</p>
