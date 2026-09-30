@@ -50,11 +50,11 @@
 
               @case('report')
               @case('account_status')
-                @include('layouts.partials.icons.bell')
+                @include('layouts.partials.icons.notif')
               @break
 
               @default
-                @include('layouts.partials.icons.bell')
+                @include('layouts.partials.icons.notif')
             @endswitch
           </div>
           <div>
@@ -111,11 +111,11 @@
 
               @case('report')
               @case('account_status')
-                @include('layouts.partials.icons.bell')
+                @include('layouts.partials.icons.notif')
               @break
 
               @default
-                @include('layouts.partials.icons.bell')
+                @include('layouts.partials.icons.notif')
             @endswitch
           </div>
           <div>

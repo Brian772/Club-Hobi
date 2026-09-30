@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Clubs;
 use App\Http\Requests\StoreClubRequestRequest;
 use App\Http\Controllers\Controller;
 use App\Models\ClubRequest;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -46,7 +48,7 @@ class ClubRequestController extends Controller
             if ($request->hasFile('cover')) {
                 $coverPath = $request->file('cover')->store('club/covers', 'public');
             }
-            ClubRequest::create([
+            $clubRequest = ClubRequest::create([
                 'id'         => Str::uuid(),
                 'user_id'    => Auth::id(),
                 'name'       => $validated['name'],
@@ -56,6 +58,16 @@ class ClubRequestController extends Controller
                 'cover_url'  => $coverPath,
                 'status'     => 'pending',
             ]);
+
+            User::where('role_global', 'admin')->pluck('id')->each(function ($adminId) use ($clubRequest) {
+                Notification::createForUser(
+                    $adminId,
+                    'Permintaan klub baru',
+                    Auth::user()->name . ' mengajukan klub ' . $clubRequest->name . '.',
+                    'other',
+                    $clubRequest->id
+                );
+            });
             DB::commit();
 
             return redirect()->route('clubs.index')->with('success', 'Permintaan klub berhasil dikirim!');

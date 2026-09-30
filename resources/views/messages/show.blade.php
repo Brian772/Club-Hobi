@@ -32,7 +32,10 @@
       {{-- Partner Name --}}
       <div>
         <h2 class="text-base font-bold text-gray-900 leading-tight">{{ $otherUser->name }}</h2>
-        <span class="text-[11px] text-gray-400">{{ $otherUser->role_global === 'admin' ? 'Admin' : 'Member' }}</span>
+        <span data-presence-user="{{ $otherUser->id }}" class="inline-flex items-center gap-1.5 text-[11px] text-gray-500">
+          <span data-presence-dot class="h-2 w-2 rounded-full {{ $otherUser->isOnline() ? 'bg-emerald-500' : 'bg-gray-300' }}"></span>
+          <span data-presence-label>{{ $otherUser->isOnline() ? 'Online' : 'Offline' }}</span>
+        </span>
       </div>
     </div>
 

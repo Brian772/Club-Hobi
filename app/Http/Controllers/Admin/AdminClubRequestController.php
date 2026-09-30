@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ClubRequest;
 use App\Models\Club;
 use App\Models\ClubMember;
+use App\Models\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -61,6 +62,13 @@ class AdminClubRequestController extends Controller
             ]);
 
             DB::commit();
+            Notification::createForUser(
+                $clubRequest->user_id,
+                'Permintaan klub disetujui',
+                'Permintaan klub ' . $clubRequest->name . ' telah disetujui.',
+                'other',
+                $clubRequest->id
+            );
         } catch(\Throwable $e){
             DB::rollBack();
             return redirect()->route('admin.clubs.request')->with('error', 'Failed to accept club request.');
@@ -86,6 +94,13 @@ class AdminClubRequestController extends Controller
             ]);
 
             DB::commit();
+            Notification::createForUser(
+                $clubRequest->user_id,
+                'Permintaan klub ditolak',
+                'Permintaan klub ' . $clubRequest->name . ' tidak disetujui.',
+                'other',
+                $clubRequest->id
+            );
         } catch(\Throwable $e){
             DB::rollBack();
             return redirect()->route('admin.clubs.request')->with('error', 'Failed to reject club request.');

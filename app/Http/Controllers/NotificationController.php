@@ -25,4 +25,14 @@ class NotificationController extends Controller
 
         return back();
     }
+
+    public function markAllAsRead(): RedirectResponse
+    {
+        auth()->user()
+            ->notifications()
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return back();
+    }
 }

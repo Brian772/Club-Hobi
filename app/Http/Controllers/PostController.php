@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\PostMedia;
 use App\Models\Comment;
 use App\Models\Like;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -55,6 +56,17 @@ class PostController extends Controller
             'title' => $validated['title'],
             'content' => $validated['content'],
         ]);
+
+        $club->members()
+            ->where('user_id', '!=', $user->id)
+            ->pluck('user_id')
+            ->each(fn ($memberId) => Notification::createForUser(
+                $memberId,
+                'Postingan baru di klub',
+                $user->name . ' membagikan postingan baru: ' . $post->title,
+                'other',
+                $post->id
+            ));
 
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {
@@ -218,6 +230,16 @@ class PostController extends Controller
                 'post_id' => $post->id,
                 'user_id' => $userId,
             ]);
+
+            if ($post->user_id !== $userId) {
+                Notification::createForUser(
+                    $post->user_id,
+                    'Postingan disukai',
+                    Auth::user()->name . ' menyukai postinganmu.',
+                    'other',
+                    $post->id
+                );
+            }
         }
 
         return back();
@@ -238,6 +260,21 @@ class PostController extends Controller
         ]);
 
         $comment->load('user');
+
+        $recipientIds = collect([$post->user_id, $comment->parent?->user_id])
+            ->filter()
+            ->unique()
+            ->reject(fn ($userId) => $userId === Auth::id());
+
+        foreach ($recipientIds as $recipientId) {
+            Notification::createForUser(
+                $recipientId,
+                'Komentar baru',
+                $comment->user->name . ' mengomentari postinganmu.',
+                'comment',
+                $comment->id
+            );
+        }
 
         return response()->json([
             'id' => $comment->id,

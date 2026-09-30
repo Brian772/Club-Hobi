@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\Report;
 use App\Models\User;
 use App\Models\Post;
+use App\Models\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,7 @@ class ReportController extends Controller
                 'comment' => $reportedContent->user_id,
             };
 
-            Report::create([
+            $report = Report::create([
                 'id' => Str::uuid(),
                 'reporter_id' => Auth::user()->id,
                 'reported_user_id' => $reportedUserId,
@@ -49,6 +50,16 @@ class ReportController extends Controller
                 'reason' => $request->reason,
                 'status' => 'pending',
             ]);
+
+            User::where('role_global', 'admin')->pluck('id')->each(function ($adminId) use ($report) {
+                Notification::createForUser(
+                    $adminId,
+                    'Laporan baru',
+                    Auth::user()->name . ' mengirim laporan untuk ditinjau.',
+                    'report',
+                    $report->id
+                );
+            });
 
             DB::commit();
             return redirect()->back()->with('success', 'Report berhasil dikirim!');

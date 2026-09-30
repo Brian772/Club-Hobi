@@ -47,6 +47,10 @@
                 <span class="font-semibold text-gray-900 text-sm group-hover:text-primary transition truncate">
                   {{ $partner->name }}
                 </span>
+                <span data-presence-user="{{ $partner->id }}" class="inline-flex items-center gap-1 text-[10px] text-gray-500">
+                  <span data-presence-dot class="h-2 w-2 rounded-full {{ $partner->isOnline() ? 'bg-emerald-500' : 'bg-gray-300' }}"></span>
+                  <span data-presence-label>{{ $partner->isOnline() ? 'Online' : 'Offline' }}</span>
+                </span>
                 @if($conv->unread_count > 0)
                   <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
                 @endif
@@ -87,7 +91,10 @@
             </div>
             <div class="min-w-0 flex-1">
               <p class="text-xs font-semibold text-gray-900 truncate group-hover:text-primary">{{ $sUser->name }}</p>
-              <p class="text-[11px] text-gray-400 truncate">{{ $sUser->interests ?? 'Member Orbii' }}</p>
+              <p data-presence-user="{{ $sUser->id }}" class="inline-flex items-center gap-1 text-[11px] text-gray-400">
+                <span data-presence-dot class="h-1.5 w-1.5 rounded-full {{ $sUser->isOnline() ? 'bg-emerald-500' : 'bg-gray-300' }}"></span>
+                <span data-presence-label>{{ $sUser->isOnline() ? 'Online' : 'Offline' }}</span>
+              </p>
             </div>
             <svg class="w-4 h-4 text-gray-400 group-hover:text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

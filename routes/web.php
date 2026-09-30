@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Clubs\ClubController;
 use App\Http\Controllers\Clubs\ClubRequestController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -46,6 +47,9 @@ Route::get('/mobile/navigation', function () {
 
 // Route yang membutuhkan login (Auth Middleware)
 Route::middleware('auth')->group(function () {
+
+    Route::post('/presence/heartbeat', [PresenceController::class, 'heartbeat'])->name('presence.heartbeat');
+    Route::get('/presence/status', [PresenceController::class, 'index'])->name('presence.index');
     
     // Fitur Pesan / Messages
     Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages.index');
@@ -71,6 +75,7 @@ Route::middleware('auth')->group(function () {
 
     // Fitur Notifikasi
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 
     // Logout

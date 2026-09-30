@@ -5,7 +5,7 @@
   <div class="mb-6 flex items-center justify-between gap-3">
     <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">Notifikasi</h1>
     @if(auth()->user()->notifications()->where('is_read', false)->exists())
-      <form action="{{ route('notifications.read', ['id' => auth()->user()->notifications()->where('is_read', false)->first()->id]) }}" method="POST">
+      <form action="{{ route('notifications.read-all') }}" method="POST">
         @csrf
         @method('PATCH')
         <button type="submit" class="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:border-primary/40 hover:text-primary">

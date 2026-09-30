@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Appeal;
 use App\Models\Report;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -36,6 +37,13 @@ class ModerationController extends Controller
     public function appealReject(Appeal $appeal)
     {
         $appeal->update(['status' => 'rejected']);
+        Notification::createForUser(
+            $appeal->user_id,
+            'Banding ditolak',
+            'Banding akunmu tidak disetujui.',
+            'account_status',
+            $appeal->id
+        );
         return redirect()->back()->with('success', 'Appeal has been rejected.');
     }
 
@@ -50,6 +58,13 @@ class ModerationController extends Controller
                 'reason' => null,
                 'suspended_until' => null,
             ]);
+            Notification::createForUser(
+                $appeal->user_id,
+                'Akun dipulihkan',
+                'Bandingmu disetujui dan status akunmu telah dipulihkan.',
+                'account_status',
+                $appeal->id
+            );
             
             DB::commit();
         } catch (\Throwable $th) {
@@ -73,9 +88,10 @@ class ModerationController extends Controller
         DB::beginTransaction();
 
         try {
+            $reportedUser = $report->reportedUser;
             switch ($action) {
                 case 'suspend':
-                    $report->reportedUser->update([
+                    $reportedUser->update([
                         'status' => 'suspended',
                         'reason' => $reason,
                         'suspended_until' => now()->addDays(7),
@@ -83,13 +99,30 @@ class ModerationController extends Controller
                     $report->update(['status' => 'resolved']);
                     break;
                 case 'ban':
-                    $report->reportedUser->update([
+                    $reportedUser->update([
                         'status' => 'banned',
                         'reason' => $reason,
                     ]);
                     $report->update(['status' => 'resolved']);
                     break;
             }
+
+            Notification::createForUser(
+                $reportedUser->id,
+                'Status akun diperbarui',
+                $action === 'suspend'
+                    ? 'Akunmu ditangguhkan selama 7 hari: ' . $reason
+                    : 'Akunmu telah diblokir: ' . $reason,
+                'account_status',
+                $report->id
+            );
+            Notification::createForUser(
+                $report->reporter_id,
+                'Laporan ditindaklanjuti',
+                'Laporan yang kamu kirim telah ditindaklanjuti.',
+                'report',
+                $report->id
+            );
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -103,6 +136,13 @@ class ModerationController extends Controller
     public function ignored(Report $report)
     {
         $report->update(['status' => 'ignored']);
+        Notification::createForUser(
+            $report->reporter_id,
+            'Laporan ditinjau',
+            'Laporan yang kamu kirim telah ditinjau.',
+            'report',
+            $report->id
+        );
 
         return redirect()->back()->with('success', 'Report has been ignored.');
     }

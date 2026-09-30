@@ -39,6 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'suspended_until',
         'email_verified_at',
         'remember_token',
+        'last_seen_at',
     ];
 
     protected $hidden = [
@@ -49,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'suspended_until' => 'datetime',
         'email_verified_at' => 'datetime',
+        'last_seen_at' => 'datetime',
     ];
 
     protected $appends = ['avatar_full_url'];
@@ -67,6 +69,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class)->latest('created_at');
+    }
+
+    public function isOnline(): bool
+    {
+        return $this->last_seen_at?->greaterThan(now()->subMinutes(2)) ?? false;
     }
 
     public function getAvatarFullUrlAttribute(): ?string

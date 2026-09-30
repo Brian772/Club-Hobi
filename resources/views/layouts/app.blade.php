@@ -18,7 +18,11 @@
   </style>
 </head>
 
-<body class="bg-canvas-soft">
+<body class="bg-canvas-soft"
+  @auth
+    data-presence-heartbeat-url="{{ route('presence.heartbeat') }}"
+    data-presence-status-url="{{ route('presence.index') }}"
+  @endauth>
 
 
   @if (Route::is(['login', 'register', 'home', 'landing', 'landing.page']))
@@ -87,6 +91,60 @@
       @include('layouts.partials.notification-panel')
     </div>
   @endif
+  @auth
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const heartbeatUrl = document.body.dataset.presenceHeartbeatUrl;
+        const statusUrl = document.body.dataset.presenceStatusUrl;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+        const sendHeartbeat = () => {
+          if (!document.hidden) {
+            fetch(heartbeatUrl, {
+              method: 'POST',
+              headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+              credentials: 'same-origin',
+            });
+          }
+        };
+
+        const refreshPresence = async () => {
+          const indicators = [...document.querySelectorAll('[data-presence-user]')];
+          if (!indicators.length) return;
+
+          const query = new URLSearchParams();
+          [...new Set(indicators.map((indicator) => indicator.dataset.presenceUser))]
+            .forEach((id) => query.append('ids[]', id));
+
+          try {
+            const response = await fetch(`${statusUrl}?${query}`, {
+              headers: { 'Accept': 'application/json' },
+              credentials: 'same-origin',
+            });
+            if (!response.ok) return;
+
+            const { users } = await response.json();
+            indicators.forEach((indicator) => {
+              const online = users[indicator.dataset.presenceUser]?.online ?? false;
+              const dot = indicator.querySelector('[data-presence-dot]');
+              const label = indicator.querySelector('[data-presence-label]');
+              if (dot) {
+                dot.classList.toggle('bg-emerald-500', online);
+                dot.classList.toggle('bg-gray-300', !online);
+              }
+              if (label) label.textContent = online ? 'Online' : 'Offline';
+            });
+          } catch (_) {}
+        };
+
+        sendHeartbeat();
+        refreshPresence();
+        window.setInterval(sendHeartbeat, 30000);
+        window.setInterval(refreshPresence, 30000);
+        document.addEventListener('visibilitychange', sendHeartbeat);
+      });
+    </script>
+  @endauth
   @stack('scripts')
   @livewireScripts()
 </body>
