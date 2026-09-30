@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Login')
+
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -7,7 +9,7 @@
 
 @section('content')
   <div class="flex flex-col md:flex-row items-center justify-center">
-    <div class="order-2 md:order-1 md:w-1/2 max-w-[400px] w-full flex flex-col">
+    <div class="order-2 md:order-1 md:w-120 w-full flex flex-col">
       <h1 class="text-[26px] font-bold text-primary">
         Welcome Back To Orbii
       </h1>
@@ -55,18 +57,13 @@
       </form>
 
       <div class="divider">
-        <span>Login With SSO</span>
+        <span>Or Login With</span>
       </div>
 
       <div class="social-login">
         <a href="{{ route('social.redirect', 'google') }}" class="social-button">
           <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="24px" height="24px">
           <span>Continue With Google</span>
-        </a>
-
-        <a href="{{ route('social.redirect', 'facebook') }}" class="social-button">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" width="24px" height="24px">
-          <span>Continue With Facebook</span>
         </a>
       </div>
     </div>

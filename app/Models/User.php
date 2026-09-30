@@ -34,6 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'interests',
         'role_global',
         'status',
+        'status_updated_at',
         'reason',
         'suspended_until',
         'email_verified_at',
@@ -71,7 +72,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getAvatarFullUrlAttribute(): ?string
     {
         $avatar = (string) ($this->avatar_url ?? '');
-        if (!$avatar === '') {
+        if (empty($avatar)) {
             return null;
         }
 
@@ -145,4 +146,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Appeal::class, 'user_id');
     }
     
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'reportable',  'content_type', 'content_id');
+    }
 }

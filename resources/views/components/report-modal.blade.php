@@ -7,12 +7,12 @@
     <div class="flex flex-col gap-2 mb-4">
       <div class="flex flex-row mb-4 justify-between items-start">
         <div>
-          <h3 class="text-title text-ink">
+          <h3 class="text-title mb-2 text-ink">
             Laporkan <span x-text="contentType"></span>
           </h3>
           <p x-show="contentType === 'user'" class="text-ink-muted text-caption">Laporkan pengguna ini jika melanggar
             aturan dan ketentuan yang berlaku di orbii.</p>
-          <p x-show="contentType === 'postingan'" class="text-ink-muted text-caption">Laporkan postingan ini jika
+          <p x-show="contentType === 'post'" class="text-ink-muted text-caption">Laporkan postingan ini jika
             melanggar aturan dan ketentuan yang berlaku di orbii.</p>
           <p x-show="contentType === 'comment'" class="text-ink-muted text-caption">Laporkan komentar ini jika melanggar
             aturan dan ketentuan yang berlaku di orbii.</p>

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\Club;
+use App\Models\ClubActivity;
 use App\Models\ClubMember;
 use App\Models\ClubJoinRequest;
 
@@ -17,6 +18,8 @@ class ClubJoinRequestController extends Controller
     {
         $user_id = Auth::user()->id;
         $club_id = $club->id;
+
+        DB::beginTransaction();
 
         try {
             $existRequest = ClubJoinRequest::where('club_id', $club_id)
@@ -34,10 +37,14 @@ class ClubJoinRequestController extends Controller
                 'user_id' => $user_id,
                 'status' => 'pending',
             ]);
-            return redirect()->back()->with('success', 'Join request sent successfully.');
+
+            DB::commit();
         } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()->back()->with('error', 'An error occurred while sending the join request.');
         }
+
+        return redirect()->back()->with('success', 'Join request sent successfully.');
     }
 
     public function acceptRequest(Club $club, $id)
@@ -61,6 +68,18 @@ class ClubJoinRequestController extends Controller
                 'joined_at' => now(),
             ]);
 
+            ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $club->id,
+                'action' => 'Accept Join Request',
+                'target_type' => 'User',
+                'target_id' => $joinRequest->user_id,
+                'metadata' => [
+                    'role' => $joinRequest->user->role_global ?? 'member',
+                ],
+            ]);
+
             $joinRequest->update([
                 'status' => 'approved',
             ]);
@@ -82,14 +101,31 @@ class ClubJoinRequestController extends Controller
         if ($joinRequest->status !== 'pending') {
             return redirect()->back()->with('error', 'Request already processed or an error occurred while processing the request.');
         }
+        DB::beginTransaction();
         try {
             $joinRequest->update([
                 'status' => 'rejected',
             ]);
-            return redirect()->back()->with('success', 'Join request rejected successfully.');
+
+            ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $club->id,
+                'action' => 'Reject Join Request',
+                'target_type' => 'User',
+                'target_id' => $joinRequest->user_id,
+                'metadata' => [
+                    'role' => $joinRequest->user->role_global ?? 'member',
+                ],
+            ]);
+
+            DB::commit();
         } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()->back()->with('error', 'An error occurred while processing the join request.');
         }
+
+        return redirect()->back()->with('success', 'Join request rejected successfully.');
     }
 
     public function cancelRequest(Club $club)
@@ -102,11 +138,14 @@ class ClubJoinRequestController extends Controller
         if ($pendingRequests->status !== 'pending') {
             return redirect()->back()->with('error', 'Request already processed or an error occurred while processing the request.');
         }
+        DB::beginTransaction();
         try {
             $pendingRequests->delete();
-            return redirect()->back()->with('success', 'Join request canceled successfully.');
+            DB::commit();
         } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()->back()->with('error', 'An error occurred while canceling the join request.');
         }
+        return redirect()->back()->with('success', 'Join request canceled successfully.');
     }
 }

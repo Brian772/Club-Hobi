@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Request Detail')
+
 @section('content')
   <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-6">
     <a href="{{ route('clubs.request.list') }}" class="text-ink-muted">
@@ -13,28 +15,28 @@
     <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">Request Detail</h2>
   </header>
 
-  <main class="flex flex-col gap-6 max-w-4xl">
+  <main class="flex flex-col gap-4 max-w-4xl" x-data="{ showCancel: false }">
     <img src="{{ Storage::url($clubRequest->cover_url) }}" alt="{{ $clubRequest->name }} Cover"
       class="w-full lg:w-lg h-40 lg:h-64 mb-4 rounded-lg object-cover border border-hairline">
-    <div class="flex flex-col">
-      <h3 class="text-ink text-heading-3">{{ $clubRequest->name }}</h3>
+    <div class="flex flex-col gap-1">
+      <h3 class="text-ink text-title">{{ $clubRequest->name }}</h3>
       <p class="text-ink text-caption font-semibold">Kategori : <span
           class="text-ink-muted">{{ $clubRequest->hobby->name }}</span></p>
     </div>
 
     <div class="flex flex-col gap-1">
-      <h4 class="text-ink text-title">Deskripsi :</h4>
-      <p class="text-ink-muted text-body-mid">{{ $clubRequest->description }}</p>
+      <h4 class="text-ink text-body-mid">Deskripsi :</h4>
+      <p class="text-ink-muted text-caption">{{ $clubRequest->description }}</p>
     </div>
 
     <div class="flex flex-col gap-1">
-      <h4 class="text-ink text-title">Alasan Pengajuan :</h4>
-      <p class="text-ink-muted text-body-mid">{{ $clubRequest->reason }}</p>
+      <h4 class="text-ink text-body-mid">Alasan Pengajuan :</h4>
+      <p class="text-ink-muted text-caption">{{ $clubRequest->reason }}</p>
     </div>
 
     <div class="flex flex-col gap-1">
-      <h4 class="text-ink text-title">Status :</h4>
-      <p class="text-ink-muted text-body-mid">
+      <h4 class="text-ink text-body-mid">Status :</h4>
+      <p class="text-ink-muted text-caption">
         @if ($clubRequest->status === 'pending')
           <span class="text-accent-yellow font-semibold">{{ ucfirst($clubRequest->status) }}</span>
         @elseif ($clubRequest->status === 'approved')
@@ -47,23 +49,62 @@
 
     @if ($clubRequest->status === 'rejected' && $clubRequest->rejected_reason)
       <div class="flex flex-col gap-1">
-        <h4 class="text-ink text-title">Alasan Ditolak :</h4>
-        <p class="text-ink-muted text-body-mid">{{ $clubRequest->rejected_reason }}</p>
+        <h4 class="text-ink text-body-mid">Alasan Ditolak :</h4>
+        <p class="text-ink-muted text-caption">{{ $clubRequest->rejected_reason }}</p>
       </div>
     @endif
 
     @if ($clubRequest->status !== 'pending')
       <div class="flex flex-col gap-1">
-        <h4 class="text-ink text-title">Direview Oleh :</h4>
-        <p class="text-ink-muted text-body-mid">
+        <h4 class="text-ink text-body-mid">Direview Oleh :</h4>
+        <p class="text-ink-muted text-caption">
           {{ $clubRequest->reviewer ? $clubRequest->reviewer->name : 'Belum Direview' }}</p>
       </div>
 
       <div class="flex flex-col gap-1">
-        <h4 class="text-ink text-title">Tanggal Direview :</h4>
-        <p class="text-ink-muted text-body-mid">
+        <h4 class="text-ink text-body-mid">Tanggal Direview :</h4>
+        <p class="text-ink-muted text-caption">
           {{ $clubRequest->reviewed_at ? $clubRequest->reviewed_at->format('d M Y') : 'Belum Direview' }}</p>
       </div>
     @endif
+
+    @if ($clubRequest->status === 'pending')
+      <form action="{{ route('clubs.request.cancel', $clubRequest->id) }}" method="POST" x-ref="cancelForm"
+        @submit.prevent="showCancel = true">
+        @csrf
+        @method('DELETE')
+        <button
+          tpye="submit" class="bg-accent-red/10 text-accent-red mt-8 flex flex-row gap-2 items-center hover:text-white rounded-md px-4 py-2 hover:bg-accent-red w-max">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+          Batalkan Pengajuan</button>
+      </form>
+    @endif
+
+    {{-- Cancel Modal --}}
+    <div x-show="showCancel" x-cloak @keydown.escape.window="showCancel = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="showCancel = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Batal Ajuan Klub
+          </h3>
+          <p class="text-body-mid mb-4 text-ink">Apakah anda yakin ingin membatalkan pengajuan klub ini?</p>
+        </div>
+        <div class="flex flex-row justify-end gap-2">
+          <button type="button" @click="showCancel = false; $refs.cancelForm.submit();"
+            class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
+            Ya, Batalkan
+          </button>
+          <button type="button"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            @click="showCancel = false">Cancel</button>
+        </div>
+      </div>
+    </div>
   </main>
 @endsection

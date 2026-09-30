@@ -301,22 +301,24 @@ button.settings-card {
     background: #ffffff;
 }
 
-.logout-yes {
-    border: 1px solid #ff3333;
+.logout-modal-buttons button.logout-yes {
+    background: rgba(255, 56, 60, 0.1);
     color: #ff3333;
 }
 
-.logout-yes:hover {
-    background: #fff5f5;
+.logout-modal-buttons button.logout-yes:hover {
+    background: rgba(255, 56, 60, 1);
+    color: #ffffff;
 }
 
-.logout-cancel {
-    border: 1px solid #e5e7eb;
-    color: #5f5f5f;
+.logout-modal-buttons button.logout-cancel {
+    background: #E5E7EB;
+    color: #000000;
 }
 
-.logout-cancel:hover {
-    background: #f9fafb;
+.logout-modal-buttons button.logout-cancel:hover {
+    background: #D1D5DB;
+    color: #111827;
 }
 
 /* Profile */

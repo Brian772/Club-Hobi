@@ -52,6 +52,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/request/list', [ClubRequestController::class, 'listRequest'])->name('request.list');
         Route::get('/request/list/{request}', [ClubRequestController::class, 'detail'])->name('request.detail');
         Route::post('/request/store', [ClubRequestController::class, 'storeRequest'])->name('request.store');
+        Route::delete('/request/{request}/cancel', [ClubRequestController::class, 'destroylRequest'])->name('request.cancel');
+        Route::get('/{club}/activity/{activity}', [ClubController::class, 'showActivity'])->name('activity.show');
         Route::get('/{club}', [ClubController::class, 'show'])->name('show');
         Route::get('/{club}/settings', [ClubController::class, 'settings'])->name('settings');
         Route::put('/{club}/settings', [ClubController::class, 'update'])->name('update');
@@ -86,28 +88,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/comments/{comment}', [PostController::class, 'destroyComment'])->name('comments.destroy');
 
     Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
-    Route::prefix('settings')->name('settings.')->group(function () {
-        Route::get('/', [SettingsController::class, 'settings'])
-            ->name('index');
-        Route::get('/profile', [SettingsController::class, 'profilesettings'])
-            ->name('profile');
-        // Update Nama + Bio
-        Route::post('/profile/update', [SettingsController::class, 'updateProfile'])
-            ->name('profile.update');
-        // Ganti / Upload Foto
-        Route::post('/profile/avatar', [SettingsController::class, 'updateAvatar'])
-            ->name('profile.avatar');
-        // Hapus Foto
-        Route::delete('/profile/avatar', [SettingsController::class, 'deleteAvatar'])
-            ->name('profile.avatar.delete');
-        // Tambah Hobi
-        Route::post('/profile/hobby', [SettingsController::class, 'addHobby'])
-            ->name('profile.hobby.add');
-        Route::delete('/profile/hobby/{clubId}', [SettingsController::class, 'deleteHobby'])
-            ->name('profile.hobby.delete');
-        Route::get('/account', [SettingsController::class, 'accountsettings'])
-            ->name('account');
-    });
 
     Route::get('/banned', [BannedController::class, 'index'])->name('banned');
     Route::get('/appeals', [AppealController::class, 'index'])->name('appeal');

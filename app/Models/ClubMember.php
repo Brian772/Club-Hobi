@@ -11,8 +11,6 @@ class ClubMember extends Model
     use HasUuids;
 
     public $timestamps = false;
-    protected $guarded = [];
-    
     protected $table = 'club_members';
     protected $keyType = 'string';
     public $incrementing = false;

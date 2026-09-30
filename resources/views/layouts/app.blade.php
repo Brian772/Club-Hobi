@@ -5,8 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-  <title>Club Hobi</title>
+
+  <link rel="icon" type="image/png" href="{{ asset('favicon/favicon-96x96.png') }}" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="{{ asset('favicon/favicon.svg') }}" />
+  <link rel="shortcut icon" href="{{ asset('favicon/favicon.ico') }}" />
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon/apple-touch-icon.png') }}" />
+  <meta name="apple-mobile-web-app-title" content="Orbii" />
+  <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}" />
+
+  <title>@yield('title', 'Orbii')</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @yield('styles')
   @livewireStyles()
@@ -20,13 +27,75 @@
 
 <body class="bg-canvas-soft">
 
-
   @if (Route::is('login') || Route::is('register') || Route::is('home'))
-    <div class="flex flex-col p-6 lg:p-8 min-h-dvh justify-center">
+    <div x-data="{ navOpen: false }" class="flex flex-col p-6 lg:p-8 min-h-dvh items-center justify-center">
       <x-alert />
 
+      {{-- panel --}}
+      <div x-show="navOpen" x-cloak @keydown.escape.window="navOpen = false" class="lg:hidden fixed inset-0 z-50">
+        {{-- background gelap --}}
+        <div x-transition.opacity @click="navOpen = false" class="fixed inset-0 z-40 bg-black/30"></div>
+
+        {{-- panel --}}
+        <div x-transition.opacity @click.stop
+          class="fixed top-20 right-4 w-xs h-max max-h-[calc(100dvh-6rem)] overflow-y-auto rounded-lg z-50 max-w-sm bg-canvas border border-hairline">
+          <div class="flex items-center justify-between p-4">
+            <a href="{{ route('home') }}">
+              <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" draggable="false" alt="Orbii Logo" height="32"
+                class="h-9 w-max object-contain">
+            </a>
+            <button type="button" @click="navOpen = false" aria-label="Tutup Menu" class="hover:bg-canvas">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M4.45742 4.43968C4.59672 4.30029 4.76212 4.18971 4.94417 4.11427C5.12622 4.03883 5.32135 4 5.51842 4C5.71548 4 5.91061 4.03883 6.09266 4.11427C6.27471 4.18971 6.44012 4.30029 6.57942 4.43968L11.8824 9.74368L17.1854 4.44068C17.4667 4.15929 17.8482 4.00115 18.2461 4.00105C18.6439 4.00096 19.0255 4.15892 19.3069 4.44018C19.5883 4.72144 19.7464 5.10297 19.7465 5.50083C19.7466 5.89868 19.5887 6.28029 19.3074 6.56168L14.0034 11.8657L19.3074 17.1687C19.4467 17.308 19.5571 17.4734 19.6325 17.6554C19.7078 17.8375 19.7466 18.0325 19.7465 18.2295C19.7465 18.4265 19.7076 18.6216 19.6322 18.8036C19.5568 18.9856 19.4462 19.1509 19.3069 19.2902C19.1676 19.4294 19.0022 19.5399 18.8202 19.6153C18.6381 19.6906 18.4431 19.7294 18.2461 19.7293C18.0491 19.7293 17.854 19.6904 17.672 19.615C17.49 19.5395 17.3247 19.429 17.1854 19.2897L11.8824 13.9857L6.57942 19.2887C6.44111 19.432 6.27565 19.5464 6.09268 19.6251C5.90971 19.7038 5.7129 19.7452 5.51374 19.7471C5.31457 19.7489 5.11703 19.711 4.93265 19.6357C4.74827 19.5603 4.58074 19.449 4.43984 19.3083C4.29894 19.1675 4.18748 19.0001 4.11197 18.8158C4.03646 18.6315 3.99841 18.434 4.00005 18.2348C4.00169 18.0356 4.04297 17.8388 4.1215 17.6557C4.20002 17.4727 4.31422 17.3071 4.45742 17.1687L9.76242 11.8637L4.45742 6.56068C4.17652 6.27943 4.01874 5.89818 4.01874 5.50068C4.01874 5.10318 4.17652 4.72093 4.45742 4.43968Z"
+                  fill="black" />
+              </svg>
+            </button>
+          </div>
+          <div class="flex flex-col gap-2 p-4">
+            <a href="{{ route('home') }}#explore" class="w-full px-4 py-2 rounded-md hover:bg-canvas-muted">Explore</a>
+            <a href="{{ route('home') }}#discover"
+              class="w-full px-4 py-2 rounded-md hover:bg-canvas-muted">Discover</a>
+            <a href="{{ route('home') }}#how-it-works" class="w-full px-4 py-2 rounded-md hover:bg-canvas-muted">How It
+              Works</a>
+            <a href="{{ route('home') }}#preview" class="w-full px-4 py-2 rounded-md hover:bg-canvas-muted">Preview</a>
+          </div>
+        </div>
+      </div>
+
+      @include('layouts.partials.guests.topbar')
       @yield('content')
+
     </div>
+    @if (Route::is('home'))
+      <footer class="bg-canvas-light/50 pt-12 pb-4 mt-24">
+        <div class="w-full px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col md:flex-row justify-around items-start md:items-center">
+            <div class="mb-4 md:mb-0">
+              <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" draggable="false" class="w-max h-16 object-contain mb-2">
+              <p class="text-body-mid text-ink">Find your people. Your hobby, your space.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 w-max gap-6 xl:gap-16">
+              <div class="flex flex-col gap-2 items-start">
+                <span class="text-ink text-body-mid font-semibold mb-2">Navigation</span>
+                <a href="#explore" class="text-body-mid text-ink hover:text-primary">Explore</a>
+                <a href="#discover" class="text-body-mid text-ink hover:text-primary">Discover</a>
+                <a href="#how-it-works" class="text-body-mid text-ink hover:text-primary">How It Works</a>
+                <a href="#preview" class="text-body-mid text-ink hover:text-primary">Preview</a>
+              </div>
+              <div class="flex flex-col gap-2 items-start">
+                <span class="text-ink text-body-mid font-semibold mb-2">Account</span>
+                <a href="{{ route('login') }}" class="text-body-mid text-ink hover:text-primary">Login</a>
+                <a href="{{ route('register') }}" class="text-body-mid text-ink hover:text-primary">Register</a>
+              </div>
+            </div>
+          </div>
+          <div class="mt-8 text-center border-t border-hairline pt-4">
+            <p class="text-caption text-ink">&copy; 2026 Orbii. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    @endif
   @elseif (Route::is('appeal'))
     <div class="flex flex-col p-6 lg:p-8 min-h-dvh items-center justify-center">
       <x-alert />
@@ -46,26 +115,37 @@
       <div x-show="sidebarOpen" x-cloak @keydown.escape.window="sidebarOpen = false"
         class="lg:hidden fixed inset-0 z-50">
         {{-- background gelap --}}
-        <div x-transition:enter="transition-opacity ease-out duration-200" x-transition:enter-start="opacity-0"
-          x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-in duration-200"
-          x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="sidebarOpen = false"
+        <div
+          x-transition:enter="transition-opacity ease-out duration-200"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          x-transition:leave="transition-opacity ease-in duration-200"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
+          @click="sidebarOpen = false"
           class="fixed inset-0 z-40 bg-black/30"></div>
 
         {{-- panel --}}
-        <div x-transition:enter="transition ease-out duration-200" x-transition:enter-start="-translate-x-full"
-          x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200"
-          x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" @click.stop
-          class="fixed top-16 left-5 h-max rounded-lg z-50 w-60 bg-canvas border border-hairline overflow-hidden">
-          <div class="flex items-center justify-start p-4">
+        <div
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="-translate-x-8 opacity-0"
+          x-transition:enter-end="translate-x-0 opacity-100"
+          x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="translate-x-0 opacity-100"
+          x-transition:leave-end="-translate-x-8 opacity-0"
+          @click.stop
+          class="lg:hidden fixed top-16 bottom-5 left-5 rounded-lg z-50 w-60 flex flex-col bg-canvas border border-hairline overflow-hidden">
+          <div class="shrink-0 flex items-center justify-start p-4">
             <button type="button" @click="sidebarOpen = false" aria-label="Tutup Menu" class="hover:bg-canvas">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M4.45742 4.43968C4.59672 4.30029 4.76212 4.18971 4.94417 4.11427C5.12622 4.03883 5.32135 4 5.51842 4C5.71548 4 5.91061 4.03883 6.09266 4.11427C6.27471 4.18971 6.44012 4.30029 6.57942 4.43968L11.8824 9.74368L17.1854 4.44068C17.4667 4.15929 17.8482 4.00115 18.2461 4.00105C18.6439 4.00096 19.0255 4.15892 19.3069 4.44018C19.5883 4.72144 19.7464 5.10297 19.7465 5.50083C19.7466 5.89868 19.5887 6.28029 19.3074 6.56168L14.0034 11.8657L19.3074 17.1687C19.4467 17.308 19.5571 17.4734 19.6325 17.6554C19.7078 17.8375 19.7466 18.0325 19.7465 18.2295C19.7465 18.4265 19.7076 18.6216 19.6322 18.8036C19.5568 18.9856 19.4462 19.1509 19.3069 19.2902C19.1676 19.4294 19.0022 19.5399 18.8202 19.6153C18.6381 19.6906 18.4431 19.7294 18.2461 19.7293C18.0491 19.7293 17.854 19.6904 17.672 19.615C17.49 19.5395 17.3247 19.429 17.1854 19.2897L11.8824 13.9857L6.57942 19.2887C6.44111 19.432 6.27565 19.5464 6.09268 19.6251C5.90971 19.7038 5.7129 19.7452 5.51374 19.7471C5.31457 19.7489 5.11703 19.711 4.93265 19.6357C4.74827 19.5603 4.58074 19.449 4.43984 19.3083C4.29894 19.1675 4.18748 19.0001 4.11197 18.8158C4.03646 18.6315 3.99841 18.434 4.00005 18.2348C4.00169 18.0356 4.04297 17.8388 4.1215 17.6557C4.20002 17.4727 4.31422 17.3071 4.45742 17.1687L9.76242 11.8637L4.45742 6.56068C4.17652 6.27943 4.01874 5.89818 4.01874 5.50068C4.01874 5.10318 4.17652 4.72093 4.45742 4.43968Z"
                   fill="black" />
               </svg>
             </button>
           </div>
-          <div>
+          <div class="flex-1 min-h-0">
             @include('layouts.partials.sidebar-content')
           </div>
         </div>
