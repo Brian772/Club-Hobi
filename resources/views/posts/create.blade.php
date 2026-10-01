@@ -112,8 +112,6 @@
 
     function resetFormMedia() {
       selectedFiles = [];
-      const picker = document.getElementById('mediaPicker');
-      if (picker) picker.value = '';
       const input = document.getElementById('mediaInput');
       if (input) input.value = '';
 
@@ -141,9 +139,11 @@
       renderPreviews();
       updateFileInput();
 
-      // Reset PICKER (bukan mediaInput) agar onchange terpanggil jika memilih file yang sama
-      document.getElementById('mediaPicker').value = '';
+      // Reset mediaInput agar onchange terpanggil jika memilih file yang sama
+      const input = document.getElementById('mediaInput');
+      if (input) input.value = '';
     }
+
     function removeFile(index) {
       selectedFiles.splice(index, 1);
       renderPreviews();
@@ -154,9 +154,7 @@
       const container = document.getElementById('mediaContainer');
       if (!container) return;
 
-      const addButton = document.getElementById('mediaAddButton');
-
-      // Bersihkan kontainer
+      // Bersihkan kontainer terlebih dahulu
       container.innerHTML = '';
 
       selectedFiles.forEach((file, index) => {
@@ -184,21 +182,21 @@
           wrapper.appendChild(img);
         } else if (file.type.startsWith('video/')) {
           content.innerHTML = `
-                        <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
-                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                    `;
+                          <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
+                          <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                      `;
           wrapper.appendChild(content);
         } else if (file.type.startsWith('audio/')) {
           content.innerHTML = `
-                        <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
-                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                    `;
+                          <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
+                          <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                      `;
           wrapper.appendChild(content);
         } else {
           content.innerHTML = `
-                        <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
-                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                    `;
+                          <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
+                          <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
+                      `;
           wrapper.appendChild(content);
         }
 
@@ -206,9 +204,17 @@
         container.appendChild(wrapper);
       });
 
-      if (addButton) {
-        container.appendChild(addButton);
-      }
+      // Buat ulang tombol "Tambah File" secara dinamis agar selalu berada di akhir kontainer
+      const addBox = document.createElement('div');
+      addBox.className = 'w-24 h-24 shrink-0 rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/50 flex flex-col items-center justify-center cursor-pointer transition-colors group';
+      addBox.onclick = function () {
+        document.getElementById('mediaInput').click();
+      };
+      addBox.innerHTML = `
+          <i class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-blue-600 transition-colors"></i>
+          <span class="text-[10px] font-medium text-neutral-500 group-hover:text-blue-600 mt-1">Tambah File</span>
+        `;
+      container.appendChild(addBox);
     }
 
     function updateFileInput() {

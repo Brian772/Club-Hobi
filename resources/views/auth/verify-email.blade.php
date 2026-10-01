@@ -26,9 +26,10 @@
             </p>
 
             <p class="verify-description">
-                Akun kamu sudah siap digunakan, Yuk segera menjelahi
-                Club dan berinteraksi dengan banyak orang..
+                Akun kamu hampir siap nih, Yuk segera verifikasi lewat gmail dan jelajahi
+                Club untuk berinteraksi dengan banyak orang..
             </p>
+
 
             <a href="{{ route('dashboard') }}" class="dashboard-button">
                 Masuk ke Dashboard

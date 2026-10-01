@@ -38,7 +38,7 @@
       @if ($joinedClub->isNotEmpty())
         <a href="{{ route('posts.create') }}"
           class="hidden lg:inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
-          + Buat Postingan
+          + Make a post
         </a>
       @endif
     </div>
@@ -65,7 +65,7 @@
                   <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                 </h3>
                 <p class="text-caption text-ink-secondary mb-2 line-clamp-2">{{ $club->description }}</p>
-                <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                <p class="text-caption text-ink-muted">{{ $club->members_count }} Person</p>
               </div>
             </a>
           @endforeach

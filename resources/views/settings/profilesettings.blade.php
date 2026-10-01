@@ -41,7 +41,7 @@
             <div class="profile-avatar-info">
               <button type="button" class="btn-edit-photo" onclick="openAvatarModal()">
                 <i class="fa-solid fa-pencil"></i>
-                Edit foto
+                Edit Photo
               </button>
 
               <span class="photo-hint">JPG/PNG, max 2MB</span>
@@ -52,9 +52,9 @@
             <span class="content-control-icon">▣</span>Riwayat Postingan
           </a>
         </div>
-        
+
         <div class="form-group-item">
-          <label class="input-label">Nama</label>
+          <label class="input-label">Name</label>
 
           <input type="text" name="name"
             class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
@@ -75,19 +75,19 @@
         </div>
 
         <div class="form-group-item">
-          <label class="input-label">Hobi</label>
+          <label class="input-label">Hobby</label>
 
           <div class="hobby-list" id="hobbyList">
             @forelse ($interests as $interest)
               <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
                 onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
             @empty
-              <span class="empty-hobby" id="emptyHobby">Belum ada hobi</span>
+              <span class="empty-hobby" id="emptyHobby">No hobbies yet</span>
             @endforelse
 
             <button type="button" class="btn-add-hobby" onclick="openHobbyModal()">
               <i class="fa-solid fa-plus"></i>
-              Tambah
+              Add
             </button>
           </div>
         </div>
@@ -113,7 +113,7 @@
   <div class="profile-modal-overlay" id="avatarModal">
     <div class="profile-modal">
       <div class="modal-header">
-        <h3>Foto Profil</h3>
+        <h3>Photo Profil</h3>
 
         <button type="button" class="modal-close" onclick="closeAvatarModal()">
           &times;
@@ -121,11 +121,13 @@
       </div>
 
       <div class="modal-body">
-        <div class="avatar-preview">
+        <div class="avatar-preview" id="avatarPreviewContainer">
           @if ($user->avatar_full_url)
-            <img src="{{ $user->avatar_full_url }}" alt="Foto Profil">
+            <img src="{{ $user->avatar_full_url }}" alt="Foto Profil" id="avatarPreviewImg">
           @else
-            <span>{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+            <img src="" alt="Foto Profil" id="avatarPreviewImg"
+              style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            <span id="avatarPreviewText">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
           @endif
         </div>
 
@@ -177,7 +179,6 @@
 
         <form action="{{ route('settings.profile.hobby.add') }}" method="POST" id="hobbyForm">
           @csrf
-          {{-- Hidden input. Tidak ada checkbox/radio yang terlihat. --}}
           <input type="hidden" name="hobby_id" id="selectedHobbyId" value="">
 
           <div class="hobby-options">
@@ -295,17 +296,27 @@
     }
 
     function showSelectedFile(input) {
-      const fileName =
-        document.getElementById('selectedFileName');
-      if (
-        input.files &&
-        input.files.length > 0
-      ) {
-        fileName.textContent =
-          input.files[0].name;
+      const fileNameElement = document.getElementById('selectedFileName');
+      const previewImg = document.getElementById('avatarPreviewImg');
+      const previewText = document.getElementById('avatarPreviewText');
+
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+
+        fileNameElement.textContent = file.name;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImg.src = e.target.result;
+          previewImg.style.display = 'block'; 
+
+          if (previewText) {
+            previewText.style.display = 'none';
+          }
+        }
+        reader.readAsDataURL(file);
       } else {
-        fileName.textContent =
-          'Belum ada foto dipilih';
+        fileNameElement.textContent = "Belum ada foto dipilih";
       }
     }
 
@@ -384,21 +395,11 @@
       }, 800);
     }
 
-
-    /* =========================
-       AUTO SAVE NAMA
-    ========================= */
-
     if (nameInput) {
       nameInput.addEventListener('input', function () {
         autoSaveProfile();
       });
     }
-
-
-    /* =========================
-       AUTO SAVE BIO
-    ========================= */
 
     if (bioInput) {
       bioInput.addEventListener('input', function () {
@@ -414,11 +415,6 @@
     let selectedHobbyElement = null;
     let selectedHobbyId = null;
 
-
-    /* =========================
-       BUKA MODAL HAPUS HOBI
-    ========================= */
-
     function openDeleteHobbyModal(element) {
 
       selectedHobbyElement = element;
@@ -428,15 +424,8 @@
 
       modal.classList.add('show');
 
-      /*
-       * Ambil posisi badge hobi yang diklik
-       */
       const rect = element.getBoundingClientRect();
 
-      /*
-       * Reset posisi dulu supaya offsetWidth/offsetHeight
-       * dihitung dengan benar
-       */
       modal.style.left = '0px';
       modal.style.top = '0px';
 
@@ -504,7 +493,6 @@
             hobbyElement.remove();
             closeDeleteHobbyModal();
 
-            /* Jika sudah tidak ada hobi */
             const hobbyList = document.getElementById('hobbyList');
             const hobbyBadges = hobbyList.querySelectorAll('.hobby-badge');
 
