@@ -69,7 +69,7 @@
     </div>
 
     <div class="flex order-1 md:order-2 md:max-w-100 justify-center w-full">
-      <img src="{{ asset('images/login-illustration.svg') }}" alt="Login Illustration"
+      <img src="{{ asset('images/Login-illustration.svg') }}" alt="Login Illustration"
         class="w-37.5 md:w-full max-w-100">
     </div>
   </div>
