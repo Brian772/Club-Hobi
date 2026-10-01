@@ -261,6 +261,61 @@
       }
     }
 
+    const likeInFlight = {};
+
+    async function toggleLike(postId) {
+      if (likeInFlight[postId]) return; // cegah klik ganda / race condition
+      likeInFlight[postId] = true;
+
+      const feedBtn = document.getElementById(`likeBtn-${postId}`);
+      const feedIcon = document.getElementById(`likeIcon-${postId}`);
+      const feedCount = document.getElementById(`likeCount-${postId}`);
+      const modalIcon = document.getElementById(`likeIconModal-${postId}`);
+      const modalCount = document.getElementById(`likeCountModal-${postId}`);
+
+      const wasLiked = feedBtn?.dataset.liked === 'true';
+      const currentCount = parseInt(feedCount?.innerText) || 0;
+
+      const applyLikeState = (liked, count) => {
+        if (feedBtn) feedBtn.dataset.liked = liked ? 'true' : 'false';
+        [feedIcon, modalIcon].forEach(icon => {
+          if (!icon) return;
+          icon.classList.toggle('fa-solid', liked);
+          icon.classList.toggle('fa-regular', !liked);
+          icon.classList.toggle('text-red-500', liked);
+        });
+        if (feedCount) feedCount.innerText = count;
+        if (modalCount) modalCount.innerText = count;
+      };
+
+      applyLikeState(!wasLiked, currentCount + (wasLiked ? -1 : 1)); // optimistic UI
+
+      try {
+        const response = await fetch(feedBtn.dataset.likeUrl, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+
+        if (!response.ok) throw new Error('Gagal memproses like.');
+
+        const data = await response.json();
+        // Sesuaikan key ini dengan response controller like kamu yang sebenarnya,
+        // mis. { liked: true, likes_count: 12 }
+        applyLikeState(data.liked, data.likes_count);
+
+      } catch (error) {
+        console.error('Like Error:', error);
+        applyLikeState(wasLiked, currentCount); // rollback kalau request gagal
+        alert('Gagal memproses like, coba lagi.');
+      } finally {
+        likeInFlight[postId] = false;
+      }
+    }
+
     async function submitComment(event, postId) {
       event.preventDefault();
 
@@ -336,7 +391,17 @@
       };
 
       if (commentData.parent_id) {
-        const parentCommentElement = modal.querySelector(`[data-comment-id="${commentData.parent_id}"]`);
+        let parentCommentElement = modal.querySelector(`[data-comment-id="${commentData.parent_id}"]`);
+
+        // Balasan bisa ditujukan ke balasan lain (nested reply), bukan cuma ke komentar utama.
+        // Elemen reply (class "flex gap-2.5") BUKAN wrapper thread, jadi kalau di-append
+        // langsung ke situ akan merusak layout flex-nya. Naikkan ke wrapper thread utama
+        // (class "space-y-2") supaya semua balasan tetap masuk ke .replies-container yang sama,
+        // persis seperti hasil flatten $getReplies() di server saat halaman di-refresh.
+        if (parentCommentElement && !parentCommentElement.classList.contains('space-y-2')) {
+          parentCommentElement = parentCommentElement.closest('[data-comment-id].space-y-2');
+        }
+
         if (parentCommentElement) {
           let repliesContainer = parentCommentElement.querySelector('.replies-container');
           if (!repliesContainer) {
@@ -349,16 +414,16 @@
           replyWrapper.className = 'flex gap-2.5';
           replyWrapper.setAttribute('data-comment-id', commentData.id);
           replyWrapper.innerHTML = `
-                <img src="${userAvatar}" class="w-6 h-6 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
+                <img src="${userAvatar}" class="size-8 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
                 <div class="flex-1 min-w-0">
-                  <p class="text-xs text-neutral-800 leading-snug break-words">
-                    <span class="font-bold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
+                  <p class="text-caption text-ink-secondary leading-snug break-words">
+                    <span class="font-semibold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
                     <span>${escapeHtml(commentData.content)}</span>
                   </p>
-                  <div class="flex items-center gap-3 mt-1 text-[10px] text-neutral-400 font-medium">
+                  <div class="flex items-center gap-3 mt-1 text-[10px] text-ink-muted font-medium">
                     <span>Baru saja</span>
-                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer font-semibold">Balas</button>
-                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer font-semibold">Hapus</button>
+                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer">Balas</button>
+                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer">Hapus</button>
                   </div>
                 </div>`;
 
@@ -377,16 +442,16 @@
         newCommentWrapper.setAttribute('data-comment-id', commentData.id);
         newCommentWrapper.innerHTML = `
               <div class="flex gap-3">
-                <img src="${userAvatar}" class="w-7 h-7 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
+                <img src="${userAvatar}" class="size-8 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
                 <div class="flex-1 min-w-0">
-                  <p class="text-xs text-neutral-800 leading-snug break-words">
-                    <span class="font-bold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
+                  <p class="text-caption text-ink-secondary leading-snug break-words">
+                    <span class="font-semibold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
                     <span>${escapeHtml(commentData.content)}</span>
                   </p>
-                  <div class="flex items-center gap-3 mt-1 text-[10px] text-neutral-400 font-medium">
+                  <div class="flex items-center gap-3 mt-1 text-[10px] text-ink-muted font-medium">
                     <span>Baru saja</span>
-                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer font-semibold">Balas</button>
-                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer font-semibold">Hapus</button>
+                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer">Balas</button>
+                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer">Hapus</button>
                   </div>
                 </div>
               </div>`;
