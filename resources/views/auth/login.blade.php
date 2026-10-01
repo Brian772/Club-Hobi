@@ -5,6 +5,7 @@
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 @endsection
 
 @section('content')
@@ -15,16 +16,16 @@
       </h1>
 
       @if (session('warning'))
-    <div class="p-3 mb-4 text-sm text-amber-800 bg-amber-100 rounded-lg" role="alert">
-      {{ session('warning') }}
-    </div>
-    @endif
+        <div class="p-3 mb-4 text-sm text-amber-800 bg-amber-100 rounded-lg" role="alert">
+          {{ session('warning') }}
+        </div>
+      @endif
 
-    @if (session('success'))
-      <div class="p-3 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
-      {{ session('success') }}
-      </div>
-    @endif
+      @if (session('success'))
+        <div class="p-3 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
+          {{ session('success') }}
+        </div>
+      @endif
 
       <form method="POST" action="{{ route('login.authenticate') }}" data-turbo="false" class="form">
         @csrf
@@ -39,7 +40,12 @@
 
         <div class="form-group">
           <x-input-label for="password" :value="__('Password')" />
-          <input type="password" id="password" name="password" placeholder="••••••••" required>
+          <div class="relative flex items-center">
+            <input type="password" id="password" name="password" placeholder="••••••••" class="w-full pr-10" required>
+            <button type="button" onclick="togglePassword('password', this)" class="absolute right-3 text-neutral-500 hover:text-neutral-700 focus:outline-none">
+              <i class="bi bi-eye-slash text-lg"></i>
+            </button>
+          </div>
           @error('password')
             <small class="error-text">{{ $message }}</small>
           @enderror
@@ -73,4 +79,21 @@
         class="w-37.5 md:w-full max-w-100">
     </div>
   </div>
+
+  <script>
+    function togglePassword(fieldId, button) {
+      const inputField = document.getElementById(fieldId);
+      const icon = button.querySelector('i');
+
+      if (inputField.type === "password") {
+        inputField.type = "text";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+      } else {
+        inputField.type = "password";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+      }
+    }
+  </script>
 @endsection

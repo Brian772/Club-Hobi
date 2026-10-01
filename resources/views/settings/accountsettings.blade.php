@@ -33,7 +33,7 @@
             @else
                 <span class="unverified-badge">
                     <i class="fa-solid fa-circle-xmark"></i>
-                    Belum Diverifikasi
+                    Not Verified Yet
                 </span>
             @endif
         </div>
@@ -49,15 +49,15 @@
             <i class="fa-solid fa-circle-check"></i>
         </div>
         <div class="account-status-text">
-            <strong>Status Akun</strong>
-            <span>Aktif, tidak ada pembatasan</span>
+            <strong>Account Status</strong>
+            <span>Active, No Restrictions</span>
         </div>
     </div>
 
     <div class="account-danger-actions">
         <button type="button" class="btn-delete-account" onclick="openDeleteAccountModal()">
             <i class="fa-solid fa-trash"></i>
-            Hapus Akun
+            Delete Account
         </button>
     </div>
     </div>
@@ -65,7 +65,7 @@
     <div class="profile-modal-overlay" id="deleteAccountModal">
         <div class="profile-modal delete-account-modal">
             <div class="modal-header">
-                <h3>Hapus Akun</h3>
+                <h3>Delete Account</h3>
                 <button type="button" class="modal-close" onclick="closeDeleteAccountModal()">&times;</button>
             </div>
 
@@ -73,10 +73,10 @@
                 <div class="delete-account-icon">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                <h4 class="delete-account-title">Yakin ingin menghapus akun?</h4>
+                <h4 class="delete-account-title">Are you sure you want to delete your account?</h4>
                 <p class="delete-account-description">
-                    Semua data akun, profile, dan keanggotaan club akan dihapus.<br>
-                    <strong>Tindakan ini tidak dapat dibatalkan.</strong>
+                    All account data, profile information, and club memberships will be deleted.<br>
+                    <strong>This action cannot be undone.</strong>
                 </p>
 
                 <form action="{{ route('profile.destroy') }}" method="POST" id="deleteAccountForm">
@@ -85,7 +85,7 @@
 
                     <div class="delete-account-password-group" style="margin-bottom: 20px; text-align: left;">
                         <label for="deleteAccountPassword" class="input-label">
-                            Masukkan password untuk konfirmasi
+                            Enter your password to confirm
                         </label>
                         <input type="password" name="password" id="deleteAccountPassword" class="custom-input-box"
                             placeholder="Password" autocomplete="current-password" style="margin-top: 6px;">
@@ -98,11 +98,11 @@
 
                     <div class="delete-account-actions">
                         <button type="button" class="btn-delete-cancel" onclick="closeDeleteAccountModal()">
-                            Batal
+                            Cancel
                         </button>
                         <button type="submit" class="btn-delete-confirm">
                             <i class="fa-solid fa-trash"></i>
-                            Hapus Akun
+                            Delete Account
                         </button>
                     </div>
                 </form>

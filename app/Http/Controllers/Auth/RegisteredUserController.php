@@ -131,7 +131,7 @@ class RegisteredUserController extends Controller
     {
 
         $validated = $request->validate([
-            'hobbies'   => ['required', 'array'],
+            'hobbies' => ['required', 'array'],
             'hobbies.*' => ['string'],
         ]);
 
@@ -163,16 +163,24 @@ class RegisteredUserController extends Controller
             'avatar_url' => session('register.avatar_url'),
             'email' => $email,
             'password_hash' => session('register.password'),
-            'interests'     => $interestsString,
-            'role_global'   => 'member',
-            'status'        => 'active',
-            'email_verified_at' => now(),
+            'interests' => $interestsString,
+            'role_global' => 'member',
+            'status' => 'active',
+            'email_verified_at' => null,
         ]);
 
-        event(new Registered($user));
-        
         Auth::login($user);
         $request->session()->regenerate();
+
+        // event(new Registered($user)); // dinonaktifkan jika ingin diganti custom mailable sepenuhnya
+
+        $verificationUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'verification.verify',
+            now()->setMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]
+        );
+        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\VerifyEmailCustom($verificationUrl, $user));
+
         $request->session()->forget('register');
 
         return redirect()

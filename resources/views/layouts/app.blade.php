@@ -34,7 +34,7 @@
   <title>@yield('title', 'Orbii - Find Your Hobby Club')</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @yield('styles')
-  @livewireStyles()
+  @livewireStyles
   <style>
     * {
       scrollbar-width: thin;
