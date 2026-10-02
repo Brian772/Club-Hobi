@@ -1,132 +1,139 @@
-<!DOCTYPE html> 
-<html lang="en"> 
-<head> 
-<meta charset="utf-8"> 
-<meta name="viewport" content="width=device-width, initial-scale=1"> 
-<meta name="color-scheme" content="light"> 
-<title>Verify Email - Orbii</title> 
-</head> 
+<!DOCTYPE html>
+<html lang="id">
 
-<body style="margin:0;padding:0;background-color:#eef2f8;font-family:'Segoe UI',Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%;"> 
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Verifikasi Email - Orbii</title>
+</head>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#eef2f8;"> 
-<tr>
-<td align="center" style="padding:40px 16px;"> 
+<body
+  style="margin:0;padding:0;background-color:#fafafa;font-family:'Figtree',Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%;">
 
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border-radius:16px;border:1px solid #e3e9f2;overflow:hidden;"> 
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+    style="background-color:#fafafa;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
 
-<tr>
-<td height="6" style="height:6px;line-height:6px;font-size:0;background-color:#4c9aff;background-image:linear-gradient(90deg,#1976ff,#6ba7ff);">
-&nbsp;
-</td>
-</tr> 
- 
-<!-- Header -->
-<tr>
-<td align="center" bgcolor="#1769d1" style="background-color:#1769d1;background-image:linear-gradient(135deg,#1769d1,#3f8cff);padding:36px 30px;"> 
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+          style="width:100%;max-width:600px;background-color:#ffffff;border-radius:16px;border:1px solid #e6e6e6;overflow:hidden;">
 
-<table role="presentation" cellpadding="0" cellspacing="0" border="0">
-<tr> 
+          <tr>
+            <td height="4"
+              style="height:4px;line-height:4px;font-size:0;background-color:#476cff;background-image:linear-gradient(90deg,#476cff,#62aef0);">
+              &nbsp;
+            </td>
+          </tr>
 
-<!-- Logo Orbii -->
-<td valign="middle" style="padding-right:12px;"> 
-  <img src="{{ asset('images/Orbii.svg') }}" width="32" height="32" alt="Orbii Logo" style="display:block;border:0;"> 
-</td> 
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background-color:#ffffff;padding:32px 30px 24px;">
 
-<td valign="middle" style="font-size:28px;font-weight:700;letter-spacing:1.5px;color:#ffffff;">
-Orbii
-</td> 
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
 
-</tr>
-</table> 
+                  <!-- Logo Orbii -->
+                  <td valign="middle" style="padding-right:12px;">
+                    <img src="{{ asset('images/orbii-v2.png') }}" alt="Orbii Logo"
+                      style="display:block;border:0; width: auto; height: 42px;">
+                  </td>
 
-</td>
-</tr> 
- 
-<tr>
-<td align="center" style="padding:44px 40px 12px;"> 
+                </tr>
+              </table>
 
-<!-- Logo Orbii menggantikan ikon pesan -->
-<table role="presentation" cellpadding="0" cellspacing="0" border="0">
-<tr> 
+            </td>
+          </tr>
 
-<td align="center" width="80" height="80" style="width:80px;height:80px;background-color:#eaf2ff;border:1px solid #d3e3ff;border-radius:24px;box-shadow:0 8px 16px rgba(0,0,0,0.05);"> 
+          <tr>
+            <td align="center" style="padding:24px 40px 8px;">
 
-  <img src="{{ asset('images/Orbii.svg') }}" width="42" height="42" alt="Orbii Logo" style="display:block;border:0;margin:0 auto;"> 
+              <!-- Logo Orbii -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
 
-</td>
+                  <td align="center" width="72" height="72"
+                    style="width:72px;height:72px;border-radius:16px;">
 
-</tr>
-</table> 
- 
-<h2 style="margin:26px 0 0;font-size:24px;line-height:1.35;font-weight:700;color:#0b1f4b;">
-Welcome aboard, <span style="color:#0052cc;">{{ $user->name ?? 'Explorer' }}</span>!
-</h2> 
+                    <img src="{{ asset('images/orbii-1.png') }}" width="36" height="36" alt="Orbii Logo"
+                      style="display:block;border:0;margin:0 auto;">
 
-<p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#5b6b82;">
-We are thrilled to have you join our community. Your journey into a world of seamless connection is almost ready to begin. Please verify your email address to unlock your dashboard.
-</p> 
+                  </td>
 
-</td>
-</tr> 
- 
-<tr>
-<td align="center" style="padding:28px 40px 12px;"> 
+                </tr>
+              </table>
 
-<table role="presentation" cellpadding="0" cellspacing="0" border="0">
-<tr> 
+              <h2 style="margin:20px 0 0;font-size:22px;line-height:1.3;font-weight:700;color:#000000;">
+                Selamat datang, <span style="color:#476cff;">{{ $user->name ?? 'Explorer' }}</span>!
+              </h2>
 
-<td align="center" bgcolor="#0052cc" style="background-color:#0052cc;border-radius:30px;"> 
+              <p style="margin:14px 0 0;font-size:15px;line-height:1.6;color:#615d59;">
+                Terima kasih telah bergabung dengan Orbii. Verifikasi alamat email Anda untuk mulai menjelajahi
+                komunitas hobi yang cocok untuk Anda.
+              </p>
 
-<a href="{{ $verificationUrl }}" target="_blank" style="display:inline-block;padding:15px 40px;font-size:15px;font-weight:600;letter-spacing:0.3px;color:#ffffff;text-decoration:none;border-radius:30px;">
-Verify Email Address
-</a> 
+            </td>
+          </tr>
 
-</td>
-</tr>
-</table> 
+          <tr>
+            <td align="center" style="padding:24px 40px 8px;">
 
-</td>
-</tr> 
- 
-<tr>
-<td style="padding:24px 40px 0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td height="1" style="height:1px;line-height:1px;font-size:0;background-color:#e8edf5;">
-&nbsp;
-</td>
-</tr>
-</table>
+                  <td align="center" style="background-color:#476cff;border-radius:100px;">
 
-</td>
-</tr> 
+                    <a href="{{ $verificationUrl }}" target="_blank"
+                      style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:600;letter-spacing:0.2px;color:#ffffff;text-decoration:none;border-radius:100px;">
+                      Verifikasi Email
+                    </a>
 
-<tr>
-<td align="center" style="padding:22px 40px 40px;"> 
+                  </td>
+                </tr>
+              </table>
 
-<p style="margin:0;font-size:13px;line-height:1.6;color:#8898aa;">
-If you did not create an account with Orbii, feel free to safely ignore this email.
-</p> 
+            </td>
+          </tr>
 
-</td>
-</tr> 
+          <tr>
+            <td style="padding:20px 40px 0;">
 
-<tr>
-<td align="center" bgcolor="#f7f9fc" style="background-color:#f7f9fc;border-top:1px solid #e8edf5;padding:22px 20px;"> 
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td height="1" style="height:1px;line-height:1px;font-size:0;background-color:#e6e6e6;">
+                    &nbsp;
+                  </td>
+                </tr>
+              </table>
 
-<p style="margin:0;font-size:12px;line-height:1.6;color:#8898aa;">
-&copy; {{ date('Y') }} Orbii. All rights reserved.
-</p> 
+            </td>
+          </tr>
 
-</td>
-</tr> 
+          <tr>
+            <td align="center" style="padding:18px 40px 32px;">
 
-</table> 
-</td>
-</tr> 
-</table> 
+              <p style="margin:0;font-size:13px;line-height:1.5;color:#a39e98;">
+                Jika Anda tidak membuat akun di Orbii, abaikan email ini.
+              </p>
 
-</body> 
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="background-color:#fafafa;border-top:1px solid #e6e6e6;padding:20px 20px;">
+
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#a39e98;">
+                &copy; {{ date('Y') }} Orbii. Hak cipta dilindungi.
+              </p>
+
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+
 </html>

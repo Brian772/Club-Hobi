@@ -25,7 +25,6 @@ Route::get('/', function () {
     return view('landing');
 })->name('home');
 
-
 //Route::get('/home', [DashboardController::class, 'index'])
  //   ->name('dashboard');
 

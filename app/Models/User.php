@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use App\Mail\VerifyEmailCustom;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -67,6 +70,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class)->latest('created_at');
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $this->id, 'hash' => sha1($this->getEmailForVerification())]
+        );
+        Mail::to($this->email)->send(new VerifyEmailCustom($url, $this));
     }
 
     public function getAvatarFullUrlAttribute(): ?string

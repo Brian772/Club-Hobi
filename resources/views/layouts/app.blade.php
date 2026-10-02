@@ -114,7 +114,7 @@
         </div>
       </footer>
     @endif
-  @elseif (Route::is('appeal'))
+  @elseif (Route::is('appeal') || Route::is('verification.notice'))
     <div class="flex flex-col p-6 lg:p-8 min-h-dvh items-center justify-center">
       <x-alert />
 

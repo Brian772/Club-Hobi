@@ -10,7 +10,11 @@ use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Attribute\RateLimit;
 
 Route::get(
     'register/{step?}',
@@ -73,30 +77,44 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
 
-    Route::get(
-        'verify-email',
-        EmailVerificationPromptController::class
-    )->name('verification.notice');
+    Route::get('/email/verify', [EmailVerificationPromptController::class, 'index'])->name('verification.notice');
 
-    Route::get(
-        'verify-email/{id}/{hash}',
-        VerifyEmailController::class
-    )
-        ->middleware([
-            'signed',
-            'throttle:6,1',
-        ])
-        ->name('verification.verify');
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard')
+            ->with('info', 'Email kamu sudah diverifikasi sebelumnya. Tidak perlu melakukan verifikasi ulang.');
+        }
+        $request->fulfill();
 
-    Route::post(
-        'email/verification-notification',
-        [
-            EmailVerificationNotificationController::class,
-            'store',
-        ]
-    )
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
+        return redirect()->route('dashboard')
+            ->with('success', 'Email kamu berhasil diverifikasi. Terima kasih!');
+    })->middleware('signed')->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $user = $request->user();
+        $key = 'verification-email:' . $user->id;
+
+        if (RateLimiter::tooManyAttempts($key, 1)) {
+            $seconds = RateLimiter::availableIn($key);
+
+            return back()->withErrors([
+                'resend' => "Tunggu {$seconds} detik sebelum mengirim ulang email verifikasi.",
+            ]);
+        }
+
+        RateLimiter::hit($key, 60);
+
+        try {
+            $user->sendEmailVerificationNotification(); 
+        } catch (\Throwable $th) {
+            RateLimiter::clear($key);
+            return back()->withErrors([
+                'resend' => 'Terjadi kesalahan saat mengirim email verifikasi. Silakan coba lagi nanti.',
+            ]);
+        }
+
+        return back()->with('status', 'verification-link-sent');
+    })->name('verification.send');
 
     Route::get(
         'confirm-password',

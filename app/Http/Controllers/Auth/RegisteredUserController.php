@@ -172,14 +172,9 @@ class RegisteredUserController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        // event(new Registered($user)); // dinonaktifkan jika ingin diganti custom mailable sepenuhnya
+        event(new Registered($user));
 
-        $verificationUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
-            'verification.verify',
-            now()->setMinutes(60),
-            ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]
-        );
-        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\VerifyEmailCustom($verificationUrl, $user));
+        \Illuminate\Support\Facades\RateLimiter::hit('verification-email:' . $user->id, 60);
 
         $request->session()->forget('register');
 
