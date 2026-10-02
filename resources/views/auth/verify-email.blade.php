@@ -17,11 +17,11 @@
         <div class="verify-success-content">
 
             <h1>
-                Akun Berhasil Diverifikasi!
+                Account Successfully Verified!
             </h1>
 
             <p class="verify-greeting">
-                Selamat datang di Orbii,
+               Welcome to Orbii, 
                 <strong>{{ Auth::user()->name ?? 'Member' }}</strong>.
             </p>
 
@@ -32,7 +32,7 @@
 
 
             <a href="{{ route('dashboard') }}" class="dashboard-button">
-                Masuk ke Dashboard
+                Go to Dashboard
                 <span>→</span>
             </a>
 
