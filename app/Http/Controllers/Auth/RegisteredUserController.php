@@ -131,7 +131,7 @@ class RegisteredUserController extends Controller
     {
 
         $validated = $request->validate([
-            'hobbies'   => ['required', 'array'],
+            'hobbies' => ['required', 'array'],
             'hobbies.*' => ['string'],
         ]);
 
@@ -163,16 +163,19 @@ class RegisteredUserController extends Controller
             'avatar_url' => session('register.avatar_url'),
             'email' => $email,
             'password_hash' => session('register.password'),
-            'interests'     => $interestsString,
-            'role_global'   => 'member',
-            'status'        => 'active',
-            'email_verified_at' => now(),
+            'interests' => $interestsString,
+            'role_global' => 'member',
+            'status' => 'active',
+            'email_verified_at' => null,
         ]);
 
-        event(new Registered($user));
-        
         Auth::login($user);
         $request->session()->regenerate();
+
+        event(new Registered($user));
+
+        \Illuminate\Support\Facades\RateLimiter::hit('verification-email:' . $user->id, 60);
+
         $request->session()->forget('register');
 
         return redirect()

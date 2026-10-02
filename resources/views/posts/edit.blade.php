@@ -64,11 +64,8 @@
             <div class="form-group">
                 <label>Lampiran Media</label>
 
-                {{-- Input file form yang dikirim ke server --}}
-                <input type="file" name="media[]" id="mediaInput" multiple class="hidden">
-
-                {{-- Input file dialog picker sementara --}}
-                <input type="file" id="mediaPicker" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple
+                {{-- Input File Tersembunyi untuk Tambah File Baru --}}
+                <input type="file" name="media[]" id="mediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple
                     class="hidden" onchange="addNewFiles(this.files)">
 
                 {{-- Container Horizontal Blok Media --}}
@@ -124,7 +121,7 @@
                     @endforeach
 
                     {{-- Tombol Tambah File (+ di Paling Kanan) --}}
-                    <div onclick="document.getElementById('mediaPicker').click()"
+                    <div onclick="document.getElementById('mediaInput').click()"
                         class="w-24 h-24 shrink-0 rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/50 flex flex-col items-center justify-center cursor-pointer transition-colors group">
                         <i
                             class="fa-solid fa-plus text-xl text-neutral-400 group-hover:text-blue-600 transition-colors"></i>
@@ -165,16 +162,20 @@
         function addNewFiles(files) {
             if (!files || files.length === 0) return;
 
+            const maxFiles = 5;
+            if (selectedFiles.length + files.length > maxFiles) {
+                alert(`Maksimal file yang dapat diunggah adalah ${maxFiles} file.`);
+                return;
+            }
+            btnElement.closest('.existing-media-block').remove();
+        }
+
             Array.from(files).forEach(file => {
-                newFiles.push(file);
+                selectedFiles.push(file);
             });
 
-            renderNewPreviews();
-            updateNewFileInput();
-
-            // Reset PICKER (bukan mediaInput) agar onchange terpanggil jika memilih file yang sama
-            const picker = document.getElementById('mediaPicker');
-            if (picker) picker.value = '';
+            renderPreviews();
+            updateFileInput();
         }
 
         function removeNewFile(index) {

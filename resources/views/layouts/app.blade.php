@@ -5,6 +5,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="description"
+    content="Orbii is a platform that helps you find hobby clubs and communities that match your interests. Connect with like-minded people and explore new hobbies.">
+  <meta property="og:title" content="Orbii - Find Your Hobby Club">
+  <meta property="og:description"
+    content="Orbii is a platform that helps you find hobby clubs and communities that match your interests. Connect with like-minded people and explore new hobbies.">
+  <meta property="og:image" content="{{ asset('images/og-images.png') }}">
+  <meta property="og:url" content="https://orbii.web.id">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Orbii">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Orbii - Find Your Hobby Club">
+  <meta name="twitter:description"
+    content="Orbii is a platform that helps you find hobby clubs and communities that match your interests. Connect with like-minded people and explore new hobbies.">
+  <meta name="twitter:image" content="{{ asset('images/og-images.png') }}">
+  <meta name="twitter:site" content="@orbii">
+  <meta name="twitter:creator" content="@orbii">
+  <link rel="canonical" href="https://orbii.web.id">
 
   <link rel="icon" type="image/png" href="{{ asset('favicon/favicon-96x96.png') }}" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="{{ asset('favicon/favicon.svg') }}" />
@@ -13,10 +31,10 @@
   <meta name="apple-mobile-web-app-title" content="Orbii" />
   <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}" />
 
-  <title>@yield('title', 'Orbii')</title>
+  <title>@yield('title', 'Orbii - Find Your Hobby Club')</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @yield('styles')
-  @livewireStyles()
+  @livewireStyles
   <style>
     * {
       scrollbar-width: thin;
@@ -96,7 +114,7 @@
         </div>
       </footer>
     @endif
-  @elseif (Route::is('appeal'))
+  @elseif (Route::is('appeal') || Route::is('verification.notice'))
     <div class="flex flex-col p-6 lg:p-8 min-h-dvh items-center justify-center">
       <x-alert />
 

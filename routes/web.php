@@ -25,11 +25,10 @@ Route::get('/', function () {
     return view('landing');
 })->name('home');
 
+//Route::get('/home', [DashboardController::class, 'index'])
+ //   ->name('dashboard');
 
-Route::get('/home', [DashboardController::class, 'index'])
-    ->name('dashboard');
-
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

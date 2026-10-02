@@ -41,57 +41,58 @@
             <div class="profile-avatar-info">
               <button type="button" class="btn-edit-photo" onclick="openAvatarModal()">
                 <i class="fa-solid fa-pencil"></i>
-                Edit foto
+                Edit Photo
               </button>
 
               <span class="photo-hint">JPG/PNG, max 2MB</span>
             </div>
           </div>
+
+          <a href="{{ route('posts.index') }}" class="content-control-button">
+            <span class="content-control-icon">▣</span>Riwayat Postingan
+          </a>
         </div>
 
-        <a href="{{ route('posts.index') }}" class="content-control-button"><span
-            class="content-control-icon">▣</span>Riwayat Postingan</a>
+        <div class="form-group-item">
+          <label class="input-label">Name</label>
+
+          <input type="text" name="name"
+            class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
+            value="{{ old('name', $user->name) }}" maxlength="255" required>
+        </div>
+
+        <div class="form-group-item">
+          <label class="input-label">Bio</label>
+
+          <div class="settings-group bio-group">
+            <textarea name="bio" class="custom-textarea" rows="3" maxlength="150"
+              id="bioInput">{{ old('bio', $user->bio) }}</textarea>
+          </div>
+
+          <div class="char-counter">
+            <span id="bioCounter">{{ strlen($user->bio ?? '') }}</span>/150
+          </div>
+        </div>
+
+        <div class="form-group-item">
+          <label class="input-label">Hobby</label>
+
+          <div class="hobby-list" id="hobbyList">
+            @forelse ($interests as $interest)
+              <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
+                onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
+            @empty
+              <span class="empty-hobby" id="emptyHobby">No hobbies yet</span>
+            @endforelse
+
+            <button type="button" class="btn-add-hobby" onclick="openHobbyModal()">
+              <i class="fa-solid fa-plus"></i>
+              Add
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
-
-    <div class="form-group-item">
-      <label class="input-label">Nama</label>
-
-      <input type="text" name="name"
-        class="rounded-md border border-hairline w-full focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-200"
-        value="{{ old('name', $user->name) }}" maxlength="255" required>
-    </div>
-
-    <div class="form-group-item">
-      <label class="input-label">Bio</label>
-
-      <div class="settings-group bio-group">
-        <textarea name="bio" class="custom-textarea" rows="3" maxlength="150" id="bioInput">{{ old('bio', $user->bio) }}</textarea>
-      </div>
-
-      <div class="char-counter">
-        <span id="bioCounter">{{ strlen($user->bio ?? '') }}</span>/150
-      </div>
-    </div>
-
-    <div class="form-group-item">
-      <label class="input-label">Hobi</label>
-
-      <div class="hobby-list" id="hobbyList">
-        @forelse ($interests as $interest)
-          <span class="hobby-badge active select-none cursor-pointer" data-hobby-id="{{ $interest->id }}"
-            onclick="openDeleteHobbyModal(this)">{{ $interest->name }}</span>
-        @empty
-          <span class="empty-hobby" id="emptyHobby">Belum ada hobi</span>
-        @endforelse
-
-        <button type="button" class="btn-add-hobby" onclick="openHobbyModal()">
-          <i class="fa-solid fa-plus"></i>
-          Tambah
-        </button>
-      </div>
-    </div>
-    </form>
-  </div>
   </div>
 
   @if ($errors->any())
@@ -112,7 +113,7 @@
   <div class="profile-modal-overlay" id="avatarModal">
     <div class="profile-modal">
       <div class="modal-header">
-        <h3>Foto Profil</h3>
+        <h3>Photo Profil</h3>
 
         <button type="button" class="modal-close" onclick="closeAvatarModal()">
           &times;
@@ -120,11 +121,13 @@
       </div>
 
       <div class="modal-body">
-        <div class="avatar-preview">
+        <div class="avatar-preview" id="avatarPreviewContainer">
           @if ($user->avatar_full_url)
-            <img src="{{ $user->avatar_full_url }}" alt="Foto Profil">
+            <img src="{{ $user->avatar_full_url }}" alt="Foto Profil" id="avatarPreviewImg">
           @else
-            <span>{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+            <img src="" alt="Foto Profil" id="avatarPreviewImg"
+              style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            <span id="avatarPreviewText">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
           @endif
         </div>
 
@@ -149,8 +152,7 @@
 
             @csrf
             @method('DELETE')
-            <button type="submit" class="btn-modal-danger"
-              onclick="return confirm('Yakin ingin menghapus foto profil?')">
+            <button type="submit" class="btn-modal-danger" onclick="return confirm('Yakin ingin menghapus foto profil?')">
               <i class="fa-solid fa-trash"></i>
               Hapus Foto
             </button>
@@ -177,7 +179,6 @@
 
         <form action="{{ route('settings.profile.hobby.add') }}" method="POST" id="hobbyForm">
           @csrf
-          {{-- Hidden input. Tidak ada checkbox/radio yang terlihat. --}}
           <input type="hidden" name="hobby_id" id="selectedHobbyId" value="">
 
           <div class="hobby-options">
@@ -187,8 +188,7 @@
               @endphp
 
               <button type="button" class="hobby-card {{ $alreadyJoined ? 'disabled' : '' }}"
-                data-hobby-name="{{ $hobby->name }}" data-hobby-id="{{ $hobby->id }}"
-                {{ $alreadyJoined ? 'disabled' : '' }}onclick="selectHobby(this)">
+                data-hobby-name="{{ $hobby->name }}" data-hobby-id="{{ $hobby->id }}" {{ $alreadyJoined ? 'disabled' : '' }}onclick="selectHobby(this)">
 
                 <div class="hobby-card-content">
                   <strong class="hobby-title">{{ $hobby->name }}</strong>
@@ -263,7 +263,7 @@
         document.getElementById('addHobbyButton');
       document
         .querySelectorAll('.hobby-card.selected')
-        .forEach(function(card) {
+        .forEach(function (card) {
           card.classList.remove('selected');
         });
       element.classList.add('selected');
@@ -286,7 +286,7 @@
 
       document
         .querySelectorAll('.hobby-card.selected')
-        .forEach(function(card) {
+        .forEach(function (card) {
           card.classList.remove('selected');
         });
 
@@ -296,17 +296,27 @@
     }
 
     function showSelectedFile(input) {
-      const fileName =
-        document.getElementById('selectedFileName');
-      if (
-        input.files &&
-        input.files.length > 0
-      ) {
-        fileName.textContent =
-          input.files[0].name;
+      const fileNameElement = document.getElementById('selectedFileName');
+      const previewImg = document.getElementById('avatarPreviewImg');
+      const previewText = document.getElementById('avatarPreviewText');
+
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+
+        fileNameElement.textContent = file.name;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImg.src = e.target.result;
+          previewImg.style.display = 'block'; 
+
+          if (previewText) {
+            previewText.style.display = 'none';
+          }
+        }
+        reader.readAsDataURL(file);
       } else {
-        fileName.textContent =
-          'Belum ada foto dipilih';
+        fileNameElement.textContent = "Belum ada foto dipilih";
       }
     }
 
@@ -317,7 +327,7 @@
         return;
       }
       toast.classList.add('hide');
-      setTimeout(function() {
+      setTimeout(function () {
         if (toast) {
           toast.remove();
         }
@@ -326,7 +336,7 @@
 
     document.addEventListener(
       'click',
-      function(event) {
+      function (event) {
         const avatarModal =
           document.getElementById('avatarModal');
         const hobbyModal =
@@ -351,7 +361,7 @@
     function autoSaveProfile() {
       clearTimeout(saveTimer);
 
-      saveTimer = setTimeout(function() {
+      saveTimer = setTimeout(function () {
 
         const name = nameInput.value.trim();
         const bio = bioInput.value;
@@ -361,17 +371,17 @@
         }
 
         fetch("{{ route('settings.profile.update') }}", {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-              name: name,
-              bio: bio
-            })
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({
+            name: name,
+            bio: bio
           })
+        })
           .then(response => response.json())
           .then(data => {
             if (data.success) {
@@ -385,24 +395,14 @@
       }, 800);
     }
 
-
-    /* =========================
-       AUTO SAVE NAMA
-    ========================= */
-
     if (nameInput) {
-      nameInput.addEventListener('input', function() {
+      nameInput.addEventListener('input', function () {
         autoSaveProfile();
       });
     }
 
-
-    /* =========================
-       AUTO SAVE BIO
-    ========================= */
-
     if (bioInput) {
-      bioInput.addEventListener('input', function() {
+      bioInput.addEventListener('input', function () {
 
         if (bioCounter) {
           bioCounter.textContent = this.value.length;
@@ -415,11 +415,6 @@
     let selectedHobbyElement = null;
     let selectedHobbyId = null;
 
-
-    /* =========================
-       BUKA MODAL HAPUS HOBI
-    ========================= */
-
     function openDeleteHobbyModal(element) {
 
       selectedHobbyElement = element;
@@ -429,15 +424,8 @@
 
       modal.classList.add('show');
 
-      /*
-       * Ambil posisi badge hobi yang diklik
-       */
       const rect = element.getBoundingClientRect();
 
-      /*
-       * Reset posisi dulu supaya offsetWidth/offsetHeight
-       * dihitung dengan benar
-       */
       modal.style.left = '0px';
       modal.style.top = '0px';
 
@@ -491,12 +479,12 @@
       const hobbyId = selectedHobbyId;
 
       fetch(`/settings/profile/hobby/${hobbyId}`, {
-          method: 'DELETE',
-          headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          }
-        })
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+      })
         .then(response => response.json())
         .then(data => {
 
@@ -505,7 +493,6 @@
             hobbyElement.remove();
             closeDeleteHobbyModal();
 
-            /* Jika sudah tidak ada hobi */
             const hobbyList = document.getElementById('hobbyList');
             const hobbyBadges = hobbyList.querySelectorAll('.hobby-badge');
 
@@ -539,7 +526,7 @@
         });
     }
 
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
 
       const deleteHobbyModal =
         document.getElementById('deleteHobbyModal');
@@ -561,19 +548,19 @@
 
     document.addEventListener(
       'DOMContentLoaded',
-      function() {
+      function () {
         const successToast =
           document.getElementById('successToast');
         const errorToast =
           document.getElementById('errorToast');
         if (successToast) {
-          setTimeout(function() {
+          setTimeout(function () {
             closeToast('successToast');
           }, 3500);
         }
 
         if (errorToast) {
-          setTimeout(function() {
+          setTimeout(function () {
             closeToast('errorToast');
           }, 5000);
         }
