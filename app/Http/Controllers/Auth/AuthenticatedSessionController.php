@@ -1,121 +1,75 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\ConfirmablePasswordController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\Auth\EmailVerificationPromptController;
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\Auth\SocialiteController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\VerifyEmailController;
-use Illuminate\Support\Facades\Route;
+namespace App\Http\Controllers\Auth;
 
-Route::get(
-    'register/{step?}',
-    [RegisteredUserController::class, 'create']
-)->name('register');
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 
-Route::post(
-    'register/step-3',
-    [RegisteredUserController::class, 'step3']
-)->name('register.step3');
+class AuthenticatedSessionController extends Controller
+{
+    public function create(): View|RedirectResponse
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
 
-Route::middleware('guest')->group(function () {
+        return view('auth.login');
+    }
 
-    Route::post(
-        'register/step-1',
-        [RegisteredUserController::class, 'step1']
-    )->name('register.step1');
+    public function store(Request $request): RedirectResponse
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
 
-    Route::post(
-        'register/step-2',
-        [RegisteredUserController::class, 'step2']
-    )->name('register.step2');
+        $user = User::where('email', $credentials['email'])->first();
 
-    Route::get(
-        'login',
-        [AuthenticatedSessionController::class, 'create']
-    )->name('login');
+        if (!$user || !Hash::check($credentials['password'], $user->getAuthPassword())) {
+            return back()->withErrors([
+                'email' => 'Email atau kata sandi yang Anda masukkan salah.',
+            ])->onlyInput('email');
+        }
 
-    Route::post(
-        'login',
-        [AuthenticatedSessionController::class, 'store']
-    )->name('login.authenticate');
+        // if ($user->status === 'suspended') {
+        //     $until = $user->suspended_until
+        //         ? $user->suspended_until->format('d M Y H:i')
+        //         : null;
 
-    Route::get('auth/{provider}/redirect', [SocialiteController::class, 'redirectToProvider'])
-        ->name('social.redirect');
+        //     return back()
+        //         ->withErrors([
+        //             'email' => 'Akun Anda sedang ditangguhkan' . ($until ? " hingga {$until}." : '.'),
+        //         ])
+        //         ->onlyInput('email');
+        // }
 
-    Route::get('auth/{provider}/callback', [SocialiteController::class, 'handleProviderCallback'])
-        ->name('social.callback');
+        // if (in_array($user->status, ['banned', 'inactive'], true)) {
+        //     return back()
+        //         ->withErrors([
+        //             'email' => 'Akun Anda telah dinonaktifkan.',
+        //         ])
+        //         ->onlyInput('email');
+        // }
 
-    Route::get(
-        'forgot-password',
-        [PasswordResetLinkController::class, 'create']
-    )->name('password.request');
+        Auth::login($user);
+        $request->session()->regenerate();
 
-    Route::post(
-        'forgot-password',
-        [PasswordResetLinkController::class, 'store']
-    )->name('password.email');
+        return redirect()->intended(route('dashboard'))
+            ->with('success', 'Berhasil masuk. Selamat datang kembali, ' . $user->name . '!');
+    }
+    
+    public function destroy(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
 
-    Route::get(
-        'reset-password/{token}',
-        [NewPasswordController::class, 'create']
-    )->name('password.reset');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    Route::post(
-        'reset-password',
-        [NewPasswordController::class, 'store']
-    )->name('password.store');
-});
-
-Route::get(
-    'verify-email/{id}/{hash}',
-    VerifyEmailController::class
-)
-    ->middleware([
-        'signed',
-        'throttle:6,1',
-    ])
-    ->name('verification.verify');
-
-
-Route::middleware('auth')->group(function () {
-
-    Route::get(
-        'verify-email',
-        EmailVerificationPromptController::class
-    )->name('verification.notice');
-
-    Route::post(
-        'email/verification-notification',
-        [
-            EmailVerificationNotificationController::class,
-            'store',
-        ]
-    )
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
-
-    Route::get(
-        'confirm-password',
-        [ConfirmablePasswordController::class, 'show']
-    )->name('password.confirm');
-
-    Route::post(
-        'confirm-password',
-        [ConfirmablePasswordController::class, 'store']
-    );
-
-    Route::put(
-        'password',
-        [PasswordController::class, 'update']
-    )->name('password.update');
-
-    Route::post(
-        'logout',
-        [AuthenticatedSessionController::class, 'destroy']
-    )->name('logout');
-});
+        return redirect('/')->with('success', 'Anda telah keluar.');
+    }
+}
