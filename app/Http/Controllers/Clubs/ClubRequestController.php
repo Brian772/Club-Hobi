@@ -41,6 +41,7 @@ class ClubRequestController extends Controller
             'name' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'hobby_id' => ['required', 'exists:hobbies,id'],
+            'privacy_club' => ['required', 'in:public,private'],
             'reason' => ['required', 'string', 'min:5', 'max:255'],
         ];
     }
@@ -50,7 +51,7 @@ class ClubRequestController extends Controller
         return [
             'cover.required' => 'Gambar cover harus dipilih.',
             'cover.image' => 'File harus berupa gambar.',
-            'cover.mimes' => 'Format gambar harus berupa jpeg, png, jpg, atau gif.',
+            'cover.mimes' => 'Format gambar harus berupa jpeg atau png.',
             'cover.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
             'name.required' => 'Nama klub harus diisi.',
             'name.string' => 'Nama klub harus berupa teks.',
@@ -60,6 +61,8 @@ class ClubRequestController extends Controller
             'description.max' => 'Deskripsi klub tidak boleh lebih dari 1000 karakter.',
             'hobby_id.required' => 'Hobi harus dipilih.',
             'hobby_id.exists' => 'Hobi yang dipilih tidak valid.',
+            'privacy_club.required' => 'Privasi klub harus dipilih.',
+            'privacy_club.in' => 'Privasi klub harus berupa public atau private.',
             'reason.required' => 'Alasan pengajuan harus diisi.',
             'reason.string' => 'Alasan pengajuan harus berupa teks.',
             'reason.max' => 'Alasan pengajuan tidak boleh lebih dari 255 karakter.',
@@ -70,31 +73,33 @@ class ClubRequestController extends Controller
     public function storeRequest(StoreClubRequestRequest $request)
     {
         $validated = $request->validated();
+        $coverPath = null;
         DB::beginTransaction();
 
         try {
-
-            $coverPath = null;
             if ($request->hasFile('cover')) {
                 $coverPath = $request->file('cover')->store('club/covers', 'public');
             }
+
             ClubRequest::create([
-                'id'         => Str::uuid(),
-                'user_id'    => Auth::id(),
-                'name'       => $validated['name'],
-                'description'=> $validated['description'] ?? null,
-                'hobby_id'   => $validated['hobby_id'],
-                'reason'     => $validated['reason'],
-                'cover_url'  => $coverPath,
-                'status'     => 'pending',
+                'id'            => Str::uuid(),
+                'user_id'       => Auth::id(),
+                'name'          => $validated['name'],
+                'description'   => $validated['description'] ?? null,
+                'hobby_id'      => $validated['hobby_id'],
+                'privacy_club'  => $validated['privacy_club'] ?? 'public',
+                'reason'        => $validated['reason'],
+                'cover_url'     => $coverPath,
+                'status'        => 'pending',
             ]);
+
             DB::commit();
 
             return redirect()->route('clubs.index')->with('success', 'Permintaan klub berhasil dikirim!');
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            if ($coverPath ?? null) {
+            if ($coverPath) {
                 Storage::disk('public')->delete($coverPath);
             }
 

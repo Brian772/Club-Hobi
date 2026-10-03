@@ -1,9 +1,9 @@
 <a href="{{ route('admin.clubs.request.show', $request->id) }}"
   class="flex flex-row gap-2 lg:gap-4 items-center justify-start rounded-lg border border-hairline bg-canvas-soft p-4 hover:shadow-md transition-shadow duration-300">
-  <div class="flex flex-col lg:flex-row gap-2 w-full h-full items-center justify-start">
+  <div class="flex flex-col lg:flex-row gap-2 w-full h-full lg:items-center justify-start">
     <div>
       <img src="{{ Storage::url($request->cover_url) }}" loading="lazy" alt="{{ $request->name }} Cover" width="128" height="64"
-        class="rounded-xs object-cover">
+        class="rounded-xs object-cover w-32 h-16 shrink-0 border border-hairline">
     </div>
     <div class="w-full flex flex-col gap-1">
       <h3 class="text-title flex flex-row items-center gap-2 justify-start text-ink">{{ $request->name }}
@@ -18,7 +18,7 @@
             class="rounded-full bg-accent-red/10 text-accent-red text-overline px-2 py-1">{{ Str::upper($request->status) }}</span>
         @endif
       </h3>
-      <p class="text-caption text-ink-muted">{{ $request->description }}</p>
+      <p class="text-caption text-ink-muted max-w-3xl line-clamp-1">{{ $request->description }}</p>
       <p class="text-caption text-ink font-semibold">Requested by: <span
           class="text-ink-muted font-normal">{{ $request->requester->name }}</span></p>
     </div>

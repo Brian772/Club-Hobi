@@ -65,6 +65,7 @@ class AuditLog extends Model
 
             'Accept Club Request' => [
                 'Club ID' => $meta['club_id'] ?? 'N/A',
+                'Privacy' => $meta['privacy'] ?? 'N/A',
                 'Requester ID' => $meta['requester_id'] ?? 'N/A',
                 'Result' => $meta['result'] ?? 'N/A',
             ],

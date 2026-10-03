@@ -26,6 +26,7 @@ class StoreClubRequestRequest extends FormRequest
             "name"        => "required|string|max:255",
             "hobby_id"    => "required|exists:hobbies,id",
             "description" => "nullable|string",
+            "privacy_club" => "required|in:public,private",
             "reason"      => "required|string|max:255",
             "cover"       => "nullable|image|mimes:jpeg,png|max:2048",
         ];
@@ -37,6 +38,8 @@ class StoreClubRequestRequest extends FormRequest
             "name.required"     => "Nama klub wajib diisi.",
             "hobby_id.required" => "Kategori klub wajib dipilih.",
             "hobby_id.exists"   => "Kategori klub yang dipilih tidak valid.",
+            "privacy_club.required" => "Privasi klub wajib dipilih.",
+            "privacy_club.in" => "Privasi klub harus berupa 'public' atau 'private'.",
             "reason.required"   => "Alasan permintaan wajib diisi.",
             "cover.image"       => "File cover harus berupa gambar.",
             "cover.mimes"       => "File cover harus berupa file JPEG atau PNG.",

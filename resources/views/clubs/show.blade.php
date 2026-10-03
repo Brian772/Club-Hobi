@@ -72,6 +72,26 @@
       <div class="min-w-0">
         <div class="mt-2 flex flex-wrap items-center gap-2 text-caption lg:text-body-mid text-ink">
           <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
+            @if ($club->privacy === 'public')
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-globe preview-icon">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
+              </svg>
+            @else
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-lock preview-icon">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            @endif
+            {{ $club->privacy }}
+          </span>
+
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
             <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -100,12 +120,14 @@
         class="fixed flex items-center justify-center inset-0 z-50">
         <div @click="OpenLeaveModal = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
         </div>
-        <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+        <div
+          class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
           <div class="flex flex-col gap-2 mb-4">
             <h3 class="text-title mb-4 text-ink">
               Leave <span x-text="selectedName"></span>?
             </h3>
-            <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin meninggalkan klub ini? Tindakan ini tidak dapat
+            <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin meninggalkan klub ini? Tindakan ini tidak
+              dapat
               dibatalkan.</p>
           </div>
           <div class="flex flex-row justify-end gap-2">

@@ -342,6 +342,42 @@ class ClubController extends Controller
         return redirect()->route('clubs.settings', ['club' => $club->id])->with('success', 'Moderator berhasil diperbarui!');
     }
 
+    public function updatePrivacy(Request $request, Club $club)
+    {
+        if (Gate::denies('isOwner', $club)) {
+            return redirect()->route('clubs.show', ['club' => $club->id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
+        }
+
+        $validated = $request->validate([
+            'privacy' => 'required|in:public,private',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $club->update(['privacy' => $validated['privacy']]);
+
+            ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $club->id,
+                'action' => 'Update Privacy',
+                'target_type' => 'Club',
+                'target_id' => $club->id,
+                'metadata' => [
+                    'new_privacy' => $validated['privacy'],
+                ],
+            ]);
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'An error occurred while updating the privacy settings.');
+        }
+
+        return redirect()->back()->with('success', 'Privacy settings updated successfully!');
+    }
+
     public function deleteClub(Club $club)
     {
         if (Gate::denies('isOwner', $club)) {
