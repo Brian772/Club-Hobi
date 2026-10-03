@@ -148,4 +148,50 @@ class ClubJoinRequestController extends Controller
         }
         return redirect()->back()->with('success', 'Join request canceled successfully.');
     }
+
+    public function join(Club $club)
+    {
+        $user_id = Auth::user()->id;
+        $club_id = $club->id;
+
+        if ($club->visibility !== 'public') {
+            return redirect()->back()->with('error', 'This club is not public. You cannot join directly.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $existMember = ClubMember::where('club_id', $club_id)
+                ->where('user_id', $user_id)
+                ->first();
+
+            if ($existMember) {
+                return redirect()->back()->with('warning', 'You are already a member of this club.');
+            }
+
+            ClubMember::create([
+                'id' => Str::uuid(),
+                'club_id' => $club_id,
+                'user_id' => $user_id,
+                'role' => 'member',
+                'joined_at' => now(),
+            ]);
+
+            ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $club->id,
+                'action' => 'Join Club',
+                'target_type' => 'User',
+                'target_id' => Auth::id(),
+            ]);
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'An error occurred while joining the club.');
+        }
+
+        return redirect()->back()->with('success', 'Successfully joined the club.');
+    }
 }

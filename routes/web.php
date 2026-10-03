@@ -56,12 +56,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{club}', [ClubController::class, 'show'])->name('show');
         Route::get('/{club}/settings', [ClubController::class, 'settings'])->name('settings');
         Route::put('/{club}/settings', [ClubController::class, 'update'])->name('update');
+        Route::post('/{club}/join', [ClubJoinRequestController::class, 'join'])->name('join');
         Route::post('/{club}/join/request', [ClubJoinRequestController::class, 'storeRequest'])->name('join.request');
         Route::delete('/{club}/join/{request}/cancel', [ClubJoinRequestController::class, 'cancelRequest'])->name('join.request.cancel');
         Route::patch('/{club}/settings/join/{request}/accept', [ClubJoinRequestController::class, 'acceptRequest'])->name('join.request.accept');
         Route::patch('/{club}/settings/join/{request}/reject', [ClubJoinRequestController::class, 'rejectRequest'])->name('join.request.reject');
         Route::patch('/{club}/promote/{userId}', [ClubController::class, 'promoteModerator'])->name('promote');
         Route::patch('/{club}/demote/{userId}', [ClubController::class, 'demoteModerator'])->name('demote');
+        Route::patch('/{club}/settings/privacy', [ClubController::class, 'updatePrivacy'])->name('privacy.update');
         Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');
         Route::delete('/clubs/{club}/kick/{userId}', [ClubController::class, 'kickMember'])->name('kick');
         Route::delete('/clubs/{club}/delete', [ClubController::class, 'deleteClub'])->name('delete');

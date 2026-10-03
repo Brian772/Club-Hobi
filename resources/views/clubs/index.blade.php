@@ -96,14 +96,36 @@
                   <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                 </h3>
                 <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
-                <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                <div class="flex flex-row items-center justify-between mt-2">
+                  <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                  <p class="text-caption text-ink-muted flex flex-row gap-2 items-center">
+                    @if ($club->privacy === 'public')
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-globe preview-icon">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                        <path d="M2 12h20" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-lock preview-icon">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                    @endif
+                    {{ $club->privacy }}
+                  </p>
+                </div>
               </div>
               <div class="mt-auto w-full p-2">
                 <a href="{{ route('clubs.show', $club->id) }}"
                   class="group bg-primary rounded-md gap-2 text-white py-2 w-full flex flex-row items-center justify-center">
                   Lihat Klub
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"
                     class="lucide lucide-arrow-right preview-icon group-hover:translate-x-1 transition-transform duration-300">
                     <path d="M5 12h14" />
                     <path d="m12 5 7 7-7 7" />
@@ -178,7 +200,28 @@
                     class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                 </h3>
                 <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
-                <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                <div class="flex flex-row items-center justify-between mt-2">
+                  <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                  <p class="text-caption text-ink-muted flex flex-row gap-2 items-center">
+                    @if ($club->privacy === 'public')
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-globe preview-icon">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                        <path d="M2 12h20" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-lock preview-icon">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                    @endif
+                    {{ $club->privacy }}
+                  </p>
+                </div>
               </div>
               <div class="mt-auto w-full p-2">
                 <?php
@@ -191,29 +234,39 @@
                 $pendingRequest = $pendingRequests->get($club->id);
                 $isAlreadyRequested = $pendingRequest !== null;
                 ?>
-                @if ($isAlreadyRequested)
-                  <div class="flex flex-row gap-2">
-                    <button
-                      class="w-full border border-hairline bg-canvas-soft rounded-md text-primary py-2 cursor-not-allowed"
-                      type="button" disabled>
-                      Menunggu Persetujuan
-                    </button>
-                    <form action="{{ route('clubs.join.request.cancel', [$club->id, $pendingRequest->id]) }}"
-                      method="POST">
-                      @csrf
-                      @method('DELETE')
+                @if ($club->privacy === 'private')
+                  @if ($isAlreadyRequested)
+                    <div class="flex flex-row gap-2">
                       <button
-                        class="w-max bg-gray-200 text-ink hover:bg-gray-300 py-2 px-4 rounded-md text-center cursor-pointer"
-                        type="submit">
-                        Batal
+                        class="w-full border border-hairline bg-canvas-soft rounded-md text-primary py-2 cursor-not-allowed"
+                        type="button" disabled>
+                        Menunggu Persetujuan
+                      </button>
+                      <form action="{{ route('clubs.join.request.cancel', [$club->id, $pendingRequest->id]) }}"
+                        method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button
+                          class="w-max bg-gray-200 text-ink hover:bg-gray-300 py-2 px-4 rounded-md text-center cursor-pointer"
+                          type="submit">
+                          Batal
+                        </button>
+                      </form>
+                    </div>
+                  @else
+                    <form action="{{ route('clubs.join.request', $club->id) }}" method="POST">
+                      @csrf
+                      <button class="w-full bg-primary rounded-md text-white py-2 cursor-pointer" type="submit">
+                        Permintaan Bergabung
                       </button>
                     </form>
-                  </div>
-                @else
-                  <form action="{{ route('clubs.join.request', $club->id) }}" method="POST">
+                  @endif
+                @endif
+                @if ($club->privacy === 'public')
+                  <form action="{{ route('clubs.join', $club->id) }}" method="POST">
                     @csrf
                     <button class="w-full bg-primary rounded-md text-white py-2 cursor-pointer" type="submit">
-                      Permintaan Bergabung
+                      Bergabung
                     </button>
                   </form>
                 @endif

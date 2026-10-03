@@ -65,7 +65,28 @@
                   <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                 </h3>
                 <p class="text-caption text-ink-secondary mb-2 line-clamp-2">{{ $club->description }}</p>
-                <p class="text-caption text-ink-muted">{{ $club->members_count }} Person</p>
+                <div class="flex flex-row items-center justify-between mt-2">
+                  <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                  <p class="text-caption text-ink-muted flex flex-row gap-2 items-center">
+                    @if ($club->privacy === 'public')
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-globe preview-icon">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                        <path d="M2 12h20" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-lock preview-icon">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                    @endif
+                    {{ $club->privacy }}
+                  </p>
+                </div>
               </div>
             </a>
           @endforeach

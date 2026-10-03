@@ -114,37 +114,53 @@
         @error('description')
           <p class="text-accent-red text-caption">{{ $message }}</p>
         @enderror
-        <div class="flex flex-col gap-2 mb-4">
-          <label for="hobby" class="text-body-mid">Kategori Klub <span class="text-accent-red">*</span></label>
+      </div>
+      <div class="flex flex-col gap-2 mb-4">
+        <label for="hobby" class="text-body-mid">Kategori Klub <span class="text-accent-red">*</span></label>
 
-          <div class="relative">
-            <select id="hobby" name="hobby_id" value="{{ old('hobby_id') }}"
-              class="w-1/3 appearance-none rounded-lg px-4 py-2 pr-10 border border-hairline bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-              <option value="" disabled {{ old('hobby_id') ? '' : 'selected' }}>Pilih Kategori</option>
-              @foreach ($hobbies as $hobby)
-                <option value="{{ $hobby->id }}" @selected(old('hobby_id') == $hobby->id)>
-                  {{ $hobby->name }}
-                </option>
-              @endforeach
-            </select>
-          </div>
-
-          @error('hobby_id')
-            <p class="text-accent-red text-caption">{{ $message }}</p>
-          @enderror
-        </div>
-        <div class="flex flex-col gap-2 mb-4">
-          <label for="reason" class="text-body-mid">Alasan Pengajuan <span class="text-accent-red">*</span></label>
-          <textarea id="reason" name="reason" placeholder="Deskripsikan alasan pengajuan anda..."
-            class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">{{ old('reason') }}</textarea>
-          @error('reason')
-            <p class="text-accent-red text-caption">{{ $message }}</p>
-          @enderror
+        <div class="relative">
+          <select id="hobby" name="hobby_id" value="{{ old('hobby_id') }}"
+            class="w-1/3 appearance-none rounded-lg px-4 py-2 pr-10 border border-hairline bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            <option value="" disabled {{ old('hobby_id') ? '' : 'selected' }}>Pilih Kategori</option>
+            @foreach ($hobbies as $hobby)
+              <option value="{{ $hobby->id }}" @selected(old('hobby_id') == $hobby->id)>
+                {{ $hobby->name }}
+              </option>
+            @endforeach
+          </select>
         </div>
 
-        <button type="submit"
-          class="bg-primary/10 text-primary hover:text-white w-max rounded-md px-4 py-2 hover:bg-primary">Ajukan
-          Klub</button>
+        @error('hobby_id')
+          <p class="text-accent-red text-caption">{{ $message }}</p>
+        @enderror
+      </div>
+      <div class="flex flex-col gap-2 mb-4">
+        <label for="privacy_club" class="text-body-mid">Privasi Klub <span class="text-accent-red">*</span></label>
+        <div class="relative">
+          <select id="privacy_club" name="privacy_club" value="{{ old('privacy_club') }}"
+            class="w-1/3 appearance-none rounded-lg px-4 py-2 pr-10 border border-hairline bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            <option value="" disabled {{ old('privacy_club') ? '' : 'selected' }}>Pilih Privasi</option>
+            <option value="public" @selected(old('privacy_club') == 'public')>Publik</option>
+            <option value="private" @selected(old('privacy_club') == 'private')>Privat</option>
+          </select>
+        </div>
+
+        @error('privacy_club')
+          <p class="text-accent-red text-caption">{{ $message }}</p>
+        @enderror
+      </div>
+      <div class="flex flex-col gap-2 mb-4">
+        <label for="reason" class="text-body-mid">Alasan Pengajuan <span class="text-accent-red">*</span></label>
+        <textarea id="reason" name="reason" placeholder="Deskripsikan alasan pengajuan anda..."
+          class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">{{ old('reason') }}</textarea>
+        @error('reason')
+          <p class="text-accent-red text-caption">{{ $message }}</p>
+        @enderror
+      </div>
+
+      <button type="submit"
+        class="bg-primary/10 text-primary hover:text-white w-max rounded-md px-4 py-2 hover:bg-primary">Ajukan
+        Klub</button>
     </form>
 
     {{-- Confirm Modal --}}

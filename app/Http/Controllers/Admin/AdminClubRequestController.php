@@ -44,6 +44,7 @@ class AdminClubRequestController extends Controller
                 'description' => $clubRequest->description,
                 'created_by' => $clubRequest->user_id,
                 'cover_url' => $clubRequest->cover_url,
+                'privacy' => $clubRequest->privacy_club,
                 'created_at' => now(),
             ]);
 
@@ -69,6 +70,7 @@ class AdminClubRequestController extends Controller
                 'target_id' => $clubRequest->id,
                 'metadata' => [
                     'club_id' => $club->id,
+                    'privacy' => $clubRequest->privacy_club,
                     'requester_id' => $clubRequest->user_id,
                     'result' => 'approved',
                 ],

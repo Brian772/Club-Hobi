@@ -7,12 +7,18 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Auth;
 
 class EmailVerificationPromptController extends Controller
 {
 
     public function index(Request $request)
     {
+        if (Auth::user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard')
+                ->with('info', 'Email kamu sudah diverifikasi sebelumnya. Tidak perlu melakukan verifikasi ulang.');
+        }
+
         $key = 'verification-email:' . $request->user()->id;
 
         $remaining = RateLimiter::tooManyAttempts($key, 6)

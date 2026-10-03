@@ -34,13 +34,13 @@
         @endif
         @foreach ($clubs as $club)
           <div class="flex flex-row items-end lg:items-center justify-between border border-hairline p-2 rounded-lg">
-            <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex flex-col lg:items-center lg:flex-row gap-4">
               <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" loading="lazy" alt="{{ $club->name }}"
-                width="128" height="64" class="rounded-xs">
+                class="object-cover rounded-xs w-32 h-16 shrink-0 border border-hairline">
               <div class="flex flex-col gap-1">
                 <h2 class="text-lg font-semibold">{{ $club->name }} <span
               class="font-normal text-body-mid">· {{ $club->hobby->name }}</span></h2>
-                <p class="text-sm text-ink-muted">{{ $club->description }}</p>
+                <p class="text-sm text-ink-muted max-w-3xl line-clamp-1">{{ $club->description }}</p>
                 <p class="text-caption text-ink font-semibold">Owner : <span
                     class="text-ink-muted font-normal">{{ $club->creator->name }}</span></p>
               </div>
@@ -61,11 +61,11 @@
               class="flex flex-row items-end lg:items-center justify-between border border-hairline p-2 rounded-lg">
               <div class="flex flex-col lg:flex-row gap-4">
                 <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" loading="lazy" alt="{{ $club->name }}"
-                  width="128" height="64" class="rounded-xs">
+                  class="object-cover rounded-xs w-32 h-16 shrink-0 border border-hairline">
                 <div class="flex flex-col gap-1">
                   <h2 class="text-lg font-semibold">{{ $club->name }} <span
               class="font-normal text-body-mid">· {{ $club->hobby->name }}</span></h2>
-                  <p class="text-sm text-ink-muted">{{ $club->description }}</p>
+                  <p class="text-sm text-ink-muted max-w-3xl line-clamp-1">{{ $club->description }}</p>
                   <p class="text-caption text-ink font-semibold">Owner : <span
                       class="text-ink-muted font-normal">{{ $club->creator->name }}</span></p>
                 </div>

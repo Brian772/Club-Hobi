@@ -17,6 +17,7 @@ class ClubRequest extends Model
         'description',
         'hobby_id',
         'cover_url',
+        'privacy_club',
         'reason',
         'status',
         'rejected_reason',

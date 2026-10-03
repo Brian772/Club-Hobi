@@ -30,6 +30,11 @@
     </div>
 
     <div class="flex flex-col gap-1">
+      <h4 class="text-ink text-body-mid">Privasi Klub :</h4>
+      <p class="text-ink-muted text-caption">{{ ucfirst($clubRequest->privacy_club) }}</p>
+    </div>
+
+    <div class="flex flex-col gap-1">
       <h4 class="text-ink text-body-mid">Alasan Pengajuan :</h4>
       <p class="text-ink-muted text-caption">{{ $clubRequest->reason }}</p>
     </div>

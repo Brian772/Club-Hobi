@@ -24,11 +24,13 @@
       openDelete: false,
       openAccept: false,
       openReject: false,
+      openChangePrivacy: false,
       selectedName: '',
       promoteUrl: '',
       demoteUrl: '',
       kickUrl: '',
       kickRole: '',
+      changePrivacyUrl: '',
       deleteUrl: '',
       acceptUrl: '',
       rejectUrl: ''
@@ -487,7 +489,8 @@
                 <tbody>
                   @forelse ($activities as $activity)
                     <tr class="odd:bg-gray-100 even:bg-canvas">
-                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->user?->name ?? 'System' }}</td>
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->user?->name ?? 'System' }}
+                      </td>
                       <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->action }}</td>
                       <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->target_type ?? 'N/A' }}</td>
                       <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">
@@ -549,6 +552,29 @@
       </section>
     @endcan
 
+    {{-- Change Privacy --}}
+    @can('isOwner', $club)
+      <div class="flex flex-row items-center justify-between border border-hairline p-4 rounded-lg">
+        <div class="flex flex-col gap-1">
+          <h3 class="text-title text-ink">Change Privacy Club</h3>
+          <p class="text-body-mid text-ink-muted">Change the privacy settings of {{ $club->name }}. Current privacy is {{ $club->privacy }}</p>
+        </div>
+        @if ($club->privacy === 'public')
+          <button type="button"
+            @click="openChangePrivacy = true; changePrivacyUrl = '{{ route('clubs.privacy.update', $club->id) }}';"
+            class="px-4 py-2 rounded-md text-primary hover:underline hover:underline-offset-2">
+            Change to Private
+          </button>
+        @else
+          <button type="button"
+            @click="openChangePrivacy = true; changePrivacyUrl = '{{ route('clubs.privacy.update', $club->id) }}';"
+            class="px-4 py-2 rounded-md text-primary hover:underline hover:underline-offset-2">
+            Change to Public
+          </button>
+        @endif
+      </div>
+    @endcan
+
     {{-- Delete Club --}}
     @can('isOwner', $club)
       <section class="p-4 mt-12">
@@ -593,7 +619,7 @@
             @csrf
             @method('PATCH')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary transition-colors duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-layer-arrow-up">
@@ -606,7 +632,7 @@
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
             @click="openPromote = false">Cancel</button>
         </div>
       </div>
@@ -631,7 +657,7 @@
             @csrf
             @method('PATCH')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary transition-colors duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-layer-arrow-down">
@@ -645,7 +671,7 @@
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
             @click="openDemote = false">Cancel</button>
         </div>
       </div>
@@ -670,7 +696,7 @@
             @csrf
             @method('DELETE')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red transition-colors duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-arrow-right-from-line">
@@ -682,7 +708,7 @@
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
             @click="openKick = false">Cancel</button>
         </div>
       </div>
@@ -706,7 +732,7 @@
             @csrf
             @method('DELETE')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red transition-colors duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-trash">
@@ -720,7 +746,7 @@
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
             @click="openDelete = false">Cancel</button>
         </div>
       </div>
@@ -743,12 +769,12 @@
             @csrf
             @method('PATCH')
             <button type="submit"
-              class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white">
+              class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
               Accept
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
             @click="openAccept = false">Cancel</button>
         </div>
       </div>
@@ -771,13 +797,62 @@
             @csrf
             @method('PATCH')
             <button type="submit"
-              class="px-4 py-2 text-accent-red cursor-pointer bg-accent-red/10 hover:bg-accent-red rounded hover:text-white">
+              class="px-4 py-2 text-accent-red cursor-pointer bg-accent-red/10 hover:bg-accent-red rounded hover:text-white transition-colors duration-200">
               Reject
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
             @click="openReject = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    {{-- Change Privacy Modal --}}
+    <div x-show="openChangePrivacy" x-cloak @keydown.escape.window="openChangePrivacy = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openChangePrivacy = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Change Privacy
+          </h3>
+          @if ($club->privacy === 'private')
+            <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin mengubah privasi klub ini? orang lain akan
+              dapat bergabung dengan klub ini tanpa melakukan persetujuan.</p>
+          @endif
+          @if ($club->privacy === 'public')
+            <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin mengubah privasi klub ini? orang lain perlu
+              persetujuan untuk bergabung dengan klub ini.</p>
+          @endif
+        </div>
+        <div class="flex flex-row justify-end gap-2">
+          @if ($club->privacy === 'public')
+            <form :action="changePrivacyUrl" method="POST">
+              @csrf
+              @method('PATCH')
+              <input type="hidden" name="privacy" value="private">
+              <button type="submit"
+                class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
+                Change to Private
+              </button>
+            </form>
+          @endif
+          @if ($club->privacy === 'private')
+            <form :action="changePrivacyUrl" method="POST">
+              @csrf
+              @method('PATCH')
+              <input type="hidden" name="privacy" value="public">
+              <button type="submit"
+                class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
+                Change to Public
+              </button>
+            </form>
+          @endif
+          <button type="button"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+            @click="openChangePrivacy = false">Cancel</button>
         </div>
       </div>
     </div>

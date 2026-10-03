@@ -24,6 +24,7 @@ class Club extends Model
         'description',
         'created_by',
         'cover_url',
+        'privacy',
     ];
 
     public function hobby()
