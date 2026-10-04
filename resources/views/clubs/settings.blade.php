@@ -112,18 +112,6 @@
       <div class="flex flex-col gap-8 border border-hairline p-4 rounded-lg">
         <div class="flex flex-row items-center justify-between">
           <div class="flex flex-col gap-1">
-            <h3 class="text-body-mid font-semibold text-ink">Require Approval</h3>
-            <p class="text-caption text-ink-muted">Choose whether {{ $club->name }} requires approval before joining</p>
-          </div>
-          <button type="button"
-            @click="openChangeApproval = true; changeApprovalUrl = '{{ route('clubs.approval.update', $club->id) }}';"
-            class="px-4 py-2 rounded-md bg-primary/10 text-primary hover:text-white hover:bg-primary transition-colors duration-300">
-            Change
-          </button>
-        </div>
-
-        <div class="flex flex-row items-center justify-between">
-          <div class="flex flex-col gap-1">
             <h3 class="text-body-mid font-semibold text-ink">Change visibility Club</h3>
             <p class="text-caption text-ink-muted">Change the visibility settings of {{ $club->name }}. Current
               visibility is {{ $club->visibility }}</p>
@@ -134,6 +122,20 @@
             Change
           </button>
         </div>
+        
+        @if ($club->visibility === 'public')
+          <div class="flex flex-row items-center justify-between">
+            <div class="flex flex-col gap-1">
+              <h3 class="text-body-mid font-semibold text-ink">Require Approval</h3>
+              <p class="text-caption text-ink-muted">Choose whether {{ $club->name }} requires approval before joining</p>
+            </div>
+            <button type="button"
+              @click="openChangeApproval = true; changeApprovalUrl = '{{ route('clubs.approval.update', $club->id) }}';"
+              class="px-4 py-2 rounded-md bg-primary/10 text-primary hover:text-white hover:bg-primary transition-colors duration-300">
+              Change
+            </button>
+          </div>
+        @endif
       </div>
     @endcan
 
@@ -614,7 +616,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openPromote = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Promote <span x-text="selectedName"></span> to Moderator?
@@ -652,7 +655,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openDemote = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title text-ink mb-4">
             Demote <span x-text="selectedName"></span> to Member?
@@ -691,7 +695,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openKick = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Kick <span x-text="selectedName"></span>?
@@ -728,7 +733,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openDelete = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Delete <span x-text="selectedName"></span>?
@@ -766,7 +772,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openAccept = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Accept Join Request?
@@ -794,7 +801,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openReject = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Reject Join Request?
@@ -823,7 +831,8 @@
       <div @click="openChangevisibility = false"
         class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Change visibility
@@ -872,7 +881,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openChangeApproval = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Change Approval

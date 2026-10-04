@@ -362,7 +362,14 @@ class ClubController extends Controller
         DB::beginTransaction();
 
         try {
-            $club->update(['visibility' => $validated['visibility']]);
+            switch ($validated['visibility']) {
+                case 'public':
+                    $club->update(['visibility' => 'public', 'is_required_request' => false]);
+                    break;
+                case 'private':
+                    $club->update(['visibility' => 'private', 'is_required_request' => true]);
+                    break;
+            }
 
             ClubActivity::create([
                 'id' => Str::uuid(),
