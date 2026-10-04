@@ -8,11 +8,11 @@
         alt="{{ $member->user->name }}"
         class="rounded-full size-10 object-cover"
         onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-        <div class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+        <div class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
           {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
         </div>
       @else
-        <div class="size-10 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+        <div class="size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
           {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
         </div>
       @endif
@@ -21,7 +21,7 @@
       <h3 class="text-body-mid font-semibold text-ink">{{ $member->user->name }}
         @if ($member->user->role_global === 'admin')
           <span
-            class="text-overline text-primary bg-primary/10 rounded-full px-2 py-1 border border-primary font-semibold">Admin</span>
+            class="text-overline text-primary bg-primary/10 rounded-full px-2 py-1 font-semibold">Admin</span>
         @endif
       </h3>
     </div>

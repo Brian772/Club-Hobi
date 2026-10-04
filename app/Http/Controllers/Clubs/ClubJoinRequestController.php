@@ -154,8 +154,8 @@ class ClubJoinRequestController extends Controller
         $user_id = Auth::user()->id;
         $club_id = $club->id;
 
-        if ($club->visibility !== 'public') {
-            return redirect()->back()->with('error', 'This club is not public. You cannot join directly.');
+        if ($club->is_required_request === 'true') {
+            return redirect()->back()->with('error', 'This club requires a join request. You cannot join directly.');
         }
 
         DB::beginTransaction();

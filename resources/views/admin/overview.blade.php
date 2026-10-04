@@ -196,7 +196,7 @@
       <div class="w-full my-8 gap-2 flex flex-col">
         @foreach ($recentActivity as $activity)
           <div class="flex flex-row justify-between gap-2 lg:mx-8">
-            <p class="text-body-mid text-ink"><span class="text-ink-muted">●</span> {{ $activity->user->name }}
+            <p class="text-body-mid text-ink"><span class="text-ink-muted">•</span> {{ $activity->user->name ?? 'System' }}
               {{ $activity->action }}</p>
             <p class="text-caption text-ink-muted">{{ $activity->created_at->diffForHumans() }}</p>
           </div>

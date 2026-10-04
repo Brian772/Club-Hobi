@@ -481,7 +481,7 @@ new class extends Component {
         <div x-data @keydown.escape.window="$wire.showSuspendModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Suspend User</h2>
                 <p>Are you sure you want to suspend this user? This action can be reversed later.</p>
@@ -528,7 +528,7 @@ new class extends Component {
         <div x-data x-cloak @keydown.escape.window="$wire.showBanModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Ban User</h2>
                 <p>Are you sure you want to ban this user? This action is permanent and cannot be
@@ -566,7 +566,7 @@ new class extends Component {
           @keydown.escape.window="$wire.showUnsuspendModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Unsuspend User</h2>
                 <p>Are you sure you want to unsuspend this user? This action will restore their access.</p>
@@ -595,7 +595,7 @@ new class extends Component {
         <div x-data x-cloak x-show="$wire.showUnbanModal" @keydown.escape.window="$wire.showUnbanModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Unban User</h2>
                 <p>Are you sure you want to unban this user? The ban will be lifted, and his account will be
@@ -624,7 +624,7 @@ new class extends Component {
         <div x-data x-cloak x-show="$wire.showPromoteModal" @keydown.escape.window="$wire.showPromoteModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Promote User</h2>
                 <p>Are you sure you want to promote this user to admin? This action will grant them elevated
@@ -647,7 +647,7 @@ new class extends Component {
         <div x-data x-cloak x-show="$wire.showDemoteModal" @keydown.escape.window="$wire.showDemoteModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Demote User</h2>
                 <p>Are you sure you want to demote this user to member? This action will revoke their admin privileges.
@@ -664,7 +664,6 @@ new class extends Component {
           </div>
         </div>
       @endif
-</div>
-</section>
-</main>
+    </section>
+  </main>
 </div>

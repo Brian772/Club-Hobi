@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-  <section x-data="{ OpenLeaveModal: false }">
+  <section x-data="{ OpenLeaveModal: false, selectedName: '', URL: '' }">
     <header class="relative w-full rounded-2xl h-64">
       @if ($club->cover_url)
         <img src="{{ Storage::url($club->cover_url) }}" alt="{{ $club->name }}"
@@ -36,35 +36,89 @@
         </h1>
       </div>
 
-      {{-- Settings --}}
-      <div class="flex flex-row gap-2 items-center absolute top-4 right-4">
-        @cannot('isOwner', $club)
-          <button type="button" @click="OpenLeaveModal = true"
-            class="text-accent-red bg-canvas/30 items-center flex flex-row gap-2 rounded-full text-body-mid px-4 py-2 cursor-pointer hover:bg-white/60 backdrop-blur-md transition-all duration-150">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-log-out preview-icon">
-              <path d="m16 17 5-5-5-5" />
-              <path d="M21 12H9" />
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            </svg>
-            Keluar
-          </button>
-        @endcannot
-        @can('view', $club)
-          <a href="{{ route('clubs.settings', $club->id) }}"
-            class="flex flex-row gap-2 rounded-full bg-canvas/30 px-4 py-2 items-center text-ink hover:bg-white/60 backdrop-blur-md transition-all duration-150">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-settings-icon lucide-settings">
-              <path
-                d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            Settings
-          </a>
-        @endcan
-      </div>
+      @if ($isNotMember)
+        <?php
+        $isAlreadyRequested = $club
+            ->joinRequests()
+            ->where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->exists();
+        
+        $pendingRequest = $pendingRequests->get($club->id);
+        $isAlreadyRequested = $pendingRequest !== null;
+        ?>
+        @if ($club->is_required_request === true)
+          @if ($isAlreadyRequested)
+            <div class="flex flex-row gap-2 absolute top-4 right-4">
+              <button class="w-max bg-canvas/50 backdrop-blur-md rounded-full text-ink py-2 px-4 cursor-not-allowed"
+                type="button" disabled>
+                Menunggu Persetujuan
+              </button>
+              <form action="{{ route('clubs.join.request.cancel', [$club->id, $pendingRequest->id]) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button
+                  class="w-max bg-canvas/30 backdrop-blur-md text-ink hover:bg-canvas/40 hover:text-accent-red py-2 px-4 rounded-full text-center cursor-pointer transition-colors duration-150"
+                  type="submit">
+                  Batal
+                </button>
+              </form>
+            </div>
+          @else
+            <form action="{{ route('clubs.join.request', $club->id) }}" method="POST">
+              @csrf
+              <button class="w-max bg-primary rounded-full text-white py-2 px-4 cursor-pointer absolute top-4 right-4"
+                type="submit">
+                Permintaan Bergabung
+              </button>
+            </form>
+          @endif
+        @endif
+        @if ($club->is_required_request === false)
+          <form action="{{ route('clubs.join', $club->id) }}" method="POST">
+            @csrf
+            <button class="w-max bg-primary rounded-full text-white py-2 px-4 cursor-pointer absolute top-4 right-4"
+              type="submit">
+              Bergabung
+            </button>
+          </form>
+        @endif
+      @endif
+
+      @if (!$isNotMember)
+        {{-- Keluar --}}
+        <div class="flex flex-row gap-2 items-center absolute top-4 right-4">
+          @cannot('isOwner', $club)
+            <button type="button"
+              @click="OpenLeaveModal = true; selectedName = '{{ $club->name }}'; URL = '{{ route('clubs.leave', $club->id) }}'"
+              class="text-accent-red bg-canvas/30 items-center flex flex-row gap-2 rounded-full text-body-mid px-4 py-2 cursor-pointer hover:bg-white/60 backdrop-blur-md transition-all duration-150">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-log-out preview-icon">
+                <path d="m16 17 5-5-5-5" />
+                <path d="M21 12H9" />
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              </svg>
+              Keluar
+            </button>
+          @endcannot
+
+          {{-- Settings --}}
+          @can('view', $club)
+            <a href="{{ route('clubs.settings', $club->id) }}"
+              class="flex flex-row gap-2 rounded-full bg-canvas/30 px-4 py-2 items-center text-ink hover:bg-white/60 backdrop-blur-md transition-all duration-150">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-settings-icon lucide-settings">
+                <path
+                  d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              Settings
+            </a>
+          @endcan
+        </div>
+      @endif
     </header>
 
     {{-- Club Info --}}
@@ -72,7 +126,7 @@
       <div class="min-w-0">
         <div class="mt-2 flex flex-wrap items-center gap-2 text-caption lg:text-body-mid text-ink">
           <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
-            @if ($club->privacy === 'public')
+            @if ($club->visibility === 'public')
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-globe preview-icon">
@@ -88,7 +142,7 @@
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             @endif
-            {{ $club->privacy }}
+            {{ $club->visibility }}
           </span>
 
           <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
@@ -103,7 +157,8 @@
 
           <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
             @if ($creator?->user?->avatar_full_url)
-              <img src="{{ $creator->user->avatar_full_url }}" alt="" class="size-5 rounded-full object-cover">
+              <img src="{{ $creator->user->avatar_full_url }}" alt=""
+                class="size-5 rounded-full object-cover">
             @endif
             Owner: {{ $creator->user->name ?? 'Tidak Diketahui' }}
           </span>
@@ -124,19 +179,19 @@
           class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
           <div class="flex flex-col gap-2 mb-4">
             <h3 class="text-title mb-4 text-ink">
-              Leave <span x-text="selectedName"></span>?
+              Keluar dari <span x-text="selectedName"></span>?
             </h3>
             <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin meninggalkan klub ini? Tindakan ini tidak
               dapat
               dibatalkan.</p>
           </div>
           <div class="flex flex-row justify-end gap-2">
-            <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
+            <form :action="URL" method="POST">
               @csrf
               @method('DELETE')
               <button type="submit"
                 class="px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
-                Leave
+                Ya, Keluar
               </button>
             </form>
             <button type="button"
@@ -148,122 +203,144 @@
     </div>
   </section>
 
-  <section id="postingan" x-data="{
-      openReportModal: false,
-      contentType: null,
-      contentId: null,
-      reportedUserId: null,
-      reportUrl: null,
-      reportTarget: null,
-  
-      openReport(type, contentId, reportedUserId = null, url = null, target = null) {
-          this.contentType = type;
-          this.contentId = contentId;
-          this.reportedUserId = reportedUserId;
-          this.reportUrl = url;
-          this.reportTarget = target;
-          this.openReportModal = true;
-      },
-  
-      closeReport() {
-          this.contentType = null;
-          this.contentId = null;
-          this.reportedUserId = null;
-          this.reportUrl = null;
-          this.openReportModal = false;
-      },
-  }">
-    <main x-data="{ tab: 'post' }" class="flex flex-col gap-4">
-      <div class="w-full md:w-max h-max flex felx-row gap-6 p-2 rounded-full border border-hairline">
-        <button @click="tab = 'post'" :class="tab === 'post' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
-          class="w-1/2 md:w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="lucide lucide-text-align-start-icon lucide-text-align-start">
-            <path d="M21 5H3" />
-            <path d="M15 12H3" />
-            <path d="M17 19H3" />
-          </svg>
-          Postingan
-        </button>
-        <button @click="tab = 'member'"
-          :class="tab === 'member' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
-          class="w-1/2 md:w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="lucide lucide-users-round-icon lucide-users-round">
-            <path d="M18 21a8 8 0 0 0-16 0" />
-            <circle cx="10" cy="8" r="5" />
-            <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" />
-          </svg>
-          Member
-        </button>
+  @if ($club->visibility === 'private' && $isNotMember)
+    <section class="w-full h-max flex items-center justify-center">
+      <div
+        class="flex flex-col mt-12 items-center gap-2 justify-center w-max h-max max-w-sm lg:max-w-md p-6 rounded-2xl border border-hairline bg-canvas">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-lock preview-icon text-ink-muted">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        <h2 class="text-title text-center lg:text-2xl font-semibold text-ink-muted">Klub ini bersifat privat.</h2>
+        <p class="text-body-mid text-center text-ink-muted">Anda tidak dapat mengakses klub ini. Ikuti klub ini untuk
+          melihat postingan.</p>
       </div>
+    </section>
+  @else
+    <section id="postingan" x-data="{
+        openReportModal: false,
+        contentType: null,
+        contentId: null,
+        reportedUserId: null,
+        reportUrl: null,
+        reportTarget: null,
+    
+        openReport(type, contentId, reportedUserId = null, url = null, target = null) {
+            this.contentType = type;
+            this.contentId = contentId;
+            this.reportedUserId = reportedUserId;
+            this.reportUrl = url;
+            this.reportTarget = target;
+            this.openReportModal = true;
+        },
+    
+        closeReport() {
+            this.contentType = null;
+            this.contentId = null;
+            this.reportedUserId = null;
+            this.reportUrl = null;
+            this.openReportModal = false;
+        },
+    }">
+      <main x-data="{ tab: 'post' }" class="flex flex-col gap-4">
+        <div class="w-full md:w-max h-max flex felx-row gap-6 p-2 rounded-full border border-hairline">
+          <button @click="tab = 'post'"
+            :class="tab === 'post' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
+            class="w-1/2 md:w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-text-align-start-icon lucide-text-align-start">
+              <path d="M21 5H3" />
+              <path d="M15 12H3" />
+              <path d="M17 19H3" />
+            </svg>
+            Postingan
+          </button>
+          <button @click="tab = 'member'"
+            :class="tab === 'member' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
+            class="w-1/2 md:w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-users-round-icon lucide-users-round">
+              <path d="M18 21a8 8 0 0 0-16 0" />
+              <circle cx="10" cy="8" r="5" />
+              <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" />
+            </svg>
+            Member
+          </button>
+        </div>
 
-      {{-- Postingan --}}
-      <div x-show="tab === 'post'">
-        @if ($club->posts->isNotEmpty())
-          <header class="mb-4 flex flex-row items-center justify-between">
-            <h2 class="text-title lg:text-heading-3 text-ink font-semibold">Postingan</h2>
-            <a href="{{ route('posts.create') }}"
-              class="inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
-              + Buat Postingan
-            </a>
-          </header>
-        @endif
-        @if ($club->posts->isEmpty())
-          <div class="flex flex-col items-center justify-center h-full">
-            <p class="text-body-mid mt-12 text-ink-muted">Belum ada postingan di klub ini.</p>
-            <a href="{{ route('posts.create') }}"
-              class="inline-flex items-center mt-8 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
-              + Buat Postingan
-            </a>
-          </div>
-        @else
-          <div class="max-w-150 space-y-4">
-            @foreach ($posts as $post)
-              <x-post :post="$post" />
-            @endforeach
+        {{-- Postingan --}}
+        <div x-show="tab === 'post'">
+          @if ($club->posts->isNotEmpty())
+            <header class="mb-4 flex flex-row items-center justify-between">
+              <h2 class="text-title lg:text-heading-3 text-ink font-semibold">Postingan</h2>
+              @if (!$isNotMember)
+                <a href="{{ route('posts.create') }}"
+                  class="inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
+                  + Buat Postingan
+                </a>
+              @endif
+            </header>
+          @endif
+          @if ($club->posts->isEmpty())
+            <div class="flex flex-col items-center justify-center h-full">
+              <p class="text-body-mid mt-12 text-ink-muted">Belum ada postingan di klub ini.</p>
+              @if (!$isNotMember)
+                <a href="{{ route('posts.create') }}"
+                  class="inline-flex items-center mt-8 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
+                  + Buat Postingan
+                </a>
+              @endif
+            </div>
+          @else
+            <div class="max-w-150 space-y-4">
+              @foreach ($posts as $post)
+                <x-post :post="$post" />
+              @endforeach
 
-            <div id="mediaModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4"
-              onclick="closeMediaModal()">
-              <button onclick="closeMediaModal()"
-                class="absolute top-4 right-4 text-white text-3xl font-bold z-50 cursor-pointer">&times;</button>
+              <div id="mediaModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4"
+                onclick="closeMediaModal()">
+                <button onclick="closeMediaModal()"
+                  class="absolute top-4 right-4 text-white text-3xl font-bold z-50 cursor-pointer">&times;</button>
 
-              <button id="modalPrevBtn" onclick="event.stopPropagation(); changeModalSlide(-1)"
-                class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">‹</button>
+                <button id="modalPrevBtn" onclick="event.stopPropagation(); changeModalSlide(-1)"
+                  class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">‹</button>
 
-              <button id="modalNextBtn" onclick="event.stopPropagation(); changeModalSlide(1)"
-                class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">›</button>
+                <button id="modalNextBtn" onclick="event.stopPropagation(); changeModalSlide(1)"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">›</button>
 
-              <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center"
-                onclick="event.stopPropagation()">
-                <div id="modalCounter" class="absolute -top-8 text-white/80 text-xs font-semibold"></div>
-                <div id="modalContent" class="w-full flex flex-col items-center justify-center"></div>
+                <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center"
+                  onclick="event.stopPropagation()">
+                  <div id="modalCounter" class="absolute -top-8 text-white/80 text-xs font-semibold"></div>
+                  <div id="modalContent" class="w-full flex flex-col items-center justify-center"></div>
+                </div>
               </div>
             </div>
-          </div>
-        @endif
-      </div>
+          @endif
+        </div>
 
-      {{-- Member --}}
-      <div x-show="tab === 'member'">
-        <header class="mb-4">
-          <h2 class="text-title lg:text-heading-3 text-ink font-semibold">Member</h2>
-        </header>
-        @if (empty($members))
-          <p class="text-caption text-ink-muted">Belum ada member di klub ini.</p>
-        @else
-          <div class="flex flex-col gap-2">
-            @foreach ($members as $member)
-              <x-member-list :member="$member" />
-            @endforeach
-          </div>
-        @endif
-      </div>
-    </main>
-    <x-report-modal />
-  </section>
+        {{-- Member --}}
+        <div x-show="tab === 'member'">
+          <header class="mb-4">
+            <h2 class="text-title lg:text-heading-3 text-ink font-semibold">Member</h2>
+          </header>
+          @if (empty($members))
+            <p class="text-caption text-ink-muted">Belum ada member di klub ini.</p>
+          @else
+            <div class="flex flex-col gap-2">
+              @foreach ($members as $member)
+                <x-member-list :member="$member" />
+              @endforeach
+            </div>
+          @endif
+        </div>
+      </main>
+      <x-report-modal />
+    </section>
+  @endif
 
   <script>
     function openCommentModal(modalId) {

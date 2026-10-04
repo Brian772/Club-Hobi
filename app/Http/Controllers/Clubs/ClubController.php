@@ -67,7 +67,14 @@ class ClubController extends Controller
             ->where('user_id', Auth::user()->id)
             ->exists();
 
+        $pendingRequests = ClubJoinRequest::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->get()
+            ->keyBy('club_id');
+
         $userClubIds = ClubMember::where('user_id', $user->id)->pluck('club_id');
+
+        $isNotMember = ClubMember::where('club_id', $club->id)->where('user_id', Auth::id())->doesntExist();
 
         $posts = Post::query()
             ->where('club_id', $id)
@@ -95,7 +102,7 @@ class ClubController extends Controller
             ->where('role', 'owner')
             ->first();
 
-        return view('clubs.show', compact('club', 'isJoined', 'posts', 'members', 'user', 'creator'));
+        return view('clubs.show', compact('club', 'isJoined', 'posts', 'members', 'user', 'creator', 'pendingRequests', 'isNotMember'));
     }
 
     public function settings(Request $request, $id)
@@ -232,7 +239,7 @@ class ClubController extends Controller
             return redirect()->back()->with('error', 'An error occurred while leaving the club.');
         }
 
-        return redirect()->route('clubs.index')->with('success', 'berhasil keluar dari klub!');
+        return redirect()->back()->with('success', 'berhasil keluar dari klub!');
     }
 
     public function kickMember(Request $request, $clubId, $userId)
@@ -342,40 +349,77 @@ class ClubController extends Controller
         return redirect()->route('clubs.settings', ['club' => $club->id])->with('success', 'Moderator berhasil diperbarui!');
     }
 
-    public function updatePrivacy(Request $request, Club $club)
+    public function updateVisibility(Request $request, Club $club)
     {
         if (Gate::denies('isOwner', $club)) {
             return redirect()->route('clubs.show', ['club' => $club->id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
         }
 
         $validated = $request->validate([
-            'privacy' => 'required|in:public,private',
+            'visibility' => 'required|in:public,private',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $club->update(['privacy' => $validated['privacy']]);
+            $club->update(['visibility' => $validated['visibility']]);
 
             ClubActivity::create([
                 'id' => Str::uuid(),
                 'actor_id' => Auth::id(),
                 'club_id' => $club->id,
-                'action' => 'Update Privacy',
+                'action' => 'Update Visibility',
                 'target_type' => 'Club',
                 'target_id' => $club->id,
                 'metadata' => [
-                    'new_privacy' => $validated['privacy'],
+                    'new_visibility' => $validated['visibility'],
                 ],
             ]);
 
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'An error occurred while updating the privacy settings.');
+            return redirect()->back()->with('error', 'An error occurred while updating the visibility settings.');
         }
 
-        return redirect()->back()->with('success', 'Privacy settings updated successfully!');
+        return redirect()->back()->with('success', 'Visibility settings updated successfully!');
+    }
+
+    public function updateApproval(Request $request, Club $club)
+    {
+        if (Gate::denies('isOwner', $club)) {
+            return redirect()->route('clubs.show', ['club' => $club->id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
+        }
+
+        $request->validate([
+            'is_required_request' => 'required|boolean',
+        ]);
+
+        $approvalRequired = $request->boolean('is_required_request');
+
+        DB::beginTransaction();
+
+        try {
+            $club->update(['is_required_request' => $approvalRequired]);
+
+            ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $club->id,
+                'action' => 'Update Approval Requirement',
+                'target_type' => 'Club',
+                'target_id' => $club->id,
+                'metadata' => [
+                    'new_approval_required' => $approvalRequired,
+                ],
+            ]);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'An error occurred while updating the approval settings.');
+        }
+
+        return redirect()->back()->with('success', 'Approval settings updated successfully!');
     }
 
     public function deleteClub(Club $club)

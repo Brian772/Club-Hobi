@@ -8,8 +8,20 @@
         $postAuthor = $post->author ?? $post->user;
       @endphp
 
-      <img src="{{ $postAuthor->avatar_full_url ?? 'https://via.placeholder.com/40' }}" draggable="false"
-        class="size-10 rounded-full object-cover" alt="{{ $postAuthor->name ?? 'User' }}">
+      @if ($postAuthor->avatar_full_url)
+        <img src="{{ $postAuthor->avatar_full_url }}" alt="{{ $postAuthor->name }}"
+          class="rounded-full size-10 object-cover"
+          onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+        <div
+          class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+          {{ Str::upper(Str::substr($postAuthor->name, 0, 1)) }}
+        </div>
+      @else
+        <div
+          class="size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+          {{ Str::upper(Str::substr($postAuthor->name, 0, 1)) }}
+        </div>
+      @endif
       <div class="flex flex-col gap-0.5">
         <span
           class="text-body-mid font-semibold text-neutral-900 block leading-tight">{{ $postAuthor->name ?? 'Anonim' }}</span>
@@ -279,8 +291,20 @@
     <div class="w-full md:w-1/2 flex flex-col h-full bg-white min-w-0">
 
       <div class="px-4 py-3 border-b border-neutral-100 shrink-0 flex gap-3">
-        <img src="{{ $postAuthor->avatar_full_url ?? 'https://via.placeholder.com/40' }}"
-          class="size-10 rounded-full object-cover border border-neutral-200 shrink-0" alt="Author">
+        @if ($postAuthor->avatar_full_url)
+          <img src="{{ $postAuthor->avatar_full_url }}" alt="{{ $postAuthor->name }}"
+            class="rounded-full size-10 object-cover"
+            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+          <div
+            class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+            {{ Str::upper(Str::substr($postAuthor->name, 0, 1)) }}
+          </div>
+        @else
+          <div
+            class="size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+            {{ Str::upper(Str::substr($postAuthor->name, 0, 1)) }}
+          </div>
+        @endif
 
         <div class="flex-1 min-w-0">
           <div class="flex flex-col gap-0.5">
@@ -310,8 +334,20 @@
           @forelse ($post->comments->whereNull('parent_id') as $comment)
             <div class="space-y-2" data-comment-id="{{ $comment->id }}">
               <div class="flex gap-3">
-                <img src="{{ $comment->user->avatar_full_url ?? 'https://via.placeholder.com/32' }}"
-                  class="size-8 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
+                @if ($postAuthor->avatar_full_url)
+                  <img src="{{ $postAuthor->avatar_full_url }}" alt="{{ $postAuthor->name }}"
+                    class="rounded-full size-8 object-cover"
+                    onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                  <div
+                    class="hidden size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                    {{ Str::upper(Str::substr($postAuthor->name, 0, 1)) }}
+                  </div>
+                @else
+                  <div
+                    class="size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                    {{ Str::upper(Str::substr($postAuthor->name, 0, 1)) }}
+                  </div>
+                @endif
                 <div class="flex-1 min-w-0">
                   <p class="text-caption text-neutral-800 leading-snug wrap-break-words">
                     <span class="font-semibold text-neutral-900 mr-1.5">{{ $comment->user->name ?? 'User' }}</span>
@@ -335,9 +371,9 @@
                             '{{ $comment->user->id }}',
                             '{{ route('reports.store') }}',
                             @js([
-                              'id' => $comment->id,
-                              'author_id' => $comment->user->id,
-                            ])
+    'id' => $comment->id,
+    'author_id' => $comment->user->id,
+])
                           )"
                         class="hover:text-red-500 cursor-pointer">
 
@@ -366,8 +402,20 @@
                 <div class="ml-9 space-y-2.5 border-l-2 border-neutral-100 pl-3 replies-container">
                   @foreach ($allReplies as $reply)
                     <div class="flex gap-2.5" data-comment-id="{{ $reply->id }}">
-                      <img src="{{ $reply->user->avatar_full_url ?? 'https://via.placeholder.com/28' }}"
-                        class="size-8 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
+                      @if ($reply->user->avatar_full_url)
+                        <img src="{{ $reply->user->avatar_full_url }}" alt="{{ $reply->user->name }}"
+                          class="size-8 rounded-full object-cover"
+                          onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                        <div
+                          class="hidden size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                          {{ Str::upper(Str::substr($reply->user->name, 0, 1)) }}
+                        </div>
+                      @else
+                        <div
+                          class="size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                          {{ Str::upper(Str::substr($reply->user->name, 0, 1)) }}
+                        </div>
+                      @endif
                       <div class="flex-1 min-w-0">
                         <p class="text-caption text-neutral-800 leading-snug wrap-break-words">
                           <span
@@ -393,9 +441,9 @@
                                   '{{ $reply->user->id }}',
                                   '{{ route('reports.store') }}',
                                   @js([
-                                    'id' => $reply->id,
-                                    'author_id' => $reply->user->id,
-                                  ])
+    'id' => $reply->id,
+    'author_id' => $reply->user->id,
+])
                                 )"
                               class="hover:text-red-500 cursor-pointer">
 

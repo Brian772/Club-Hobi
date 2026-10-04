@@ -97,7 +97,7 @@
     <div x-show="OpenApproveModal" x-cloak @keydown.escape.window="OpenApproveModal = false">
       <div class="fixed inset-0 bg-black/50 z-40" @click="OpenApproveModal = false"></div>
       <div class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
           <div class="flex flex-col gap-2 mb-4">
             <h2 class="text-lg font-semibold">Approve this appeal?</h2>
             <p>Are you sure you want to approve this appeal? The appeal will be approved, and the user's account will be
@@ -123,7 +123,7 @@
     <div x-show="OpenRejectModal" x-cloak @keydown.escape.window="OpenRejectModal = false">
       <div class="fixed inset-0 bg-black/50 z-40" @click="OpenRejectModal = false"></div>
       <div class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
           <div class="flex flex-col gap-2 mb-4">
             <h2 class="text-lg font-semibold">Reject this appeal?</h2>
             <p>Are you sure you want to reject this appeal? The appeal will be denied, and the user's account will remain

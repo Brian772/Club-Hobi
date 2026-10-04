@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('clubs', function (Blueprint $table) {
-            $table->enum('privacy', ['public', 'private'])->default('public')->after('cover_url');
+        Schema::table('club_requests', function (Blueprint $table) {
+            $table->enum('visibility_club', ['public', 'private'])->default('public')->after('cover_url');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('clubs', function (Blueprint $table) {
+        Schema::table('club_requests', function (Blueprint $table) {
             //
         });
     }

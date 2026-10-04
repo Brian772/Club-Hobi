@@ -44,6 +44,17 @@
       </div>
 
       <div class="flex flex-col gap-1">
+        <h4 class="text-ink text-body-mid">Nama Pengaju :</h4>
+        <p class="text-ink-muted text-caption">{{ $clubRequest->requester->name }}</p>
+      </div>
+
+
+      <div class="flex flex-col gap-1">
+        <h4 class="text-ink text-body-mid">Visibilitas :</h4>
+        <p class="text-ink-muted text-caption">{{ Str::title($clubRequest->visibility_club) }}</p>
+      </div>
+
+      <div class="flex flex-col gap-1">
         <h4 class="text-ink text-body-mid">Alasan Pengajuan :</h4>
         <p class="text-ink-muted text-caption">{{ $clubRequest->reason }}</p>
       </div>
@@ -89,7 +100,7 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="showAccept = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Terima Ajuan Klub
@@ -114,7 +125,7 @@
       <div x-transition.opacity @click="showReject = false" class="fixed inset-0 z-40 bg-black/30"></div>
 
       <div x-transition.opacity @click.stop
-        class="fixed h-max rounded-lg z-50 w-2xs lg:w-lg bg-canvas border border-hairline overflow-hidden p-4">
+        class="fixed h-max rounded-lg z-50 max-w-sm lg:max-w-md bg-canvas border border-hairline overflow-hidden p-4">
         <div class="flex flex-col gap-1 mb-4">
           <h2 class="text-title text-ink mb-4">Apakah anda yakin?</h2>
           <p class="text-body-mid text-ink-muted">Apakah anda yakin ingin menolak permintaan klub ini? Tindakan ini
@@ -126,7 +137,7 @@
           @method('patch')
           <div class="flex flex-col gap-2 mb-4">
             <label for="reason" class="text-body-mid font-semibold text-ink">Alasan Ditolak :</label>
-            <textarea id="reason" name="reason" placeholder="Deskripsikan alasan pengajuan anda..."
+            <textarea id="reason" name="reason" placeholder="Deskripsikan alasan penolakan anda..."
               class="rounded-lg px-4 py-2 border border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">{{ old('reason') }}</textarea>
               @if ($errors->reject->has('reason'))
               <span class="text-caption text-accent-red">{{ $errors->reject->first('reason') }}</span>

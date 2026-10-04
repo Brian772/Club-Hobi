@@ -63,7 +63,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/{club}/settings/join/{request}/reject', [ClubJoinRequestController::class, 'rejectRequest'])->name('join.request.reject');
         Route::patch('/{club}/promote/{userId}', [ClubController::class, 'promoteModerator'])->name('promote');
         Route::patch('/{club}/demote/{userId}', [ClubController::class, 'demoteModerator'])->name('demote');
-        Route::patch('/{club}/settings/privacy', [ClubController::class, 'updatePrivacy'])->name('privacy.update');
+        Route::patch('/{club}/settings/visibility', [ClubController::class, 'updateVisibility'])->name('visibility.update');
+        Route::patch('/{club}/settings/approval', [ClubController::class, 'updateApproval'])->name('approval.update');
         Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');
         Route::delete('/clubs/{club}/kick/{userId}', [ClubController::class, 'kickMember'])->name('kick');
         Route::delete('/clubs/{club}/delete', [ClubController::class, 'deleteClub'])->name('delete');
