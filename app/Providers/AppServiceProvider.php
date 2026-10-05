@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Models\Post;
-use App\Models\User;
 use App\Models\Comment;
 
 class AppServiceProvider extends ServiceProvider

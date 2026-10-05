@@ -122,12 +122,13 @@
             Change
           </button>
         </div>
-        
+
         @if ($club->visibility === 'public')
           <div class="flex flex-row items-center justify-between">
             <div class="flex flex-col gap-1">
               <h3 class="text-body-mid font-semibold text-ink">Require Approval</h3>
-              <p class="text-caption text-ink-muted">Choose whether {{ $club->name }} requires approval before joining</p>
+              <p class="text-caption text-ink-muted">Choose whether {{ $club->name }} requires approval before joining
+              </p>
             </div>
             <button type="button"
               @click="openChangeApproval = true; changeApprovalUrl = '{{ route('clubs.approval.update', $club->id) }}';"
@@ -231,7 +232,7 @@
                                 </svg>
                                 Lihat Profil
                               </a>
-                              <a href="{{ route('messages.index', ['conversation' => $member->user->id]) }}"
+                              <a href="{{ route('messages.show', $member->user->id) }}"
                                 class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -504,7 +505,7 @@
 
         <main class="border border-hairline p-4 rounded-lg">
           <div class="flex flex-col gap-4">
-            <div id="container" class="border mt-2 border-hairline p-2 rounded-lg overflow-x-auto lg:overflow-visible">
+            <div id="container" class="overflow-x-auto lg:overflow-visible">
               <table class="min-w-full h-max table-auto">
                 <thead class="border-b border-hairline">
                   <tr>

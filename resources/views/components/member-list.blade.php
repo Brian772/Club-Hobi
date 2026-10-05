@@ -58,7 +58,7 @@
               </svg>
               Lihat Profil
             </a>
-            <a href="{{ route('messages.index', ['conversation' => $member->user->id]) }}"
+            <a href="{{ route('messages.show', $member->user->id) }}"
               class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"

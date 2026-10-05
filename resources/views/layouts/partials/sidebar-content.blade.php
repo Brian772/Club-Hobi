@@ -103,5 +103,5 @@
       @endif
       <span class="text-sm font-semibold text-neutral-900">{{ auth()->user()->name }}</span>
     </div>
-  @endif
+  </div>
 </div>

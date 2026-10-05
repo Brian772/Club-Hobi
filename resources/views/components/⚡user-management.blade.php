@@ -377,7 +377,7 @@ new class extends Component {
                               Lihat Profil
                             </a>
                             @if ($user->status === 'active')
-                              <a href="{{ route('messages.index', ['conversation' => $user->id]) }}"
+                              <a href="{{ route('messages.show', $user->id) }}"
                                 class="flex flex-row w-full gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
