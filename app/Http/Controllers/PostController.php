@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\PostMedia;
 use App\Models\Comment;
 use App\Models\Like;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -55,49 +56,60 @@ class PostController extends Controller
 
         DB::beginTransaction();
         try {
-            
-        $post = Post::create([
-            'club_id' => $club->id,
-            'user_id' => $user->id,
-            'title' => $validated['title'],
-            'content' => $validated['content'],
-        ]);
 
-        if ($request->hasFile('media')) {
-            foreach ($request->file('media') as $file) {
-                $extension = strtolower($file->getClientOriginalExtension());
-                $mediaPath = null;
+            $post = Post::create([
+                'club_id' => $club->id,
+                'user_id' => $user->id,
+                'title' => $validated['title'],
+                'content' => $validated['content'],
+            ]);
 
-                if (in_array($extension, ['mp4', 'mov', 'avi'])) {
-                    $fileName = time() . '_' . uniqid() . '_converted.mp4';
-                    $outputPath = storage_path('app/public/posts/' . $fileName);
+            $club->members()
+                ->where('user_id', '!=', $user->id)
+                ->pluck('user_id')
+                ->each(fn($memberId) => Notification::createForUser(
+                    $memberId,
+                    'Postingan baru di klub',
+                    $user->name . ' membagikan postingan baru: ' . $post->title,
+                    'other',
+                    $post->id
+                ));
 
-                    $ffmpeg = FFMpeg::create([
-                        'ffmpeg.binaries'  => config('ffmpeg.binaries.ffmpeg'),
-                        'ffprobe.binaries' => config('ffmpeg.binaries.ffprobe'),
-                        'timeout'          => config('ffmpeg.timeout'),
-                        'ffmpeg.threads'   => config('ffmpeg.threads'),
+            if ($request->hasFile('media')) {
+                foreach ($request->file('media') as $file) {
+                    $extension = strtolower($file->getClientOriginalExtension());
+                    $mediaPath = null;
+
+                    if (in_array($extension, ['mp4', 'mov', 'avi'])) {
+                        $fileName = time() . '_' . uniqid() . '_converted.mp4';
+                        $outputPath = storage_path('app/public/posts/' . $fileName);
+
+                        $ffmpeg = FFMpeg::create([
+                            'ffmpeg.binaries'  => config('ffmpeg.binaries.ffmpeg'),
+                            'ffprobe.binaries' => config('ffmpeg.binaries.ffprobe'),
+                            'timeout'          => config('ffmpeg.timeout'),
+                            'ffmpeg.threads'   => config('ffmpeg.threads'),
+                        ]);
+
+                        $video = $ffmpeg->open($file->getRealPath());
+                        $format = new X264();
+                        $format->setAudioCodec('aac');
+                        $video->save($format, $outputPath);
+
+                        $mediaPath = 'posts/' . $fileName;
+                    } else {
+                        $mediaPath = $file->store('posts', 'public');
+                    }
+
+                    PostMedia::create([
+                        'post_id' => $post->id,
+                        'file_path' => $mediaPath,
+                        'file_type' => $extension,
                     ]);
-
-                    $video = $ffmpeg->open($file->getRealPath());
-                    $format = new X264();
-                    $format->setAudioCodec('aac');
-                    $video->save($format, $outputPath);
-
-                    $mediaPath = 'posts/' . $fileName;
-                } else {
-                    $mediaPath = $file->store('posts', 'public');
                 }
-
-                PostMedia::create([
-                    'post_id' => $post->id,
-                    'file_path' => $mediaPath,
-                    'file_type' => $extension,
-                ]);
             }
-        }
 
-        ClubActivity::create([
+            ClubActivity::create([
                 'id' => Str::uuid(),
                 'actor_id' => Auth::id(),
                 'club_id' => $club->id,
@@ -110,7 +122,7 @@ class PostController extends Controller
                 ],
             ]);
 
-        DB::commit();
+            DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'An error occurred while creating the post.');
@@ -275,6 +287,15 @@ class PostController extends Controller
                 'likes_count' => $post->likes()->count(),
             ]);
         }
+        if ($post->user_id !== $userId) {
+            Notification::createForUser(
+                $post->user_id,
+                'Postingan disukai',
+                Auth::user()->name . ' menyukai postinganmu.',
+                'other',
+                $post->id
+            );
+        }
 
         return back();
     }
@@ -294,6 +315,21 @@ class PostController extends Controller
         ]);
 
         $comment->load('user');
+
+        $recipientIds = collect([$post->user_id, $comment->parent?->user_id])
+            ->filter()
+            ->unique()
+            ->reject(fn($userId) => $userId === Auth::id());
+
+        foreach ($recipientIds as $recipientId) {
+            Notification::createForUser(
+                $recipientId,
+                'Komentar baru',
+                $comment->user->name . ' mengomentari postinganmu.',
+                'comment',
+                $comment->id
+            );
+        }
 
         return response()->json([
             'id' => $comment->id,

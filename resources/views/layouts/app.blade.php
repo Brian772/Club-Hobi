@@ -43,7 +43,12 @@
   </style>
 </head>
 
-<body class="bg-canvas-soft">
+<body class="bg-canvas-soft"
+  @auth
+    data-presence-heartbeat-url="{{ route('presence.heartbeat') }}"
+    data-presence-status-url="{{ route('presence.index') }}"
+    data-notification-updates-url="{{ route('notifications.updates') }}"
+  @endauth>
 
   @if (Route::is('login') || Route::is('register') || Route::is('home'))
     <div x-data="{ navOpen: false }" class="flex flex-col p-6 lg:p-8 min-h-dvh items-center justify-center">
@@ -125,7 +130,7 @@
 
       {{-- sidebar desktop --}}
       <aside
-        class="hidden lg:fixed lg:inset-y-4 lg:left-4 lg:rounded-lg lg:z-30 lg:flex lg:h-[calc(100vh-2rem)] lg:shrink-0 lg:w-60 lg:overflow-hidden lg:border lg:border-hairline lg:bg-canvas">
+        class="hidden lg:fixed lg:inset-y-4 lg:left-4 lg:z-30 lg:flex lg:h-[calc(100vh-2rem)] lg:w-72 lg:shrink-0 lg:overflow-hidden lg:rounded-2xl lg:border lg:border-hairline lg:bg-white lg:shadow-[0_12px_40px_rgba(15,23,42,0.08)]">
         @include('layouts.partials.sidebar-content')
       </aside>
 
@@ -170,7 +175,7 @@
       </div>
 
       <div
-        class="flex-1 min-w-0 w-full flex flex-col rounded-lg h-[calc(100vh-34px)] overflow-hidden lg:pl-61.25 transition-[padding] duration-200"
+        class="flex-1 min-w-0 w-full flex flex-col rounded-lg h-[calc(100vh-34px)] overflow-hidden lg:pl-80 transition-[padding] duration-200"
         :class="notifOpen ? 'lg:pr-[24.3rem]' : 'lg:pr-0'">
         @include('layouts.partials.topbar')
 

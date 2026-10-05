@@ -31,6 +31,21 @@ test('users can not authenticate with invalid password', function () {
     $this->assertGuest();
 });
 
+test('users can authenticate with legacy plain-text password hashes stored in the database', function () {
+    $user = User::factory()->create([
+        'email' => 'legacy-user@example.com',
+        'password_hash' => 'secret123',
+    ]);
+
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'secret123',
+    ]);
+
+    $this->assertAuthenticated();
+    $response->assertRedirect(route('dashboard', absolute: false));
+});
+
 test('users can logout', function () {
     $user = User::factory()->create();
 

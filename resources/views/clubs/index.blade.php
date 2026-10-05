@@ -185,8 +185,7 @@
             <div
               class="flex flex-col items-stretch min-w-75 w-100 lg:w-75 border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
-                {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                <img src="{{ $club->cover_display_url }}" alt="{{ $club->name }}"
                   class="w-full h-48 rounded-t-lg object-cover" loading="lazy">
               @else
                 <div class="w-full h-48 rounded-t-lg bg-gray-200 flex items-center justify-center">

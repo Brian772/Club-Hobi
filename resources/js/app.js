@@ -1,5 +1,6 @@
 // import './bootstrap';
 import './elements/turbo-echo-stream-tag';
+import './realtime';
 import './libs';
 // import './animations/scale';
 // import './animations/horizontal-scroll';

@@ -1,4 +1,9 @@
-@if (auth()->user()->status === 'suspended')
+@php
+  $accountStatus = auth()->check() ? auth()->user()->status : null;
+  $suspendedUntil = auth()->check() ? optional(auth()->user()->suspended_until)->format('d M Y') : null;
+@endphp
+
+@if ($accountStatus === 'suspended')
   <div
     class="flex flex-row gap-2 items-center justify-center w-full lg:w-max border border-yellow-500 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-md relative"
     role="alert">
@@ -17,7 +22,7 @@
         banding</a>.
     </div>
   </div>
-@elseif(auth()->user()->status === 'banned')
+@elseif($accountStatus === 'banned')
   <div
     class="flex flex-row gap-2 items-center justify-center w-full lg:w-max mb-4 border border-red-500 bg-red-100 text-red-800 px-4 py-2 rounded-md relative"
     role="alert">

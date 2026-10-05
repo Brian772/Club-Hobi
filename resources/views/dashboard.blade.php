@@ -343,307 +343,43 @@
                     <button type="button" class="delete-button hover:text-red-500 cursor-pointer">Hapus</button>
                   </div>
                 </div>
-              </div>`;
 
-        newCommentWrapper.querySelector('.reply-button').addEventListener('click', () => {
-          replyComment(postId, commentData.id, userName);
-        });
-        newCommentWrapper.querySelector('.delete-button').addEventListener('click', () => {
-          deleteComment(commentData.id, postId);
-        });
+                @if (!empty($joinedClub) && $joinedClub->isNotEmpty())
+                    <div class="space-y-4">
+                        @foreach ($joinedClub as $club)
+                            <a href="{{ route('clubs.show', $club->id) }}" class="block rounded-xl border border-slate-200 p-3 transition hover:border-sky-200 hover:bg-sky-50">
+                                <div class="flex items-start gap-3">
+                                    <img src="{{ $club->cover_display_url ?? asset('images/default-club.png') }}" alt="{{ $club->name }}" class="h-16 w-16 rounded-lg object-cover">
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">{{ $club->hobby->name ?? 'Kategori' }}</p>
+                                        <h3 class="mt-1 text-base font-semibold text-slate-900">{{ $club->name }}</h3>
+                                        <p class="mt-1 text-sm text-slate-600 line-clamp-2">{{ $club->description }}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">Anda belum bergabung ke klub manapun.</p>
+                @endif
+            </div>
 
-        commentsContainer.appendChild(newCommentWrapper);
-      }
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900">Aktivitas terbaru</h2>
 
-      const scrollableArea = modal.querySelector('.overflow-y-auto');
-      if (scrollableArea) {
-        requestAnimationFrame(() => {
-          scrollableArea.scrollTop = scrollableArea.scrollHeight;
-        });
-      }
-    }
-
-    function replyComment(postId, commentId, username) {
-      const parentInput = document.getElementById(`parentId-${postId}`);
-      const replyIndicator = document.getElementById(`replyIndicator-${postId}`);
-      const replyTarget = document.getElementById(`replyTarget-${postId}`);
-      const inputContent = document.getElementById(`inputContent-${postId}`);
-
-      if (parentInput) parentInput.value = commentId;
-      if (replyTarget) replyTarget.textContent = `@${username}`;
-      if (replyIndicator) replyIndicator.classList.remove('hidden');
-      if (inputContent) inputContent.focus();
-    }
-
-    function cancelReply(postId) {
-      const parentInput = document.getElementById(`parentId-${postId}`);
-      const replyIndicator = document.getElementById(`replyIndicator-${postId}`);
-
-      if (parentInput) parentInput.value = '';
-      if (replyIndicator) replyIndicator.classList.add('hidden');
-    }
-
-    async function deleteComment(commentId, postId) {
-      if (!confirm('Hapus komentar ini?')) return;
-
-      const modal = document.getElementById(`commentModal-${postId}`);
-      if (!modal) {
-        alert('Komentar tidak ditemukan.');
-        return;
-      }
-
-      const commentElement = modal.querySelector(`[data-comment-id="${commentId}"]`);
-      if (!commentElement) {
-        alert('Komentar tidak ditemukan.');
-        return;
-      }
-
-      if (commentElement.dataset.deleting === 'true') return;
-      commentElement.dataset.deleting = 'true';
-
-      const parent = commentElement.parentNode;
-      const nextSibling = commentElement.nextSibling;
-      const deletedCount = 1 + commentElement.querySelectorAll('[data-comment-id]').length;
-
-      const commentsContainer = modal.querySelector('.overflow-y-auto .space-y-4');
-      const emptyState = commentsContainer?.querySelector('p.text-center');
-
-      if (emptyState) {
-        emptyState.remove();
-      }
-
-      commentElement.remove();
-      updateCommentsCount(postId, -deletedCount);
-
-      if (
-        commentsContainer &&
-        !commentsContainer.querySelector('[data-comment-id]')
-      ) {
-        commentsContainer.insertAdjacentHTML(
-          'beforeend',
-          '<p class="text-xs text-neutral-400 text-center py-8" data-empty-comments="true">Belum ada komentar.</p>'
-        );
-      }
-
-      try {
-        const response = await fetch(`{{ url('/comments') }}/${encodeURIComponent(commentId)}`, {
-          method: 'DELETE',
-          credentials: 'same-origin',
-          headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-          }
-        });
-
-        const currentEmptyState = commentsContainer?.querySelector('[data-empty-comments="true"]');
-        if (
-          currentEmptyState &&
-          commentsContainer.querySelector('[data-comment-id]')
-        ) {
-          currentEmptyState.remove();
-        }
-      } catch (error) {
-        if (parent) {
-          if (nextSibling && nextSibling.parentNode === parent) {
-            parent.insertBefore(commentElement, nextSibling);
-          } else {
-            parent.appendChild(commentElement);
-          }
-        }
-
-        commentElement.dataset.deleting = 'false';
-        updateCommentsCount(postId, deletedCount);
-
-        const currentEmptyState = commentsContainer?.querySelector('[data-empty-comments="true"]');
-        if (currentEmptyState) {
-          currentEmptyState.remove();
-        }
-
-        console.error('Delete Comment Error:', error);
-        alert(error.message || 'Terjadi kesalahan saat menghapus komentar.');
-      }
-    }
-
-    const slideIndices = {};
-
-    function moveSlide(postId, direction) {
-      if (!(postId in slideIndices)) slideIndices[postId] = 0;
-      const slidesContainer = document.getElementById(`slides-${postId}`);
-      const totalSlides = slidesContainer.children.length;
-
-      slideIndices[postId] = (slideIndices[postId] + direction + totalSlides) % totalSlides;
-      const currentIndex = slideIndices[postId];
-      slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
-
-      const dots = document.querySelectorAll(`#dots-${postId} span`);
-      dots.forEach((dot, idx) => {
-        dot.classList.toggle('!bg-white', idx === currentIndex);
-        dot.classList.toggle('w-2.5', idx === currentIndex);
-      });
-    }
-
-    const modalSlideIndices = {};
-
-    function moveModalSlide(postId, direction) {
-      if (!(postId in modalSlideIndices)) modalSlideIndices[postId] = 0;
-      const slidesContainer = document.getElementById(`modal-slides-${postId}`);
-      const totalSlides = slidesContainer.children.length;
-
-      modalSlideIndices[postId] = (modalSlideIndices[postId] + direction + totalSlides) % totalSlides;
-      slidesContainer.style.transform = `translateX(-${modalSlideIndices[postId] * 100}%)`;
-    }
-
-    let currentModalMediaList = [];
-    let currentModalIndex = 0;
-
-    function openMediaModal(mediaList, index = 0) {
-      currentModalMediaList = mediaList;
-      currentModalIndex = index;
-      const modal = document.getElementById('mediaModal');
-      modal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-      renderModalContent();
-    }
-
-    async function downloadFileAsync(downloadUrl, filename, btnElement) {
-      const originalText = btnElement.innerHTML;
-      btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengunduh...';
-      btnElement.style.pointerEvents = 'none';
-
-      try {
-        const response = await fetch(downloadUrl, {
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
-        });
-
-        if (response.status === 401 || response.status === 419) {
-          alert('Sesi login telah berakhir. Silakan login kembali.');
-          window.location.reload();
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error('Gagal mengunduh file.');
-        }
-
-        const blob = await response.blob();
-        const blobUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = filename || 'download';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(blobUrl);
-      } catch (error) {
-        console.error('Download error:', error);
-        alert(error.message || 'Terjadi kesalahan saat mengunduh file.');
-      } finally {
-        btnElement.innerHTML = originalText;
-        btnElement.style.pointerEvents = 'auto';
-      }
-    }
-
-    function renderModalContent() {
-      const content = document.getElementById('modalContent');
-      const counter = document.getElementById('modalCounter');
-      const prevBtn = document.getElementById('modalPrevBtn');
-      const nextBtn = document.getElementById('modalNextBtn');
-
-      if (!currentModalMediaList || currentModalMediaList.length === 0) return;
-
-      const item = currentModalMediaList[currentModalIndex];
-      const {
-        url,
-        download_url,
-        ext,
-        filename
-      } = item;
-
-      if (currentModalMediaList.length > 1) {
-        prevBtn.classList.remove('hidden');
-        nextBtn.classList.remove('hidden');
-        counter.classList.remove('hidden');
-        counter.textContent = `${currentModalIndex + 1} / ${currentModalMediaList.length}`;
-      } else {
-        prevBtn.classList.add('hidden');
-        nextBtn.classList.add('hidden');
-        counter.classList.add('hidden');
-      }
-
-      const downloadButtonHtml = `
-            <button type="button" onclick="downloadFileAsync('${download_url}', '${filename}', this)" class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow transition-colors cursor-pointer">
-              <i class="fa-solid fa-download"></i> Unduh File
-            </button>`;
-
-      if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) {
-        content.innerHTML = `
-            <div class="relative flex flex-col items-center">
-              <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg">
-              ${downloadButtonHtml}
-            </div>`;
-      } else if (['mp4', 'mov', 'webm'].includes(ext)) {
-        const mimeType = ext === 'mov' ? 'video/quicktime' : `video/${ext}`;
-        content.innerHTML = `
-            <div class="relative flex flex-col items-center">
-              <video controls autoplay class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg">
-                <source src="${url}" type="${mimeType}">
-              </video>
-              ${downloadButtonHtml}
-            </div>`;
-      } else if (['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) {
-        content.innerHTML = `
-            <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center gap-4 min-w-[320px] max-w-md w-full">
-              <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                <i class="fa-solid fa-music text-2xl"></i>
-              </div>
-              <p class="text-sm font-semibold text-neutral-800 text-center truncate w-full">${filename}</p>
-              <audio controls autoplay class="w-full"><source src="${url}" type="audio/${ext}"></audio>
-              <button type="button" onclick="downloadFileAsync('${download_url}', '${filename}', this)" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg text-center transition-colors cursor-pointer flex items-center justify-center gap-2">
-                <i class="fa-solid fa-download"></i> Unduh File
-              </button>
-            </div>`;
-      } else {
-        content.innerHTML = `
-            <div class="bg-white rounded-xl overflow-hidden shadow-2xl w-full max-w-3xl h-[78vh] flex flex-col">
-              <div class="flex items-center justify-between p-3.5 bg-neutral-100 border-b border-neutral-200">
-                <span class="text-xs font-semibold text-neutral-700 truncate max-w-[70%]">${filename}</span>
-                <button type="button" onclick="downloadFileAsync('${download_url}', '${filename}', this)" class="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors cursor-pointer flex items-center gap-2">
-                  <i class="fa-solid fa-download"></i> Unduh File
-                </button>
-              </div>
-              <iframe src="${url}" class="w-full h-full border-none"></iframe>
-            </div>`;
-      }
-    }
-
-    function changeModalSlide(direction) {
-      if (currentModalMediaList.length <= 1) return;
-      currentModalIndex = (currentModalIndex + direction + currentModalMediaList.length) % currentModalMediaList.length;
-      renderModalContent();
-    }
-
-    function closeMediaModal() {
-      const modal = document.getElementById('mediaModal');
-      const content = document.getElementById('modalContent');
-      modal.classList.add('hidden');
-      document.body.style.overflow = 'auto';
-      content.innerHTML = '';
-      currentModalMediaList = [];
-      currentModalIndex = 0;
-    }
-
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape' || event.key === 'Esc') {
-        closeMediaModal();
-        document.querySelectorAll('[id^="commentModal-"]').forEach(m => closeCommentModal(m.id));
-      } else if (event.key === 'ArrowLeft') {
-        changeModalSlide(-1);
-      } else if (event.key === 'ArrowRight') {
-        changeModalSlide(1);
-      }
-    });
-  </script>
+                @if (!empty($feedPosts) && $feedPosts->isNotEmpty())
+                    <div class="mt-4 space-y-4">
+                        @foreach ($feedPosts->take(4) as $post)
+                            <div class="rounded-xl border border-slate-200 p-3">
+                                <p class="text-sm font-semibold text-slate-900">{{ $post->user->name ?? 'Pengguna' }}</p>
+                                <p class="mt-1 text-sm text-slate-600">{{ Str::limit($post->content ?? 'Tidak ada konten', 120) }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="mt-4 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">Belum ada aktivitas terbaru.</p>
+                @endif
+            </div>
+        </div>
+    </div>
 @endsection

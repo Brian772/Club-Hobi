@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\AuditLog;
 use App\Models\Appeal;
 use App\Models\Report;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -65,6 +66,13 @@ class ModerationController extends Controller
             return redirect()->back()->with('error', 'An error occurred while processing the appeal.');
         }
 
+        Notification::createForUser(
+            $appeal->user_id,
+            'Banding ditolak',
+            'Banding akunmu tidak disetujui.',
+            'account_status',
+            $appeal->id
+        );
         return redirect()->back()->with('success', 'Appeal has been rejected.');
     }
 
@@ -86,13 +94,20 @@ class ModerationController extends Controller
             ]);
 
             $appeal->update(['status' => 'approved']);
-            
+
             User::where('id', $appeal->user_id)->update([
                 'status' => 'active',
                 'status_updated_at' => now(),
                 'reason' => null,
                 'suspended_until' => null,
             ]);
+            Notification::createForUser(
+                $appeal->user_id,
+                'Akun dipulihkan',
+                'Bandingmu disetujui dan status akunmu telah dipulihkan.',
+                'account_status',
+                $appeal->id
+            );
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -116,9 +131,10 @@ class ModerationController extends Controller
         DB::beginTransaction();
 
         try {
+            $reportedUser = $report->reportedUser;
             switch ($action) {
                 case 'suspend':
-                    $report->reportedUser->update([
+                    $reportedUser->update([
                         'status' => 'suspended',
                         'status_updated_at' => now(),
                         'reason' => $reason,
@@ -140,7 +156,7 @@ class ModerationController extends Controller
                     ]);
                     break;
                 case 'ban':
-                    $report->reportedUser->update([
+                    $reportedUser->update([
                         'status' => 'banned',
                         'status_updated_at' => now(),
                         'reason' => $reason,
@@ -193,6 +209,23 @@ class ModerationController extends Controller
                     break;
             }
 
+            Notification::createForUser(
+                $reportedUser->id,
+                'Status akun diperbarui',
+                $action === 'suspend'
+                    ? 'Akunmu ditangguhkan selama 7 hari: ' . $reason
+                    : 'Akunmu telah diblokir: ' . $reason,
+                'account_status',
+                $report->id
+            );
+            Notification::createForUser(
+                $report->reporter_id,
+                'Laporan ditindaklanjuti',
+                'Laporan yang kamu kirim telah ditindaklanjuti.',
+                'report',
+                $report->id
+            );
+
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -220,11 +253,21 @@ class ModerationController extends Controller
                 ],
             ]);
 
+            Notification::createForUser(
+                $report->reporter_id,
+                'Laporan ditinjau',
+                'Laporan yang kamu kirim telah ditinjau.',
+                'report',
+                $report->id
+            );
+
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'An error occurred while processing the report.');
         }
+        $report->update(['status' => 'ignored']);
+
 
         return redirect()->back()->with('success', 'Report has been ignored.');
     }

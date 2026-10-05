@@ -31,7 +31,7 @@
       <div
         class="hidden lg:flex lg:flex-row items-center justify-between mb-6 gap-2 p-2 border border-hairline rounded-lg">
         <div class="flex flex-row items-center gap-2 p-2">
-          <img src="{{ $user->avatar_full_url ?? asset('images/default-avatar.png') }}" alt="{{ $user->name }}"
+          <img src="{{ $user->avatar_full_url ?? asset('images/default-avatar.svg') }}" alt="{{ $user->name }}"
             class="w-9 h-9 rounded-full object-cover">
           <div class="flex flex-col">
             <p class="text-body-mid text-ink font-semibold">{{ $user->name }}</p>

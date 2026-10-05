@@ -2,36 +2,27 @@
 
 namespace Database\Seeders;
 
-use App\Models\Hobby;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class HobbySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $hobbies = [
-            'Photography',
-            'Music',
-            'Gaming',
-            'Traveling',
-            'Cooking',
-            'Reading',
-            'Drawing',
-            'Sports',
-            'Fitness',
-            'Coding',
-            'Gardening',
-            'Movies',
-            'Writing',
-            'Cycling',
-            'Hiking',
+            'Fotografi', 'Olahraga', 'Musik', 'Gaming', 'Memasak',
+            'Membaca', 'Melukis', 'Menulis', 'Traveling', 'Coding',
+            'Desain Grafis', 'Film & Sinema', 'Berkebun', 'Kerajinan Tangan',
+            'Yoga & Meditasi', 'Hiking', 'Bulu Tangkis', 'Basket', 'Sepak Bola',
+            'Berenang', 'Tari', 'Teater', 'Animasi', 'Robotika',
         ];
 
-        foreach ($hobbies as $name) {
-            Hobby::firstOrCreate(['name' => $name]);
+        foreach ($hobbies as $hobby) {
+            DB::table('hobbies')->insertOrIgnore([
+                'name'       => $hobby,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }
