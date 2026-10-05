@@ -65,10 +65,10 @@
                   <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                 </h3>
                 <p class="text-caption text-ink-secondary mb-2 line-clamp-2">{{ $club->description }}</p>
-                <div class="flex flex-row items-center justify-between mt-2">
+                <div class="flex flex-row items-center justify-between mt-auto">
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                   <p class="text-caption text-ink-muted flex flex-row gap-2 items-center">
-                    @if ($club->privacy === 'public')
+                    @if ($club->visibility === 'public')
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" class="lucide lucide-globe preview-icon">
@@ -84,7 +84,7 @@
                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                       </svg>
                     @endif
-                    {{ $club->privacy }}
+                    {{ $club->visibility }}
                   </p>
                 </div>
               </div>
@@ -92,7 +92,7 @@
           @endforeach
         </div>
       @else
-        <section id="alreadyJoin" class="flex flex-col items-center justify-center w-full h-full">
+        <section id="alreadyJoin" class="flex pt-24 flex-col items-center justify-center w-full h-full">
           <div class="flex justify-center items-center w-full flex-col gap-1">
             <h2 class="text-ink text-title">Belum Ada Aktivitas</h2>
             <p class="text-caption text-ink-muted">Bergabung dengan klub untuk melihat postingan dan aktivitas terbaru

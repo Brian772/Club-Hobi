@@ -7,6 +7,7 @@ use App\Models\ClubRequest;
 use App\Models\Club;
 use App\Models\ClubMember;
 use App\Models\AuditLog;
+use App\Models\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -25,6 +26,7 @@ class AdminClubRequestController extends Controller
     public function show(ClubRequest $clubRequest)
     {
         $user = Auth::user();
+        $clubRequest = ClubRequest::with('requester')->find($clubRequest->id);
         return view("admin.clubs.request-show", compact("clubRequest", "user"));
     }
 
@@ -44,7 +46,7 @@ class AdminClubRequestController extends Controller
                 'description' => $clubRequest->description,
                 'created_by' => $clubRequest->user_id,
                 'cover_url' => $clubRequest->cover_url,
-                'privacy' => $clubRequest->privacy_club,
+                'visibility' => $clubRequest->visibility_club,
                 'created_at' => now(),
             ]);
 
@@ -70,14 +72,21 @@ class AdminClubRequestController extends Controller
                 'target_id' => $clubRequest->id,
                 'metadata' => [
                     'club_id' => $club->id,
-                    'privacy' => $clubRequest->privacy_club,
+                    'visibility' => $clubRequest->visibility_club,
                     'requester_id' => $clubRequest->user_id,
                     'result' => 'approved',
                 ],
             ]);
+            Notification::createForUser(
+                $clubRequest->user_id,
+                'Permintaan klub disetujui',
+                'Permintaan klub ' . $clubRequest->name . ' telah disetujui.',
+                'other',
+                $clubRequest->id
+            );
 
             DB::commit();
-        } catch (\Throwable $e) {
+        } catch(\Throwable $e){
             DB::rollBack();
             return redirect()->route('admin.clubs.request')->with('error', 'Failed to accept club request.');
         }
@@ -122,9 +131,16 @@ class AdminClubRequestController extends Controller
                     'requester_id' => $clubRequest->user_id,
                 ],
             ]);
+            Notification::createForUser(
+                $clubRequest->user_id,
+                'Permintaan klub ditolak',
+                'Permintaan klub ' . $clubRequest->name . ' tidak disetujui.',
+                'other',
+                $clubRequest->id
+            );
 
             DB::commit();
-        } catch (\Throwable $e) {
+        } catch(\Throwable $e){
             DB::rollBack();
             return redirect()->route('admin.clubs.request')->with('error', 'Failed to reject club request.');
         }

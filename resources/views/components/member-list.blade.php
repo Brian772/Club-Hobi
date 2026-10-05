@@ -8,11 +8,11 @@
         alt="{{ $member->user->name }}"
         class="rounded-full size-10 object-cover"
         onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-        <div class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+        <div class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
           {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
         </div>
       @else
-        <div class="size-10 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+        <div class="size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
           {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
         </div>
       @endif
@@ -21,7 +21,7 @@
       <h3 class="text-body-mid font-semibold text-ink">{{ $member->user->name }}
         @if ($member->user->role_global === 'admin')
           <span
-            class="text-overline text-primary bg-primary/10 rounded-full px-2 py-1 border border-primary font-semibold">Admin</span>
+            class="text-overline text-primary bg-primary/10 rounded-full px-2 py-1 font-semibold">Admin</span>
         @endif
       </h3>
     </div>
@@ -58,7 +58,7 @@
               </svg>
               Lihat Profil
             </a>
-            <a href="{{ route('messages.index', ['conversation' => $member->user->id]) }}"
+            <a href="{{ route('messages.show', $member->user->id) }}"
               class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -78,7 +78,7 @@
                   '{{ route('reports.store') }}',
                   @js([
                     'name' => $member->user->name,
-                    'avatar' => $member->user->avatar_full_url ?? asset('images/default-avatar.png'),
+                    'avatar' => $member->user->avatar_full_url ?? asset('images/default-avatar.svg'),
                     'joined' => $member->user->created_at->format('d M Y'),
                   ])
                 )"

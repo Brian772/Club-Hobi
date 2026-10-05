@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -42,6 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'suspended_until',
         'email_verified_at',
         'remember_token',
+        'last_seen_at',
     ];
 
     protected $hidden = [
@@ -52,6 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'suspended_until' => 'datetime',
         'email_verified_at' => 'datetime',
+        'last_seen_at' => 'datetime',
     ];
 
     protected $appends = ['avatar_full_url'];
@@ -82,23 +85,52 @@ class User extends Authenticatable implements MustVerifyEmail
         Mail::to($this->email)->send(new VerifyEmailCustom($url, $this));
     }
 
+    public function isOnline(): bool
+    {
+        return $this->last_seen_at?->greaterThan(now()->subMinutes(2)) ?? false;
+    }
+
     public function getAvatarFullUrlAttribute(): ?string
     {
         $avatar = (string) ($this->avatar_url ?? '');
-        if (empty($avatar)) {
+
+        if ($avatar === '') {
             return null;
         }
 
-        if (str_starts_with($this->avatar_url, 'http://') || str_starts_with($avatar, 'https://')) {
-            return $this->avatar_url;
+        if (filter_var($avatar, FILTER_VALIDATE_URL) !== false) {
+            return $avatar;
         }
 
-        return Storage::disk('public')->url($this->avatar_url);
+        if (!Storage::disk('public')->exists($avatar)) {
+            return null;
+        }
+
+        return url('storage/' . ltrim($avatar, '/'));
     }
 
     public function getAuthPassword(): string
     {
         return $this->password_hash ?? $this->password ?? '';
+    }
+
+    public function passwordMatches(string $plainPassword): bool
+    {
+        $storedPassword = $this->password_hash ?? $this->password ?? null;
+
+        if (blank($storedPassword)) {
+            return false;
+        }
+
+        try {
+            if (Hash::check($plainPassword, $storedPassword)) {
+                return true;
+            }
+        } catch (\RuntimeException $e) {
+            // Allow legacy or manually inserted values that are not BCrypt hashes.
+        }
+
+        return hash_equals((string) $storedPassword, $plainPassword);
     }
 
     public function setPasswordAttribute($value): void

@@ -122,11 +122,9 @@
 
           <div class="flex items-center gap-4 justify-start w-full mb-2 profile-upload">
             <div class="flex flex-row justify-start mb-2">
-              <label for="avatar_url" class="w-max h-max cursor-pointer relative block">
-                <span
-                  class="upload-icon w-24 h-24 border border-solid rounded-full flex items-center justify-center overflow-hidden m-0"
-                  id="avatar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <label for="avatar_url" class="relative block h-24 w-24 cursor-pointer">
+                <span id="avatar-icon" class="upload-icon flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-solid text-slate-500 {{ $avatarPreviewUrl ? 'hidden' : '' }}">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-12 w-12">
                     <path
                       d="M4 7.5C4 6.67 4.67 6 5.5 6H8L9.2 4.5H14.8L16 6H18.5C19.33 6 20 6.67 20 7.5V17.5C20 18.33 19.33 19 18.5 19H5.5C4.67 19 4 18.33 4 17.5V7.5Z"
                       stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
@@ -134,10 +132,9 @@
                   </svg>
                 </span>
 
-                <span id="avatar-preview-wrap"
-                  class="{{ $avatarPreviewUrl ? '' : 'hidden' }} w-24 h-24 overflow-hidden m-0 rounded-full">
-                  <img id="avatar-preview" src="{{ $avatarPreviewUrl }}" alt="{{ session('register.name') }}"
-                    class="w-full h-full object-cover block">
+                <span id="avatar-preview-wrap" class="{{ $avatarPreviewUrl ? '' : 'hidden' }} flex h-24 w-24 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                  <img id="avatar-preview" src="{{ $avatarPreviewUrl ?? asset('images/default-avatar.svg') }}" alt="Preview foto profil"
+                    class="h-full w-full object-cover block">
                 </span>
 
                 <input type="file" id="avatar_url" name="avatar_url" accept="image/*" class="hidden">

@@ -180,7 +180,7 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="OpenActionModal = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 bg-canvas border border-hairline overflow-hidden w-sm lg:w-md">
+      <div class="fixed p-6 h-max rounded-lg z-50 bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title text-ink">
             Take Moderation Action
@@ -243,7 +243,7 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="OpenIgnoreModal = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Ignore Report

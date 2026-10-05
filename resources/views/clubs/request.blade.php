@@ -15,7 +15,7 @@
     <h2 class="text-title lg:text-heading-2 text-ink-secondary">Ajukan Klub</h2>
   </header>
 
-  <main class="max-w-4xl" x-data="{
+  <main class="max-w-4xl p-2 lg:p-0" x-data="{
       submitForm: false,
       coverError: '',
       isDragging: false,
@@ -120,7 +120,7 @@
 
         <div class="relative">
           <select id="hobby" name="hobby_id" value="{{ old('hobby_id') }}"
-            class="w-1/3 appearance-none rounded-lg px-4 py-2 pr-10 border border-hairline bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            class="w-1/2 lg:w-1/3 appearance-none rounded-lg px-4 py-2 pr-10 border border-hairline bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
             <option value="" disabled {{ old('hobby_id') ? '' : 'selected' }}>Pilih Kategori</option>
             @foreach ($hobbies as $hobby)
               <option value="{{ $hobby->id }}" @selected(old('hobby_id') == $hobby->id)>
@@ -135,17 +135,17 @@
         @enderror
       </div>
       <div class="flex flex-col gap-2 mb-4">
-        <label for="privacy_club" class="text-body-mid">Privasi Klub <span class="text-accent-red">*</span></label>
+        <label for="visibility_club" class="text-body-mid">Visibilitas Klub <span class="text-accent-red">*</span></label>
         <div class="relative">
-          <select id="privacy_club" name="privacy_club" value="{{ old('privacy_club') }}"
-            class="w-1/3 appearance-none rounded-lg px-4 py-2 pr-10 border border-hairline bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="" disabled {{ old('privacy_club') ? '' : 'selected' }}>Pilih Privasi</option>
-            <option value="public" @selected(old('privacy_club') == 'public')>Publik</option>
-            <option value="private" @selected(old('privacy_club') == 'private')>Privat</option>
+          <select id="visibility_club" name="visibility_club" value="{{ old('visibility_club') }}"
+            class="w-1/2 lg:w-1/3 appearance-none rounded-lg px-4 py-2 pr-10 border border-hairline bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            <option value="" disabled {{ old('visibility_club') ? '' : 'selected' }}>Pilih Visibilitas</option>
+            <option value="public" @selected(old('visibility_club') == 'public')>Public</option>
+            <option value="private" @selected(old('visibility_club') == 'private')>Private</option>
           </select>
         </div>
 
-        @error('privacy_club')
+        @error('visibility_club')
           <p class="text-accent-red text-caption">{{ $message }}</p>
         @enderror
       </div>
@@ -168,7 +168,7 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="submitForm = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Konfirmasi Ajuan Klub

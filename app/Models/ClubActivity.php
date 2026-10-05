@@ -22,10 +22,10 @@ class ClubActivity extends Model
         'metadata',
     ];
 
-    public $casts = [
-        'metadata' => 'array',
-    ];
-
+    protected function casts(): array
+    {
+        return ['metadata' => 'array'];
+    }
     public function getFormatMetadataAttribute(): array
     {
         $meta = $this->metadata ?? [];
@@ -74,6 +74,14 @@ class ClubActivity extends Model
                 'Demoted By' => $meta['demoted_by'] ?? 'N/A',
                 'Previous Role' => $meta['previous_role'] ?? 'N/A',
                 'New Role' => $meta['new_role'] ?? 'N/A',
+            ],
+
+            'Update Visibility' => [
+                'New Visibility' => $meta['new_visibility'] ?? 'N/A',
+            ],
+
+            'Update Approval Requirement' => [
+                'New Approval Requirement' => $meta['new_approval_requirement'] ?? 'N/A',
             ],
 
             default => $meta,

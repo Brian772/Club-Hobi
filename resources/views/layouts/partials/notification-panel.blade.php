@@ -35,7 +35,7 @@
         →</a>
     </div>
 
-    <div class="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+    <div data-notification-list class="flex-1 overflow-y-auto px-6 py-4 space-y-5">
       @forelse ($notifications ?? [] as $notif)
         <div class="flex gap-3 {{ $notif->is_read ? 'opacity-60' : '' }}">
           <div class="mt-0.5 shrink-0">
@@ -50,11 +50,11 @@
 
               @case('report')
               @case('account_status')
-                @include('layouts.partials.icons.bell')
+                @include('layouts.partials.icons.notif')
               @break
 
               @default
-                @include('layouts.partials.icons.bell')
+                @include('layouts.partials.icons.notif')
             @endswitch
           </div>
           <div>
@@ -96,7 +96,7 @@
       <a href="{{ route('notifications.index') }}" class="text-sm text-neutral-400 hover:text-neutral-700">See More →</a>
     </div>
 
-    <div class="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+    <div data-notification-list class="flex-1 overflow-y-auto px-6 py-4 space-y-5">
       @forelse ($notifications ?? [] as $notif)
         <div class="flex gap-3 {{ $notif->is_read ? 'opacity-60' : '' }}">
           <div class="mt-0.5 shrink-0">
@@ -111,11 +111,11 @@
 
               @case('report')
               @case('account_status')
-                @include('layouts.partials.icons.bell')
+                @include('layouts.partials.icons.notif')
               @break
 
               @default
-                @include('layouts.partials.icons.bell')
+                @include('layouts.partials.icons.notif')
             @endswitch
           </div>
           <div>

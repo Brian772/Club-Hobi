@@ -24,8 +24,16 @@ class Club extends Model
         'description',
         'created_by',
         'cover_url',
-        'privacy',
+        'visibility',
+        'is_required_request',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_required_request' => 'boolean',
+        ];
+    }
 
     public function hobby()
     {

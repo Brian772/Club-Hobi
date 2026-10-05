@@ -8,64 +8,59 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
+    /**
+     * Tampilkan halaman registrasi berdasarkan step.
+     */
     public function create($step = 1): View|RedirectResponse
     {
         $step = (int) $step;
 
-        if (!in_array($step, [1, 2, 3], true)) {
+        if (!in_array($step, [1, 2, 3])) {
             abort(404);
         }
 
-        if (Auth::check()) {
-            if ($step === 3 && empty(Auth::user()->interests)) {
-                // Jika user sudah login tapi belum memilih minat, arahkan ke step 3
-            } else {
-                return redirect()->route('dashboard');
+        // Step 3 hanya bisa diakses setelah login (dibuat otomatis di step 2).
+        if ($step === 3) {
+            if (!Auth::check()) {
+                return redirect()->route('register', ['step' => 1]);
             }
+        } elseif (Auth::check()) {
+            return redirect()->route('dashboard');
         }
 
-        if ($step === 2 && !session()->has('register.email')) {
-            return redirect()->route('register', ['step' => 1]);
-        }
+        $categories = [
+            'Photography',
+            'Fishing',
+            'Reading',
+            'Music',
+            'Gaming',
+            'Traveling',
+            'Football',
+            'Swimming',
+            'Hiking',
+        ];
 
-        if (
-            $step === 3 &&
-            !Auth::check() &&
-            (
-                !session()->has('register.email') ||
-                !session()->has('register.name')
-            )
-        ) {
-            return redirect()->route('register', ['step' => 1]);
-        }
-
-        $categories = $step === 3
-            ? DB::table('hobbies')->orderBy('name')->get()
-            : collect();
-
-        return view(
-            'auth.register',
-            compact('step', 'categories')
-        );
+        return view('auth.register', compact('step', 'categories'));
     }
 
+    /**
+     * Step 1: Simpan Email & Password sementara ke Session.
+     */
     public function step1(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'email' => [
                 'required',
                 'string',
-                'email:rfc,dns',
+                'email:rfc',
                 'max:255',
-                Rule::unique(User::class, 'email'), // <--- Menolak email duplikat sejak awal
+                Rule::unique(User::class, 'email'),
             ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
@@ -78,55 +73,45 @@ class RegisteredUserController extends Controller
         return redirect()->route('register', ['step' => 2]);
     }
 
+    /**
+     * Step 2: Simpan Data Pengguna ke Database & Buat Sesi Login.
+     */
     public function step2(Request $request): RedirectResponse
     {
-        if (!session()->has('register.email')) {
-            return redirect()->route('register', ['step' => 1]);
-        }
-
         $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'bio' => [
-                'nullable',
-                'string',
-                'max:500',
-            ],
-            'avatar_url' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png',
-                'max:5120',
-            ],
+            'name' => ['required', 'string', 'max:255'],
+            'bio' => ['nullable', 'string', 'max:500'],
+            'avatar_url' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ]);
+
+        $avatarUrl = null;
 
         if ($request->hasFile('avatar_url')) {
-            $oldAvatar = session('register.avatar_url');
-
-            if ($oldAvatar) {
-                Storage::disk('public')->delete($oldAvatar);
-            }
-
-            $avatarPath = $request
-                ->file('avatar_url')
-                ->store('avatars', 'public');
-
-            session([
-                'register.avatar_url' => $avatarPath,
-            ]);
+            $avatarUrl = $request->file('avatar_url')->store('avatars', 'public');
+            session(['register.avatar_url' => $avatarUrl]);
         }
 
-        session([
-            'register.name' => $validated['name'],
-            'register.bio' => $validated['bio'] ?? null,
+        $user = User::create([
+            'name' => $validated['name'],
+            'bio' => $validated['bio'],
+            'avatar_url' => $avatarUrl,
+            'email' => session('register.email'),
+            'password_hash' => session('register.password'),
         ]);
+
+        event(new Registered($user));
+
+        Auth::login($user);
+
+        $request->session()->regenerate();
+        session()->forget('register');
 
         return redirect()->route('register', ['step' => 3]);
     }
 
+    /**
+     * Step 3: Simpan Hobi Pengguna.
+     */
     public function step3(Request $request): RedirectResponse
     {
 
@@ -154,7 +139,7 @@ class RegisteredUserController extends Controller
 
         $validated = $request->validate([
             'hobbies' => ['nullable', 'array'],
-            'hobbies.*' => ['string'],
+            'hobbies.*' => ['nullable', 'string'],
         ]);
 
         $user = User::create([
@@ -179,7 +164,7 @@ class RegisteredUserController extends Controller
         $request->session()->forget('register');
 
         return redirect()
-            ->route('verification.notice')
-            ->with('success', 'Registrasi berhasil! Selamat datang, ' . $user->name . '!');
+            ->route('dashboard')
+            ->with('success', 'Registrasi berhasil! Selamat datang, ' . ($user ? $user->name : '') . '!');
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Clubs;
 use App\Http\Requests\StoreClubRequestRequest;
 use App\Http\Controllers\Controller;
 use App\Models\ClubRequest;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -41,7 +43,7 @@ class ClubRequestController extends Controller
             'name' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'hobby_id' => ['required', 'exists:hobbies,id'],
-            'privacy_club' => ['required', 'in:public,private'],
+            'visibility_club' => ['required', 'in:public,private'],
             'reason' => ['required', 'string', 'min:5', 'max:255'],
         ];
     }
@@ -61,8 +63,8 @@ class ClubRequestController extends Controller
             'description.max' => 'Deskripsi klub tidak boleh lebih dari 1000 karakter.',
             'hobby_id.required' => 'Hobi harus dipilih.',
             'hobby_id.exists' => 'Hobi yang dipilih tidak valid.',
-            'privacy_club.required' => 'Privasi klub harus dipilih.',
-            'privacy_club.in' => 'Privasi klub harus berupa public atau private.',
+            'visibility_club.required' => 'Privasi klub harus dipilih.',
+            'visibility_club.in' => 'Privasi klub harus berupa public atau private.',
             'reason.required' => 'Alasan pengajuan harus diisi.',
             'reason.string' => 'Alasan pengajuan harus berupa teks.',
             'reason.max' => 'Alasan pengajuan tidak boleh lebih dari 255 karakter.',
@@ -81,18 +83,27 @@ class ClubRequestController extends Controller
                 $coverPath = $request->file('cover')->store('club/covers', 'public');
             }
 
-            ClubRequest::create([
+            $clubRequest = ClubRequest::create([
                 'id'            => Str::uuid(),
                 'user_id'       => Auth::id(),
                 'name'          => $validated['name'],
                 'description'   => $validated['description'] ?? null,
                 'hobby_id'      => $validated['hobby_id'],
-                'privacy_club'  => $validated['privacy_club'] ?? 'public',
+                'visibility_club'  => $validated['visibility_club'] ?? 'public',
                 'reason'        => $validated['reason'],
                 'cover_url'     => $coverPath,
                 'status'        => 'pending',
             ]);
 
+            User::where('role_global', 'admin')->pluck('id')->each(function ($adminId) use ($clubRequest) {
+                Notification::createForUser(
+                    $adminId,
+                    'Permintaan klub baru',
+                    Auth::user()->name . ' mengajukan klub ' . $clubRequest->name . '.',
+                    'other',
+                    $clubRequest->id
+                );
+            });
             DB::commit();
 
             return redirect()->route('clubs.index')->with('success', 'Permintaan klub berhasil dikirim!');

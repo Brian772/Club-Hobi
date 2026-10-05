@@ -14,10 +14,11 @@ use App\Http\Controllers\AppealController;
 use App\Http\Controllers\BannedController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ChartController;
+use App\Http\Controllers\PresenceController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// Halaman utama (Welcome Page)
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
@@ -25,8 +26,8 @@ Route::get('/', function () {
     return view('landing');
 })->name('home');
 
-//Route::get('/home', [DashboardController::class, 'index'])
- //   ->name('dashboard');
+// Route::get('/home', [DashboardController::class, 'index'])
+//   ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -36,13 +37,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/posts', [DashboardController::class, 'posts'])->name('posts.dashboard');
     Route::get('/dashboard/club-files', [DashboardController::class, 'clubFiles'])->name('club_files.dashboard');
 
-    // Notifikasi
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/presence/heartbeat', [PresenceController::class, 'heartbeat'])->name('presence.heartbeat');
+    Route::get('/presence/status', [PresenceController::class, 'index'])->name('presence.index');
 
-    // Pesan
-    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
+    // Fitur Pesan / Messages
+    Route::get('/messages/{conversation}/updates', [MessageController::class, 'updates'])->name('messages.updates');
+    Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{conversation}/show', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
 
     Route::prefix('clubs')->name('clubs.')->group(function () {
@@ -63,7 +64,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/{club}/settings/join/{request}/reject', [ClubJoinRequestController::class, 'rejectRequest'])->name('join.request.reject');
         Route::patch('/{club}/promote/{userId}', [ClubController::class, 'promoteModerator'])->name('promote');
         Route::patch('/{club}/demote/{userId}', [ClubController::class, 'demoteModerator'])->name('demote');
-        Route::patch('/{club}/settings/privacy', [ClubController::class, 'updatePrivacy'])->name('privacy.update');
+        Route::patch('/{club}/settings/visibility', [ClubController::class, 'updateVisibility'])->name('visibility.update');
+        Route::patch('/{club}/settings/approval', [ClubController::class, 'updateApproval'])->name('approval.update');
         Route::delete('/{club}/leave', [ClubController::class, 'leave'])->name('leave');
         Route::delete('/clubs/{club}/kick/{userId}', [ClubController::class, 'kickMember'])->name('kick');
         Route::delete('/clubs/{club}/delete', [ClubController::class, 'deleteClub'])->name('delete');
@@ -88,16 +90,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/posts/{post}/comments', [PostController::class, 'storeComment'])->name('posts.comments.store');
     Route::delete('/comments/{comment}', [PostController::class, 'destroyComment'])->name('comments.destroy');
 
+    // Download Media
+    Route::get('/media/{media}/download', [DownloadController::class, 'download'])->name('media.download');
+    Route::get('/posts/{post}/download', [DownloadController::class, 'downloadPostFile'])->name('posts.download');  
+
     Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    // Fitur Notifikasi
+    Route::get('/notifications/updates', [NotificationController::class, 'updates'])->name('notifications.updates');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 
     Route::get('/banned', [BannedController::class, 'index'])->name('banned');
     Route::get('/appeals', [AppealController::class, 'index'])->name('appeal');
     Route::post('/appeals/store', [AppealController::class, 'store'])->name('appeal.store');
-    // Download Media
-    Route::get('/media/{media}/download', [DownloadController::class, 'download'])->name('media.download');
-    Route::get('/posts/{post}/download', [DownloadController::class, 'downloadPostFile'])->name('posts.download');
 
-    // Pengaturan
+    // Fitur Pengaturan / Settings
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [SettingsController::class, 'settings'])->name('index');
         Route::get('/profile', [SettingsController::class, 'profilesettings'])->name('profile');
@@ -109,16 +118,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/account', [SettingsController::class, 'accountsettings'])->name('account');
     });
 
-    // Profil Pengguna
+    // Fitur Profil / Profile bawaan Laravel
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.index');
+    Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Logout
-    Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     Route::get('/api/user-charts', [App\Http\Controllers\ChartController::class, 'getDataUsers'])->name('api.chart');
 });
-require __DIR__ . '/admin.php';
 require __DIR__ . '/auth.php';
+require __DIR__ . '/admin.php';

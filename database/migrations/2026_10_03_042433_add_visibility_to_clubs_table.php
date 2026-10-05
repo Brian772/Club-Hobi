@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hobbies', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
+        Schema::table('clubs', function (Blueprint $table) {
+            $table->enum('visibility', ['public', 'private'])->default('public')->after('cover_url');
+            $table->boolean('is_required_request')->default(false)->after('visibility');
         });
     }
 
@@ -23,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hobbies');
+        Schema::table('clubs', function (Blueprint $table) {
+            //
+        });
     }
 };

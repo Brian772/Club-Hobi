@@ -24,13 +24,15 @@
       openDelete: false,
       openAccept: false,
       openReject: false,
-      openChangePrivacy: false,
+      openChangevisibility: false,
+      openChangeApproval: false,
       selectedName: '',
       promoteUrl: '',
       demoteUrl: '',
       kickUrl: '',
       kickRole: '',
-      changePrivacyUrl: '',
+      changevisibilityUrl: '',
+      changeApprovalUrl: '',
       deleteUrl: '',
       acceptUrl: '',
       rejectUrl: ''
@@ -103,6 +105,39 @@
           </form>
         </div>
       </section>
+    @endcan
+
+    {{-- Settings Club --}}
+    @can('isOwner', $club)
+      <div class="flex flex-col gap-8 border border-hairline p-4 rounded-lg">
+        <div class="flex flex-row items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <h3 class="text-body-mid font-semibold text-ink">Change visibility Club</h3>
+            <p class="text-caption text-ink-muted">Change the visibility settings of {{ $club->name }}. Current
+              visibility is {{ $club->visibility }}</p>
+          </div>
+          <button type="button"
+            @click="openChangevisibility = true; changevisibilityUrl = '{{ route('clubs.visibility.update', $club->id) }}';"
+            class="px-4 py-2 rounded-md bg-primary/10 text-primary hover:text-white hover:bg-primary transition-colors duration-300">
+            Change
+          </button>
+        </div>
+
+        @if ($club->visibility === 'public')
+          <div class="flex flex-row items-center justify-between">
+            <div class="flex flex-col gap-1">
+              <h3 class="text-body-mid font-semibold text-ink">Require Approval</h3>
+              <p class="text-caption text-ink-muted">Choose whether {{ $club->name }} requires approval before joining
+              </p>
+            </div>
+            <button type="button"
+              @click="openChangeApproval = true; changeApprovalUrl = '{{ route('clubs.approval.update', $club->id) }}';"
+              class="px-4 py-2 rounded-md bg-primary/10 text-primary hover:text-white hover:bg-primary transition-colors duration-300">
+              Change
+            </button>
+          </div>
+        @endif
+      </div>
     @endcan
 
     {{-- Manage Member --}}
@@ -197,7 +232,7 @@
                                 </svg>
                                 Lihat Profil
                               </a>
-                              <a href="{{ route('messages.index', ['conversation' => $member->user->id]) }}"
+                              <a href="{{ route('messages.show', $member->user->id) }}"
                                 class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -470,7 +505,7 @@
 
         <main class="border border-hairline p-4 rounded-lg">
           <div class="flex flex-col gap-4">
-            <div id="container" class="border mt-2 border-hairline p-2 rounded-lg overflow-x-auto lg:overflow-visible">
+            <div id="container" class="overflow-x-auto lg:overflow-visible">
               <table class="min-w-full h-max table-auto">
                 <thead class="border-b border-hairline">
                   <tr>
@@ -552,29 +587,6 @@
       </section>
     @endcan
 
-    {{-- Change Privacy --}}
-    @can('isOwner', $club)
-      <div class="flex flex-row items-center justify-between border border-hairline p-4 rounded-lg">
-        <div class="flex flex-col gap-1">
-          <h3 class="text-title text-ink">Change Privacy Club</h3>
-          <p class="text-body-mid text-ink-muted">Change the privacy settings of {{ $club->name }}. Current privacy is {{ $club->privacy }}</p>
-        </div>
-        @if ($club->privacy === 'public')
-          <button type="button"
-            @click="openChangePrivacy = true; changePrivacyUrl = '{{ route('clubs.privacy.update', $club->id) }}';"
-            class="px-4 py-2 rounded-md text-primary hover:underline hover:underline-offset-2">
-            Change to Private
-          </button>
-        @else
-          <button type="button"
-            @click="openChangePrivacy = true; changePrivacyUrl = '{{ route('clubs.privacy.update', $club->id) }}';"
-            class="px-4 py-2 rounded-md text-primary hover:underline hover:underline-offset-2">
-            Change to Public
-          </button>
-        @endif
-      </div>
-    @endcan
-
     {{-- Delete Club --}}
     @can('isOwner', $club)
       <section class="p-4 mt-12">
@@ -605,7 +617,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openPromote = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Promote <span x-text="selectedName"></span> to Moderator?
@@ -643,7 +656,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openDemote = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title text-ink mb-4">
             Demote <span x-text="selectedName"></span> to Member?
@@ -682,7 +696,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openKick = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Kick <span x-text="selectedName"></span>?
@@ -719,7 +734,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openDelete = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Delete <span x-text="selectedName"></span>?
@@ -757,7 +773,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openAccept = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Accept Join Request?
@@ -785,7 +802,8 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openReject = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
             Reject Join Request?
@@ -808,52 +826,95 @@
       </div>
     </div>
 
-    {{-- Change Privacy Modal --}}
-    <div x-show="openChangePrivacy" x-cloak @keydown.escape.window="openChangePrivacy = false"
+    {{-- Change visibility Modal --}}
+    <div x-show="openChangevisibility" x-cloak @keydown.escape.window="openChangevisibility = false"
       class="fixed flex items-center justify-center inset-0 z-50">
-      <div @click="openChangePrivacy = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      <div @click="openChangevisibility = false"
+        class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
-            Change Privacy
+            Change visibility
           </h3>
-          @if ($club->privacy === 'private')
-            <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin mengubah privasi klub ini? orang lain akan
-              dapat bergabung dengan klub ini tanpa melakukan persetujuan.</p>
-          @endif
-          @if ($club->privacy === 'public')
-            <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin mengubah privasi klub ini? orang lain perlu
-              persetujuan untuk bergabung dengan klub ini.</p>
-          @endif
+          <p class="text-body-mid text-ink">Choose who can discover this club and what non-members can see.</p>
         </div>
-        <div class="flex flex-row justify-end gap-2">
-          @if ($club->privacy === 'public')
-            <form :action="changePrivacyUrl" method="POST">
-              @csrf
-              @method('PATCH')
-              <input type="hidden" name="privacy" value="private">
-              <button type="submit"
-                class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
-                Change to Private
-              </button>
-            </form>
-          @endif
-          @if ($club->privacy === 'private')
-            <form :action="changePrivacyUrl" method="POST">
-              @csrf
-              @method('PATCH')
-              <input type="hidden" name="privacy" value="public">
-              <button type="submit"
-                class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
-                Change to Public
-              </button>
-            </form>
-          @endif
-          <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
-            @click="openChangePrivacy = false">Cancel</button>
+        <form :action="changevisibilityUrl" method="POST">
+          @csrf
+          @method('PATCH')
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1 items-start">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="radio" id="public" name="visibility" value="public"
+                  {{ old('visibility', $club->visibility) === 'public' ? 'checked' : '' }}>
+                <label for="public" class="text-ink text-body">Public</label>
+              </div>
+              <p class="text-caption text-ink-muted">Anyone can discover this club and view its posts and member list.
+              </p>
+            </div>
+            <div class="flex flex-col gap-1 items-start">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="radio" id="private" name="visibility" value="private"
+                  {{ old('visibility', $club->visibility) === 'private' ? 'checked' : '' }}>
+                <label for="private" class="text-ink text-body">Private</label>
+              </div>
+              <p class="text-caption text-ink-muted">Anyone can discover this club, but only members can view posts and
+                member
+                details.</p>
+            </div>
+          </div>
+          <div class="flex flex-row justify-end mt-4 gap-2">
+            <button type="submit"
+              class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
+              Save Change
+            </button>
+            <button type="button"
+              class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+              @click="openChangevisibility = false">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {{-- Change Approval Modal --}}
+    <div x-show="openChangeApproval" x-cloak @keydown.escape.window="openChangeApproval = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openChangeApproval = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Change Approval
+          </h3>
+          <p class="text-body-mid text-ink">Choose whether or not approval is needed to join this club</p>
         </div>
+        <form :action="changeApprovalUrl" method="POST">
+          @csrf
+          @method('PATCH')
+          <div class="flex flex-col gap-1">
+            <div class="flex flex-row gap-2 items-center">
+              <input type="radio" id="approval_no" name="is_required_request" value="0"
+                {{ old('is_required_request', (int) $club->is_required_request) == 0 ? 'checked' : '' }}>
+              <label for="approval_no" class="text-ink text-body">No Approval Needed</label>
+            </div>
+            <div class="flex flex-row gap-2 mt-2 items-center">
+              <input type="radio" id="approval_yes" name="is_required_request" value="1"
+                {{ old('is_required_request', (int) $club->is_required_request) == 1 ? 'checked' : '' }}>
+              <label for="approval_yes" class="text-ink text-body">Required Approval</label>
+            </div>
+          </div>
+          <div class="flex flex-row justify-end gap-2 mt-4">
+            <button type="submit"
+              class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
+              Save changes
+            </button>
+            <button type="button"
+              class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+              @click="openChangeApproval = false">Cancel</button>
+          </div>
+        </form>
       </div>
     </div>
   </main>

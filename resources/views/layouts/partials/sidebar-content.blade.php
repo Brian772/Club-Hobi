@@ -92,12 +92,12 @@
           class="rounded-full size-9 object-cover"
           onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
         <div
-          class="hidden size-9 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+          class="hidden size-9 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
           {{ Str::upper(Str::substr(auth()->user()->name, 0, 1)) }}
         </div>
       @else
         <div
-          class="size-9 items-center justify-center rounded-full bg-primary/10 text-body-mid font-bold text-primary flex">
+          class="size-9 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
           {{ Str::upper(Str::substr(auth()->user()->name, 0, 1)) }}
         </div>
       @endif

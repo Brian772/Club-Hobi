@@ -31,7 +31,7 @@
       <div
         class="hidden lg:flex lg:flex-row items-center justify-between mb-6 gap-2 p-2 border border-hairline rounded-lg">
         <div class="flex flex-row items-center gap-2 p-2">
-          <img src="{{ $user->avatar_full_url ?? asset('images/default-avatar.png') }}" alt="{{ $user->name }}"
+          <img src="{{ $user->avatar_full_url ?? asset('images/default-avatar.svg') }}" alt="{{ $user->name }}"
             class="w-9 h-9 rounded-full object-cover">
           <div class="flex flex-col">
             <p class="text-body-mid text-ink font-semibold">{{ $user->name }}</p>
@@ -97,7 +97,7 @@
     <div x-show="OpenApproveModal" x-cloak @keydown.escape.window="OpenApproveModal = false">
       <div class="fixed inset-0 bg-black/50 z-40" @click="OpenApproveModal = false"></div>
       <div class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
           <div class="flex flex-col gap-2 mb-4">
             <h2 class="text-lg font-semibold">Approve this appeal?</h2>
             <p>Are you sure you want to approve this appeal? The appeal will be approved, and the user's account will be
@@ -123,7 +123,7 @@
     <div x-show="OpenRejectModal" x-cloak @keydown.escape.window="OpenRejectModal = false">
       <div class="fixed inset-0 bg-black/50 z-40" @click="OpenRejectModal = false"></div>
       <div class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
           <div class="flex flex-col gap-2 mb-4">
             <h2 class="text-lg font-semibold">Reject this appeal?</h2>
             <p>Are you sure you want to reject this appeal? The appeal will be denied, and the user's account will remain
