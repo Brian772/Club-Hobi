@@ -83,7 +83,7 @@
               @if ($club->cover_url)
                 {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
                 <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
-                  loading="lazy" class="w-full h-48 rounded-t-lg object-cover">
+                  loading="lazy" draggable="false" class="w-full h-48 rounded-t-lg object-cover">
               @else
                 <div class="w-full h-48 rounded-t-lg bg-gray-200 flex items-center justify-center">
                   <span class="text-ink-muted">Tidak ada gambar</span>
@@ -96,7 +96,7 @@
                   <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                 </h3>
                 <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
-                <div class="flex flex-row items-center justify-between mt-2">
+                <div class="flex flex-row items-center justify-between mt-auto">
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                   <p class="text-caption text-ink-muted flex flex-row gap-2 items-center">
                     @if ($club->visibility === 'public')
@@ -185,8 +185,8 @@
             <div
               class="flex flex-col items-stretch min-w-75 w-100 lg:w-75 border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
-                <img src="{{ $club->cover_display_url }}" alt="{{ $club->name }}"
-                  class="w-full h-48 rounded-t-lg object-cover" loading="lazy">
+                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                  class="w-full h-48 rounded-t-lg object-cover" draggable="false" loading="lazy">
               @else
                 <div class="w-full h-48 rounded-t-lg bg-gray-200 flex items-center justify-center">
                   <span class="text-ink-muted">Tidak ada gambar</span>
@@ -200,7 +200,7 @@
                     class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                 </h3>
                 <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
-                <div class="flex flex-row items-center justify-between mt-2">
+                <div class="flex flex-row items-center justify-between mt-auto">
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                   <p class="text-caption text-ink-muted flex flex-row gap-2 items-center">
                     @if ($club->visibility === 'public')

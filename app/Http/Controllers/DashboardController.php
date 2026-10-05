@@ -58,7 +58,7 @@ class DashboardController extends Controller
 
         // 2. Ambil data klub untuk widget/sidebar
         $joinedClub = Club::query()
-            ->whereIn('id', $userClubIds->take(3))
+            ->whereIn('id', $userClubIds)
             ->withCount('members')
             ->get();
 

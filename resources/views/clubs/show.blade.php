@@ -206,7 +206,7 @@
   @if ($club->visibility === 'private' && $isNotMember)
     <section class="w-full h-max flex items-center justify-center">
       <div
-        class="flex flex-col mt-12 items-center gap-2 justify-center w-max h-max max-w-sm lg:max-w-md p-6 rounded-2xl border border-hairline bg-canvas">
+        class="flex flex-col mt-12 items-center gap-2 justify-center w-max h-max max-w-sm lg:max-w-md p-6">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
           class="lucide lucide-lock preview-icon text-ink-muted">
@@ -215,7 +215,7 @@
         </svg>
         <h2 class="text-title text-center lg:text-2xl font-semibold text-ink-muted">Klub ini bersifat privat.</h2>
         <p class="text-body-mid text-center text-ink-muted">Anda tidak dapat mengakses klub ini. Ikuti klub ini untuk
-          melihat postingan.</p>
+          melihat postingannya.</p>
       </div>
     </section>
   @else

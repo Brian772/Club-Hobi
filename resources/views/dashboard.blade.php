@@ -65,7 +65,7 @@
                   <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
                 </h3>
                 <p class="text-caption text-ink-secondary mb-2 line-clamp-2">{{ $club->description }}</p>
-                <div class="flex flex-row items-center justify-between mt-2">
+                <div class="flex flex-row items-center justify-between mt-auto">
                   <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
                   <p class="text-caption text-ink-muted flex flex-row gap-2 items-center">
                     @if ($club->visibility === 'public')

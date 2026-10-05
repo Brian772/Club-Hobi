@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Orbii | ' . $otherUser->name ?? "Pengguna")
+@section('title', 'Orbii | ' . $otherUser->name ?? 'Pengguna')
 
 @section('content')
   @php
@@ -9,7 +9,31 @@
     $myInitial = strtoupper(substr(Auth::user()->name ?? 'U', 0, 1));
   @endphp
 
-  <div class="flex flex-col h-[calc(100vh-8.5rem)] max-w-5xl mx-auto -mt-4">
+  <div class="flex flex-col h-[calc(100vh-8.5rem)] max-w-5xl mx-auto -mt-4" x-data="{
+      openReportModal: false,
+      contentType: null,
+      contentId: null,
+      reportedUserId: null,
+      reportUrl: null,
+      reportTarget: null,
+  
+      openReport(type, contentId, reportedUserId = null, url = null, target = null) {
+          this.contentType = type;
+          this.contentId = contentId;
+          this.reportedUserId = reportedUserId;
+          this.reportUrl = url;
+          this.reportTarget = target;
+          this.openReportModal = true;
+      },
+  
+      closeReport() {
+          this.contentType = null;
+          this.contentId = null;
+          this.reportedUserId = null;
+          this.reportUrl = null;
+          this.openReportModal = false;
+      },
+  }">
     {{-- Chat Header matching Figma --}}
     <div
       class="flex items-center justify-between pb-4 border-b border-gray-100 bg-white/50 backdrop-blur-sm sticky top-0 z-10 px-2 pt-2">
@@ -23,13 +47,19 @@
         </a>
 
         {{-- Partner Avatar Initial --}}
-        @if ($otherUser->avatar_full_url && !str_contains($otherUser->avatar_full_url, 'people'))
+        @if ($otherUser->avatar_full_url)
           <img src="{{ $otherUser->avatar_full_url }}" alt="{{ $otherUser->name }}"
-            class="w-10 h-10 rounded-full object-cover shrink-0">
+            class="rounded-full size-10 object-cover"
+            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+          </img>
+          <div
+            class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+            {{ Str::upper(Str::substr($otherUser->name, 0, 1)) }}
+          </div>
         @else
           <div
-            class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-sm shrink-0 select-none">
-            {{ $otherInitial }}
+            class="size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+            {{ Str::upper(Str::substr($otherUser->name, 0, 1)) }}
           </div>
         @endif
 
@@ -46,23 +76,65 @@
       </div>
 
       {{-- Three Dots Menu --}}
-      <div class="relative" x-data="{ open: false }">
-        <button @click="open = !open" type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition">
+      <div class="relative" x-data="{ MenuOpen: false }">
+        <button @click="MenuOpen = !MenuOpen" type="button"
+          class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <circle cx="12" cy="5" r="2" />
             <circle cx="12" cy="12" r="2" />
             <circle cx="12" cy="19" r="2" />
           </svg>
         </button>
-        <div x-show="open" @click.outside="open = false" x-cloak
-          class="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-20">
-          <a href="{{ route('profile.show', ['user' => $otherUser->id]) }}"
-            class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-50">
-            Lihat Profil
-          </a>
-          <a href="{{ route('messages.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-50">
-            Tutup Obrolan
-          </a>
+        <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
+          <div x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
+            @click.outside="MenuOpen = false" @click="MenuOpen = false"
+            class="absolute z-50 right-5 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
+            <a href="{{ route('profile.show', ['user' => $otherUser->id]) }}"
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-user-round">
+                <circle cx="12" cy="8" r="5" />
+                <path d="M20 21a8 8 0 0 0-16 0" />
+              </svg>
+              Lihat Profil
+            </a>
+            <a href="{{ route('messages.index') }}"
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-message-circle-icon lucide-message-circle">
+                <path
+                  d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
+              </svg>
+              Keluar Obrolan
+            </a>
+            <div class="h-px border-b border-hairline my-2"></div>
+            <button type="button"
+              @click="
+                openReport(
+                  'user',
+                  '{{ $otherUser->id }}',
+                  '{{ $otherUser->id }}',
+                  '{{ route('reports.store') }}',
+                  @js([
+    'name' => $otherUser->name,
+    'avatar' => $otherUser->avatar_full_url ?? asset('images/default-avatar.svg'),
+    'joined' => $otherUser->created_at->format('d M Y'),
+])
+              )"
+              class="flex flex-row gap-2 items-center w-full cursor-pointer px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-flag">
+                <path
+                  d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" />
+              </svg>
+              Laporkan Pengguna
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -94,10 +166,20 @@
             {{-- Received Message (Left) --}}
             <div data-message-id="{{ $msg->id }}" class="flex items-start gap-2.5 max-w-[80%] md:max-w-[70%]">
               {{-- Partner Initial Avatar --}}
-              <div
-                class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-xs shrink-0 select-none mt-0.5">
-                {{ $otherInitial }}
-              </div>
+              @if ($otherUser->avatar_full_url)
+                <img src="{{ $otherUser->avatar_full_url }}" alt="{{ $otherUser->name }}"
+                  class="rounded-full size-8 object-cover"
+                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                <div
+                  class="hidden size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                  {{ Str::upper(Str::substr($otherUser->name, 0, 1)) }}
+                </div>
+              @else
+                <div
+                  class="size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                  {{ Str::upper(Str::substr($otherUser->name, 0, 1)) }}
+                </div>
+              @endif
               <div>
                 <div
                   class="bg-white text-gray-900 text-sm px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100">
@@ -121,10 +203,20 @@
                 </span>
               </div>
               {{-- Current User Initial Avatar --}}
-              <div
-                class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-xs shrink-0 select-none mt-0.5">
-                {{ $myInitial }}
-              </div>
+              @if (auth()->user()->avatar_full_url)
+                <img src="{{ auth()->user()->avatar_full_url }}" alt="{{ auth()->user()->name }}"
+                  class="rounded-full size-8 object-cover"
+                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                <div
+                  class="hidden size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                  {{ Str::upper(Str::substr(auth()->user()->name, 0, 1)) }}
+                </div>
+              @else
+                <div
+                  class="size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                  {{ Str::upper(Str::substr(auth()->user()->name, 0, 1)) }}
+                </div>
+              @endif
             </div>
           @endif
         @endforeach
@@ -136,7 +228,8 @@
       <form action="{{ route('messages.store', $otherUser->id) }}" method="POST" data-turbo="false"
         class="w-full flex items-center gap-3" id="chatForm">
         @csrf
-        <input type="text" name="content" id="messageInput" required autocomplete="off" placeholder="Ketik Pesan..."
+        <input type="text" name="content" id="messageInput" required autocomplete="off"
+          placeholder="Ketik Pesan..."
           class="flex-1 bg-white border border-gray-200 rounded-full py-3.5 pl-6 pr-4 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm transition">
 
         <button type="submit"
@@ -147,6 +240,7 @@
         </button>
       </form>
     </div>
+    <x-report-modal />
   </div>
 
 @endsection
