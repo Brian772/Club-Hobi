@@ -10,6 +10,7 @@ use App\Models\Club;
 use App\Models\ClubActivity;
 use App\Models\ClubMember;
 use App\Models\ClubJoinRequest;
+use App\Models\Notification;
 
 class ClubJoinRequestController extends Controller
 {
@@ -37,6 +38,14 @@ class ClubJoinRequestController extends Controller
                 'user_id' => $user_id,
                 'status' => 'pending',
             ]);
+
+            Notification::createForUser(
+                $club->created_by,
+                'Permintaan Bergabung Klub',
+                Auth::user()->name . ' meminta bergabung ke klub ' . $club->name,
+                'other',
+                $user_id,
+            );
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -80,6 +89,14 @@ class ClubJoinRequestController extends Controller
                 ],
             ]);
 
+            Notification::createForUser(
+                $joinRequest->user_id,
+                'Permintaan Bergabung Klub Diterima',
+                'Permintaan bergabung ke klub ' . $club->name . ' telah diterima.',
+                'other',
+                $joinRequest->id
+            );
+
             $joinRequest->update([
                 'status' => 'approved',
             ]);
@@ -118,6 +135,14 @@ class ClubJoinRequestController extends Controller
                     'role' => $joinRequest->user->role_global ?? 'member',
                 ],
             ]);
+
+            Notification::createForUser(
+                $joinRequest->user_id,
+                'Permintaan Bergabung Klub Ditolak',
+                'Permintaan bergabung ke klub ' . $club->name . ' telah ditolak.',
+                'other',
+                $joinRequest->id
+            );
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -185,6 +210,14 @@ class ClubJoinRequestController extends Controller
                 'target_type' => 'User',
                 'target_id' => Auth::id(),
             ]);
+
+            Notification::createForUser(
+                $club->created_by,
+                'Anggota Baru Bergabung',
+                Auth::user()->name . ' telah bergabung ke klub ' . $club->name,
+                'other',
+                $user_id,
+            );
 
             DB::commit();
         } catch (\Throwable $th) {

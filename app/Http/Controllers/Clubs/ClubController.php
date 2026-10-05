@@ -10,6 +10,7 @@ use App\Models\ClubActivity;
 use App\Models\AuditLog;
 use App\Models\ClubJoinRequest;
 use App\Models\ClubMember;
+use App\Models\Notification;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -445,6 +446,16 @@ class ClubController extends Controller
                 'club_name' => $club->name,
             ],
         ]);
+
+        ClubMember::where('club_id', $club->id)
+            ->pluck('user_id')
+            ->each(fn ($memberId) => Notification::createForUser(
+                $memberId,
+                'Klub Dihapus',
+                'Klub ' . $club->name . ' telah dihapus oleh pemiliknya.',
+                'other',
+                $club->id
+            ));
 
         $club->delete();
 
