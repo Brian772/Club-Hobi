@@ -39,7 +39,20 @@ class AdminClubRequestController extends Controller
         DB::beginTransaction();
 
         try {
-            $club = Club::create([
+            if ($clubRequest->visibility_club === 'private') {
+                $club = Club::create([
+                'id' => Str::uuid(),
+                'name' => $clubRequest->name,
+                'hobby_id' => $clubRequest->hobby_id,
+                'description' => $clubRequest->description,
+                'created_by' => $clubRequest->user_id,
+                'cover_url' => $clubRequest->cover_url,
+                'visibility' => $clubRequest->visibility_club,
+                'is_required_request' => True,
+                'created_at' => now(),
+            ]);
+            } else {
+                $club = Club::create([
                 'id' => Str::uuid(),
                 'name' => $clubRequest->name,
                 'hobby_id' => $clubRequest->hobby_id,
@@ -49,6 +62,8 @@ class AdminClubRequestController extends Controller
                 'visibility' => $clubRequest->visibility_club,
                 'created_at' => now(),
             ]);
+            }
+            
 
             ClubMember::create([
                 'id' => Str::uuid(),

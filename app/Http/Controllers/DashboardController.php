@@ -82,6 +82,7 @@ class DashboardController extends Controller
         // Fallback jika belum ada postingan dari klub yang diikuti
         if ($feedPosts->isEmpty()) {
             $feedPosts = Post::query()
+            ->whereIn('club_id', $userClubIds)
                 ->with([
                     'author',
                     'club',

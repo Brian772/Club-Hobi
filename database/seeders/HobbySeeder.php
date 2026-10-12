@@ -10,19 +10,28 @@ class HobbySeeder extends Seeder
     public function run(): void
     {
         $hobbies = [
-            'Fotografi', 'Olahraga', 'Musik', 'Gaming', 'Memasak',
-            'Membaca', 'Melukis', 'Menulis', 'Traveling', 'Coding',
-            'Desain Grafis', 'Film & Sinema', 'Berkebun', 'Kerajinan Tangan',
-            'Yoga & Meditasi', 'Hiking', 'Bulu Tangkis', 'Basket', 'Sepak Bola',
-            'Berenang', 'Tari', 'Teater', 'Animasi', 'Robotika',
+            'Photography',
+            'Music',
+            'Gaming',
+            'Traveling',
+            'Cooking',
+            'Reading',
+            'Drawing',
+            'Sports',
+            'Fitness',
+            'Coding',
+            'Gardening',
+            'Movies',
+            'Writing',
+            'Cycling',
+            'Hiking',
         ];
 
-        foreach ($hobbies as $hobby) {
-            DB::table('hobbies')->insertOrIgnore([
-                'name'       => $hobby,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        $rows = collect($hobbies)->map(fn ($name) => [
+            'name' => $name,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ])->all();
+        DB::table('hobbies')->upsert($rows, ['name'], ['updated_at']);
     }
 }

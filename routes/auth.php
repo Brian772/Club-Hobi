@@ -115,7 +115,7 @@ Route::middleware('auth')->group(function () {
 
         return back()->with('status', 'verification-link-sent');
     })->name('verification.send');
-
+    
     Route::get(
         'confirm-password',
         [ConfirmablePasswordController::class, 'show']
