@@ -29,24 +29,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->environment(['local', 'testing'])) {
-            try {
-                if (!Schema::hasTable('users')) {
-                    Artisan::call('migrate', ['--force' => true]);
-                }
-
-                $shouldSeedDefaultData = Schema::hasTable('users') && User::count() === 0
-                    || Schema::hasTable('hobbies') && Hobby::count() === 0
-                    || Schema::hasTable('clubs') && Club::count() === 0;
-
-                if ($shouldSeedDefaultData) {
-                    Artisan::call('db:seed', ['--force' => true]);
-                }
-            } catch (\Throwable $e) {
-                logger()->warning('Default data restore guard failed: ' . $e->getMessage());
-            }
-        }
-
         View::composer(['layouts.partials.notification-panel', 'layouts.partials.topbar'], function ($view) {
             $notifications = auth()->check()
                 ? auth()->user()->notifications()->latest('created_at')->take(5)->get()

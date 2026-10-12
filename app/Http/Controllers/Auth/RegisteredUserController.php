@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -20,6 +21,10 @@ class RegisteredUserController extends Controller
     public function create($step = 1): View|RedirectResponse
     {
         $step = (int) $step;
+
+        $categories = $step === 3
+            ? DB::table('hobbies')->orderBy('name')->get()
+            : collect();
 
         if (!in_array($step, [1, 2, 3])) {
             abort(404);
@@ -33,18 +38,6 @@ class RegisteredUserController extends Controller
         } elseif (Auth::check()) {
             return redirect()->route('dashboard');
         }
-
-        $categories = [
-            'Photography',
-            'Fishing',
-            'Reading',
-            'Music',
-            'Gaming',
-            'Traveling',
-            'Football',
-            'Swimming',
-            'Hiking',
-        ];
 
         return view('auth.register', compact('step', 'categories'));
     }
