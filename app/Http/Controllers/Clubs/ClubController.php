@@ -71,6 +71,7 @@ class ClubController extends Controller
 
         $posts = Post::query()
             ->where('club_id', $id)
+            ->where('is_archived', false)
             ->with([
                 'author',
                 'club',

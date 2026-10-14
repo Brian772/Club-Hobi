@@ -22,6 +22,7 @@ class DashboardController extends Controller
         
         $feedPosts = Post::query()
             ->whereIn('club_id', $userClubIds)
+            ->where('is_archived', false)
             ->with([
                 'author',
                 'club',

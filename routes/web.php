@@ -27,7 +27,7 @@ Route::get('/', function () {
 
 
 //Route::get('/home', [DashboardController::class, 'index'])
- //   ->name('dashboard');
+//   ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -74,6 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Postingan & Komentar
     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+    Route::get('/posts/archived', [PostController::class, 'archived'])->name('posts.archived');
     Route::get('/posts/trash', [PostController::class, 'trash'])->name('posts.trash');
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
@@ -86,6 +87,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/comments', [PostController::class, 'storeComment'])->name('posts.comments.store');
     Route::delete('/comments/{comment}', [PostController::class, 'destroyComment'])->name('comments.destroy');
+    Route::patch('/posts/{post}/archive', [PostController::class, 'archive'])->name('posts.archive');
+    Route::patch('/posts/{post}/unarchive', [PostController::class, 'unarchive'])->name('posts.unarchive');
 
     Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
