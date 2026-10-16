@@ -17,6 +17,7 @@
         class="w-37.5 md:w-full max-w-50">
     </div>
 
+    
     <div class="order-2 md:w-1/2 max-w-200 w-full p-3 flex flex-col">
       <p class="text-body-mid text-ink">Akun Anda telah diblokir. Anda dapat mengajukan banding untuk meminta agar
         akun Anda diaktifkan kembali.</p>

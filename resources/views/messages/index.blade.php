@@ -15,7 +15,7 @@
         </svg>
       </div>
       <h3 class="text-lg font-bold text-gray-800 mb-1">Belum Ada Percakapan</h3>
-      <p class="text-sm text-gray-500 mb-6">Mulai obrolan dengan anggota klub atau pengguna lainnya.</p>
+      <p class="text-sm text-gray-500 mb-6">Mulai obrolan dengan anggota dari club yang sama.</p>
     </div>
   @else
     {{-- Conversation List matching Figma --}}
@@ -29,7 +29,7 @@
           // Clean Indonesian relative time like "2 hari lalu"
           $timeAgo = str_replace(' yang lalu', ' lalu', $timeAgo);
         @endphp
-        <a href="{{ route('messages.show', $partner->id) }}" 
+          <a href="{{ route('messages.show', [$conv->club->id, $partner->id]) }}"
            class="flex items-center justify-between p-4 hover:bg-gray-50/80 transition duration-150 group">
           <div class="flex items-center gap-3.5 min-w-0">
             {{-- Avatar Circle --}}
@@ -47,6 +47,7 @@
                 <span class="font-semibold text-gray-900 text-sm group-hover:text-primary transition truncate">
                   {{ $partner->name }}
                 </span>
+                <span class="text-[10px] text-gray-500">{{ $conv->club->name }}</span>
                 <span data-presence-user="{{ $partner->id }}" class="inline-flex items-center gap-1 text-[10px] text-gray-500">
                   <span data-presence-dot class="h-2 w-2 rounded-full {{ $partner->isOnline() ? 'bg-emerald-500' : 'bg-gray-300' }}"></span>
                   <span data-presence-label>{{ $partner->isOnline() ? 'Online' : 'Offline' }}</span>
@@ -82,15 +83,19 @@
     <div class="mt-8">
       <h2 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 px-1">Teman yang bisa diajak mengobrol</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        @foreach($suggestedUsers as $sUser)
-          @php $sInitial = strtoupper(substr($sUser->name ?? 'U', 0, 1)); @endphp
-          <a href="{{ route('messages.show', $sUser->id) }}" 
+        @foreach($suggestedUsers as $suggestion)
+          @php
+            $sUser = $suggestion->user;
+            $sInitial = strtoupper(substr($sUser->name ?? 'U', 0, 1));
+          @endphp
+          <a href="{{ route('messages.show', [$suggestion->club->id, $sUser->id]) }}"
              class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 hover:border-primary/40 hover:shadow-sm transition group">
             <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 font-semibold flex items-center justify-center text-sm shrink-0 group-hover:bg-primary/10 group-hover:text-primary">
               {{ $sInitial }}
             </div>
             <div class="min-w-0 flex-1">
               <p class="text-xs font-semibold text-gray-900 truncate group-hover:text-primary">{{ $sUser->name }}</p>
+              <p class="text-[10px] text-gray-500 truncate">{{ $suggestion->club->name }}</p>
               <p data-presence-user="{{ $sUser->id }}" class="inline-flex items-center gap-1 text-[11px] text-gray-400">
                 <span data-presence-dot class="h-1.5 w-1.5 rounded-full {{ $sUser->isOnline() ? 'bg-emerald-500' : 'bg-gray-300' }}"></span>
                 <span data-presence-label>{{ $sUser->isOnline() ? 'Online' : 'Offline' }}</span>

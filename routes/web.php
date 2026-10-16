@@ -52,10 +52,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/presence/status', [PresenceController::class, 'index'])->name('presence.index');
     
     // Fitur Pesan / Messages
-    Route::get('/messages/{conversation}/updates', [MessageController::class, 'updates'])->name('messages.updates');
-    Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/{conversation}/show', [MessageController::class, 'show'])->name('messages.show');
-    Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{club}/{conversation}/updates', [MessageController::class, 'updates'])->name('messages.updates');
+    Route::get('/messages/{club}/{conversation}/show', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/{club}/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+    Route::patch('/messages/{club}/{conversation}/message/{message}', [MessageController::class, 'update'])->name('messages.update');
+    Route::delete('/messages/{club}/{conversation}/message/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
 
     // Fitur Klub / Clubs
     Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
