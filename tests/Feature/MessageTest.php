@@ -2,6 +2,9 @@
 
 use App\Models\Message;
 use App\Models\Notification;
+use App\Models\Club;
+use App\Models\ClubMember;
+use App\Models\Hobby;
 use App\Models\User;
 use function Pest\Laravel\actingAs;
 
@@ -26,12 +29,16 @@ it('creates a message with a uuid id', function () {
 it('creates a notification when a message is sent', function () {
     $sender = User::factory()->create();
     $receiver = User::factory()->create();
+    Hobby::create(['name' => 'Fotografi']);
+    $club = Club::factory()->create();
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $sender->id, 'role' => 'member']);
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $receiver->id, 'role' => 'member']);
 
     actingAs($sender)
-        ->post(route('messages.store', $receiver->id), [
+        ->post(route('messages.store', [$club->id, $receiver->id]), [
             'content' => 'Halo bang, ada kabar?',
         ])
-        ->assertRedirect(route('messages.show', $receiver->id));
+        ->assertRedirect(route('messages.show', [$club->id, $receiver->id]));
 
     expect(Notification::query()
         ->where('user_id', $receiver->id)
@@ -116,7 +123,12 @@ it('shows notifications from every supported type', function () {
 it('returns new messages and marks their message notifications as read', function () {
     $sender = User::factory()->create();
     $receiver = User::factory()->create();
+    Hobby::create(['name' => 'Membaca']);
+    $club = Club::factory()->create();
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $sender->id, 'role' => 'member']);
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $receiver->id, 'role' => 'member']);
     $message = Message::create([
+        'club_id' => $club->id,
         'sender_id' => $sender->id,
         'receiver_id' => $receiver->id,
         'content' => 'Pesan real-time',
@@ -134,6 +146,7 @@ it('returns new messages and marks their message notifications as read', functio
 
     actingAs($receiver)
         ->get(route('messages.updates', [
+            'club' => $club->id,
             'conversation' => $sender->id,
             'after' => now()->subMinute()->toIso8601String(),
         ]))
@@ -143,4 +156,40 @@ it('returns new messages and marks their message notifications as read', functio
 
     expect($message->fresh()->is_read)->toBeTrue()
         ->and($notification->fresh()->is_read)->toBeTrue();
+});
+
+it('rejects messages outside a shared club and supports editing and deleting own messages', function () {
+    $sender = User::factory()->create();
+    $receiver = User::factory()->create();
+    $outsider = User::factory()->create();
+    Hobby::create(['name' => 'Bersepeda']);
+    $club = Club::factory()->create();
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $sender->id, 'role' => 'member']);
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $receiver->id, 'role' => 'member']);
+
+    actingAs($sender)
+        ->post(route('messages.store', [$club->id, $outsider->id]), ['content' => 'Tidak boleh'])
+        ->assertForbidden();
+
+    $message = Message::create([
+        'club_id' => $club->id,
+        'sender_id' => $sender->id,
+        'receiver_id' => $receiver->id,
+        'content' => 'Versi awal',
+        'is_read' => false,
+        'send_at' => now(),
+    ]);
+
+    actingAs($sender)
+        ->patch(route('messages.update', [$club->id, $receiver->id, $message->id]), ['content' => 'Sudah diedit'])
+        ->assertRedirect();
+
+    expect($message->fresh()->content)->toBe('Sudah diedit')
+        ->and($message->fresh()->edited_at)->not->toBeNull();
+
+    $this->delete(route('messages.destroy', [$club->id, $receiver->id, $message->id]))
+        ->assertRedirect();
+
+    expect($message->fresh()->content)->toBe('Pesan telah dihapus')
+        ->and($message->fresh()->deleted_at)->not->toBeNull();
 });

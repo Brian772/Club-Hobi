@@ -16,15 +16,20 @@ class Message extends Model
 
     protected $fillable = [
         'id',
+        'club_id',
         'sender_id',
         'receiver_id',
         'content',
         'is_read',
         'send_at',
+        'edited_at',
+        'deleted_at',
     ];
 
     protected $casts = [
         'is_read' => 'boolean',
         'send_at' => 'datetime',
+        'edited_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 }

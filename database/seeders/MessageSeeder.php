@@ -23,6 +23,7 @@ class MessageSeeder extends Seeder
         // Seed messages for both Richard and Jhon so whichever the user logs in as, it matches Figma!
         $targetUsers = array_filter([$richard, $jhon]);
 
+        
         foreach ($targetUsers as $targetUser) {
             if ($rangga) {
                 Message::create([
