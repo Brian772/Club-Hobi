@@ -23,6 +23,7 @@ class Post extends Model
         'content',
         'media_url',
         'is_announcement',
+        'is_archived',
     ];
 
     protected $casts = [

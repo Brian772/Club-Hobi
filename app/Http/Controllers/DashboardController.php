@@ -65,6 +65,7 @@ class DashboardController extends Controller
         // 3. Tarik postingan dari klub yang diikuti user
         $feedPosts = Post::query()
             ->whereIn('club_id', $userClubIds)
+            ->where('is_archived', false)
             ->with([
                 'author',
                 'club',
