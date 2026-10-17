@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Orbii | ' . $otherUser->name ?? 'Pengguna')
+@section('title', 'Orbii | ' . ($otherUser->name ?? 'Pengguna'))
 
 @section('content')
   @php
@@ -16,7 +16,7 @@
       reportedUserId: null,
       reportUrl: null,
       reportTarget: null,
-  
+
       openReport(type, contentId, reportedUserId = null, url = null, target = null) {
           this.contentType = type;
           this.contentId = contentId;
@@ -25,7 +25,7 @@
           this.reportTarget = target;
           this.openReportModal = true;
       },
-  
+
       closeReport() {
           this.contentType = null;
           this.contentId = null;
@@ -34,116 +34,85 @@
           this.openReportModal = false;
       },
   }">
-    {{-- Chat Header matching Figma --}}
-    <div
-      class="flex items-center justify-between pb-4 border-b border-gray-100 bg-white/50 backdrop-blur-sm sticky top-0 z-10 px-2 pt-2">
+
+    {{-- Chat Header --}}
+    <div class="flex items-center justify-between pb-4 border-b border-gray-100 bg-white/50 backdrop-blur-sm sticky top-0 z-10 px-2 pt-2">
       <div class="flex items-center gap-3">
-        {{-- Back Button --}}
-        <a href="{{ route('messages.index') }}" class="p-2 -ml-2 rounded-full hover:bg-gray-100 text-gray-700 transition"
-          title="Kembali ke Pesan">
+        <a href="{{ route('messages.index') }}"
+          class="p-2 -ml-2 rounded-full hover:bg-gray-100 text-gray-700 transition" title="Kembali ke Pesan">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
         </a>
 
-        {{-- Partner Avatar Initial --}}
-        @if ($otherUser->avatar_full_url)
+        @if ($otherUser->avatar_full_url && !str_contains($otherUser->avatar_full_url, 'people'))
           <img src="{{ $otherUser->avatar_full_url }}" alt="{{ $otherUser->name }}"
-            class="rounded-full size-10 object-cover"
-            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-          </img>
-          <div
-            class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
-            {{ Str::upper(Str::substr($otherUser->name, 0, 1)) }}
-          </div>
+            class="w-10 h-10 rounded-full object-cover shrink-0">
         @else
-          <div
-            class="size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
-            {{ Str::upper(Str::substr($otherUser->name, 0, 1)) }}
+          <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-sm shrink-0 select-none">
+            {{ $otherInitial }}
           </div>
         @endif
 
-        {{-- Partner Name --}}
         <div>
           <h2 class="text-base font-bold text-gray-900 leading-tight">{{ $otherUser->name }}</h2>
-          <span data-presence-user="{{ $otherUser->id }}"
-            class="inline-flex items-center gap-1.5 text-[11px] text-gray-500">
-            <span data-presence-dot
-              class="h-2 w-2 rounded-full {{ $otherUser->isOnline() ? 'bg-emerald-500' : 'bg-gray-300' }}"></span>
+          <p class="text-[11px] text-gray-500">{{ $club->name }}</p>
+          <span data-presence-user="{{ $otherUser->id }}" class="inline-flex items-center gap-1.5 text-[11px] text-gray-500">
+            <span data-presence-dot class="h-2 w-2 rounded-full {{ $otherUser->isOnline() ? 'bg-emerald-500' : 'bg-gray-300' }}"></span>
             <span data-presence-label>{{ $otherUser->isOnline() ? 'Online' : 'Offline' }}</span>
           </span>
         </div>
       </div>
 
       {{-- Three Dots Menu --}}
-      <div class="relative" x-data="{ MenuOpen: false }">
-        <button @click="MenuOpen = !MenuOpen" type="button"
-          class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition">
+      <div class="relative" x-data="{ menuOpen: false }">
+        <button @click="menuOpen = !menuOpen" type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <circle cx="12" cy="5" r="2" />
             <circle cx="12" cy="12" r="2" />
             <circle cx="12" cy="19" r="2" />
           </svg>
         </button>
-        <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
-          <div x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2"
-            x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
-            @click.outside="MenuOpen = false" @click="MenuOpen = false"
-            class="absolute z-50 right-5 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
-            <a href="{{ route('profile.show', ['user' => $otherUser->id]) }}"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-user-round">
-                <circle cx="12" cy="8" r="5" />
-                <path d="M20 21a8 8 0 0 0-16 0" />
-              </svg>
-              Lihat Profil
-            </a>
-            <a href="{{ route('messages.index') }}"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-message-circle-icon lucide-message-circle">
-                <path
-                  d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
-              </svg>
-              Keluar Obrolan
-            </a>
-            <div class="h-px border-b border-hairline my-2"></div>
-            <button type="button"
-              @click="
-                openReport(
-                  'user',
-                  '{{ $otherUser->id }}',
-                  '{{ $otherUser->id }}',
-                  '{{ route('reports.store') }}',
-                  @js([
-    'name' => $otherUser->name,
-    'avatar' => $otherUser->avatar_full_url ?? asset('images/default-avatar.svg'),
-    'joined' => $otherUser->created_at->format('d M Y'),
-])
-              )"
-              class="flex flex-row gap-2 items-center w-full cursor-pointer px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-flag">
-                <path
-                  d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" />
-              </svg>
-              Laporkan Pengguna
-            </button>
-          </div>
+        <div x-show="menuOpen" x-cloak @keydown.escape.window="menuOpen = false" @click.outside="menuOpen = false"
+          @click="menuOpen = false"
+          class="absolute z-50 right-0 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
+          <a href="{{ route('profile.show', ['user' => $otherUser->id]) }}"
+            class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+            Lihat Profil
+          </a>
+          <a href="{{ route('messages.index') }}"
+            class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+            Keluar Obrolan
+          </a>
+          <div class="h-px border-b border-hairline my-2"></div>
+          <button type="button"
+            @click="openReport(
+              'user',
+              '{{ $otherUser->id }}',
+              '{{ $otherUser->id }}',
+              '{{ route('reports.store') }}',
+              @js([
+                  'name' => $otherUser->name,
+                  'avatar' => $otherUser->avatar_full_url ?? asset('images/default-avatar.svg'),
+                  'joined' => $otherUser->created_at->format('d M Y'),
+              ])
+            )"
+            class="flex flex-row gap-2 items-center w-full cursor-pointer px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+            Laporkan Pengguna
+          </button>
         </div>
       </div>
     </div>
 
     {{-- Chat Messages Area --}}
-    <div id="chatMessages" data-chat-updates-url="{{ route('messages.updates', $otherUser->id) }}"
-      data-current-user-id="{{ $currentUserId }}" data-current-initial="{{ $myInitial }}"
-      data-other-initial="{{ $otherInitial }}" data-after="{{ $messages->last()?->send_at?->toIso8601String() }}"
+    <div id="chatMessages"
+      data-chat-updates-url="{{ route('messages.updates', [$club->id, $otherUser->id]) }}"
+      data-current-user-id="{{ $currentUserId }}"
+      data-current-initial="{{ $myInitial }}"
+      data-other-initial="{{ $otherInitial }}"
+      data-after="{{ $messages->last()?->send_at?->toIso8601String() }}"
       class="flex-1 overflow-y-auto py-6 px-2 space-y-4">
+
       @if ($messages->isEmpty())
         <div data-chat-empty class="flex flex-col items-center justify-center h-full text-center text-gray-400">
           <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
@@ -153,39 +122,23 @@
             </svg>
           </div>
           <p class="text-sm font-medium text-gray-600">Belum ada pesan sebelumnya.</p>
-          <p class="text-xs text-gray-400 mt-1">Kirim pesan pertama untuk memulai obrolan dengan {{ $otherUser->name }}!
-          </p>
+          <p class="text-xs text-gray-400 mt-1">Kirim pesan pertama untuk memulai obrolan dengan {{ $otherUser->name }}!</p>
         </div>
       @else
         @foreach ($messages as $msg)
-          @php
-            $isMe = $msg->sender_id === $currentUserId;
-          @endphp
+          @php $isMe = $msg->sender_id === $currentUserId; @endphp
 
           @if (!$isMe)
             {{-- Received Message (Left) --}}
             <div data-message-id="{{ $msg->id }}" class="flex items-start gap-2.5 max-w-[80%] md:max-w-[70%]">
-              {{-- Partner Initial Avatar --}}
-              @if ($otherUser->avatar_full_url)
-                <img src="{{ $otherUser->avatar_full_url }}" alt="{{ $otherUser->name }}"
-                  class="rounded-full size-8 object-cover"
-                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-                <div
-                  class="hidden size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
-                  {{ Str::upper(Str::substr($otherUser->name, 0, 1)) }}
-                </div>
-              @else
-                <div
-                  class="size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
-                  {{ Str::upper(Str::substr($otherUser->name, 0, 1)) }}
-                </div>
-              @endif
+              <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-xs shrink-0 select-none mt-0.5">
+                {{ $otherInitial }}
+              </div>
               <div>
-                <div
-                  class="bg-white text-gray-900 text-sm px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100">
+                <div data-message-content class="bg-white text-gray-900 text-sm px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100">
                   {{ $msg->content }}
                 </div>
-                <span class="text-[10px] text-gray-400 ml-2 mt-1 block">
+                <span data-message-time class="text-[10px] text-gray-400 ml-2 mt-1 block">
                   {{ $msg->send_at ? $msg->send_at->format('H:i') : '' }}
                 </span>
               </div>
@@ -193,28 +146,83 @@
           @else
             {{-- Sent Message (Right) --}}
             <div data-message-id="{{ $msg->id }}"
-              class="flex items-start justify-end gap-2.5 max-w-[80%] md:max-w-[70%] ml-auto">
-              <div class="flex flex-col items-end">
-                <div class="bg-[#0070F3] text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm">
-                  {{ $msg->content }}
+              x-data="{ menuOpen: false, editing: false, confirmDelete: false }" @click.outside="menuOpen = false"
+              class="group flex flex-col items-end max-w-[80%] md:max-w-[70%] ml-auto">
+              <div class="flex items-start justify-end gap-2.5">
+                @if (!$msg->deleted_at)
+                  <div data-message-actions class="relative self-center opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity">
+                    <button type="button" @click="menuOpen = !menuOpen" title="Opsi pesan" aria-label="Opsi pesan"
+                      class="w-7 h-7 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="5" cy="12" r="1.8" />
+                        <circle cx="12" cy="12" r="1.8" />
+                        <circle cx="19" cy="12" r="1.8" />
+                      </svg>
+                    </button>
+                    <div x-show="menuOpen" x-cloak @keydown.escape.window="menuOpen = false"
+                      class="absolute right-full top-0 z-20 mr-1 w-36 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                      <button type="button" @click="editing = true; menuOpen = false"
+                        class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50">
+                        Edit pesan
+                      </button>
+                      <button type="button" @click="confirmDelete = true; menuOpen = false"
+                        class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50">
+                        Hapus pesan
+                      </button>
+                    </div>
+                  </div>
+                @endif
+
+                <div class="flex flex-col items-end">
+                  <div data-message-content class="bg-[#0070F3] text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm">
+                    {{ $msg->content }}
+                  </div>
+                  <span data-message-time class="text-[10px] text-gray-400 mr-2 mt-1 block">
+                    {{ $msg->send_at ? $msg->send_at->format('H:i') : '' }}
+                    @if ($msg->edited_at && !$msg->deleted_at)
+                      <span data-message-edited>(diedit)</span>
+                    @endif
+                  </span>
                 </div>
-                <span class="text-[10px] text-gray-400 mr-2 mt-1 block">
-                  {{ $msg->send_at ? $msg->send_at->format('H:i') : '' }}
-                </span>
+
+                <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-xs shrink-0 select-none mt-0.5">
+                  {{ $myInitial }}
+                </div>
               </div>
-              {{-- Current User Initial Avatar --}}
-              @if (auth()->user()->avatar_full_url)
-                <img src="{{ auth()->user()->avatar_full_url }}" alt="{{ auth()->user()->name }}"
-                  class="rounded-full size-8 object-cover"
-                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-                <div
-                  class="hidden size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
-                  {{ Str::upper(Str::substr(auth()->user()->name, 0, 1)) }}
-                </div>
-              @else
-                <div
-                  class="size-8 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
-                  {{ Str::upper(Str::substr(auth()->user()->name, 0, 1)) }}
+
+              @if (!$msg->deleted_at)
+                {{-- Edit form --}}
+                <form x-show="editing" x-cloak
+                  action="{{ route('messages.update', [$club->id, $otherUser->id, $msg->id]) }}" method="POST"
+                  class="mt-2 flex w-full items-center gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
+                  @csrf
+                  @method('PATCH')
+                  <input type="text" name="content" value="{{ $msg->content }}" maxlength="5000" required
+                    aria-label="Edit pesan"
+                    class="min-w-0 flex-1 border-0 bg-transparent px-2 py-1 text-xs text-gray-800 focus:ring-0">
+                  <button type="submit" title="Simpan perubahan" aria-label="Simpan perubahan"
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-primary hover:bg-primary/10">✓</button>
+                  <button type="button" @click="editing = false" title="Batal edit" aria-label="Batal edit"
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100">✕</button>
+                </form>
+
+                {{-- Delete confirmation --}}
+                <div x-show="confirmDelete" x-cloak x-transition.opacity @keydown.escape.window="confirmDelete = false"
+                  class="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/45 p-4 backdrop-blur-[2px]"
+                  role="dialog" aria-modal="true" aria-labelledby="delete-message-title-{{ $msg->id }}">
+                  <div @click.stop class="w-full max-w-sm rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl">
+                    <h3 id="delete-message-title-{{ $msg->id }}" class="text-center text-base font-semibold text-gray-900">Hapus pesan ini?</h3>
+                    <p class="mt-2 text-center text-sm leading-5 text-gray-500">Pesan akan dihapus dari percakapan.</p>
+                    <form action="{{ route('messages.destroy', [$club->id, $otherUser->id, $msg->id]) }}" method="POST"
+                      class="mt-6 flex gap-3">
+                      @csrf
+                      @method('DELETE')
+                      <button type="button" @click="confirmDelete = false"
+                        class="flex-1 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">Batal</button>
+                      <button type="submit"
+                        class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700">Hapus</button>
+                    </form>
+                  </div>
                 </div>
               @endif
             </div>
@@ -223,15 +231,13 @@
       @endif
     </div>
 
-    {{-- Chat Input Form matching Figma --}}
+    {{-- Chat Input Form --}}
     <div class="pt-3 pb-1 border-t border-gray-100 bg-white/70 backdrop-blur-sm">
-      <form action="{{ route('messages.store', $otherUser->id) }}" method="POST" data-turbo="false"
+      <form action="{{ route('messages.store', [$club->id, $otherUser->id]) }}" method="POST" data-turbo="false"
         class="w-full flex items-center gap-3" id="chatForm">
         @csrf
-        <input type="text" name="content" id="messageInput" required autocomplete="off"
-          placeholder="Ketik Pesan..."
+        <input type="text" name="content" id="messageInput" required autocomplete="off" placeholder="Ketik Pesan..."
           class="flex-1 bg-white border border-gray-200 rounded-full py-3.5 pl-6 pr-4 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm transition">
-
         <button type="submit"
           class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:scale-95 text-gray-900 transition">
           <svg class="w-5 h-5 -rotate-45" fill="currentColor" viewBox="0 0 24 24">
@@ -240,7 +246,7 @@
         </button>
       </form>
     </div>
+
     <x-report-modal />
   </div>
-
 @endsection

@@ -332,7 +332,7 @@
           @else
             <div class="flex flex-col gap-2">
               @foreach ($members as $member)
-                <x-member-list :member="$member" />
+                <x-member-list :member="$member" :club="$club" />
               @endforeach
             </div>
           @endif

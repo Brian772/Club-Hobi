@@ -41,10 +41,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/presence/status', [PresenceController::class, 'index'])->name('presence.index');
 
     // Fitur Pesan / Messages
-    Route::get('/messages/{conversation}/updates', [MessageController::class, 'updates'])->name('messages.updates');
-    Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/{conversation}/show', [MessageController::class, 'show'])->name('messages.show');
-    Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{club}/{conversation}/updates', [MessageController::class, 'updates'])->name('messages.updates');
+    Route::get('/messages/{club}/{conversation}/show', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/{club}/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+    Route::patch('/messages/{club}/{conversation}/message/{message}', [MessageController::class, 'update'])->name('messages.update');
+    Route::delete('/messages/{club}/{conversation}/message/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
 
     Route::prefix('clubs')->name('clubs.')->group(function () {
         Route::get('/', [ClubController::class, 'index'])->name('index');
@@ -77,6 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Postingan & Komentar
     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+    Route::get('/posts/archived', [PostController::class, 'archived'])->name('posts.archived');
     Route::get('/posts/trash', [PostController::class, 'trash'])->name('posts.trash');
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
@@ -89,6 +92,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/comments', [PostController::class, 'storeComment'])->name('posts.comments.store');
     Route::delete('/comments/{comment}', [PostController::class, 'destroyComment'])->name('comments.destroy');
+    Route::patch('/posts/{post}/archive', [PostController::class, 'archive'])->name('posts.archive');
+    Route::patch('/posts/{post}/unarchive', [PostController::class, 'unarchive'])->name('posts.unarchive');
 
     // Download Media
     Route::get('/media/{media}/download', [DownloadController::class, 'download'])->name('media.download');

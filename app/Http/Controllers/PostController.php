@@ -23,13 +23,14 @@ class PostController extends Controller
         $user = Auth::user();
 
         $posts = Post::where('user_id', $user->id)
+            ->where('is_archived', false) // Pastikan pos yang diarsipkan tidak tampil di index
             ->with(['club', 'media'])
             ->withCount(['comments', 'likes'])
             ->latest()
             ->get();
 
-        $totalPosts = $posts->count();
-        $totalLikes = $posts->sum('likes_count');
+        $totalPosts = Post::where('user_id', $user->id)->where('is_archived', false)->count();
+        $totalLikes = Post::where('user_id', $user->id)->where('is_archived', false)->withSum('likes', 'id')->get()->sum('likes_count');
 
         return view('posts.index', compact('posts', 'totalPosts', 'totalLikes'));
     }
@@ -129,6 +130,18 @@ class PostController extends Controller
         }
 
         return redirect()->route('posts.index')->with('success', 'Postingan berhasil dibuat.');
+    }
+
+    // TAMBAHKAN METHOD SHOW INI UNTUK MENGATASI ERROR
+    public function show(Post $post)
+    {
+        if ($post->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $post->load(['club', 'media', 'comments.user', 'likes']);
+
+        return view('posts.show', compact('post'));
     }
 
     public function edit(Post $post)
@@ -244,6 +257,7 @@ class PostController extends Controller
         $posts = Post::onlyTrashed()
             ->where('user_id', Auth::id())
             ->with(['club', 'media'])
+            ->withCount(['comments', 'likes'])
             ->latest()
             ->get();
 
@@ -260,6 +274,40 @@ class PostController extends Controller
         $post->restore();
 
         return redirect()->route('posts.index')->with('success', 'Postingan berhasil dikembalikan.');
+    }
+
+    public function archived()
+    {
+        $posts = Post::where('user_id', Auth::id())
+            ->where('is_archived', true)
+            ->with(['club', 'media'])
+            ->withCount(['comments', 'likes'])
+            ->latest()
+            ->get();
+
+        return view('posts.archived', compact('posts'));
+    }
+
+    public function archive(Post $post)
+    {
+        if ($post->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $post->update(['is_archived' => true]);
+
+        return redirect()->route('posts.index')->with('success', 'Postingan berhasil diarsipkan.');
+    }
+
+    public function unarchive(Post $post)
+    {
+        if ($post->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $post->update(['is_archived' => false]);
+
+        return redirect()->route('posts.archived')->with('success', 'Postingan berhasil dipulihkan dari arsip.');
     }
 
     public function like(Request $request, Post $post)

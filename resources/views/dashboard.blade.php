@@ -38,7 +38,7 @@
       @if ($joinedClub->isNotEmpty())
         <a href="{{ route('posts.create') }}"
           class="hidden lg:inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
-          + Make a post
+          + Buat Postingan
         </a>
       @endif
     </div>

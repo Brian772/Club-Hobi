@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PostMedia extends Model
 {
     use HasFactory, HasUuids;
-
     protected $keyType = 'string';
     public $incrementing = false;
 
