@@ -37,16 +37,10 @@
       </div>
 
       @if ($isNotMember)
-        <?php
-        $isAlreadyRequested = $club
-            ->joinRequests()
-            ->where('user_id', auth()->id())
-            ->where('status', 'pending')
-            ->exists();
-        
-        $pendingRequest = $pendingRequests->get($club->id);
-        $isAlreadyRequested = $pendingRequest !== null;
-        ?>
+        @php
+          $pendingRequest = $pendingRequests->get($club->id);
+          $isAlreadyRequested =$pendingRequest !== null;
+        @endphp
         @if ($club->is_required_request === true)
           @if ($isAlreadyRequested)
             <div class="flex flex-row gap-2 absolute top-4 right-4">
@@ -54,7 +48,7 @@
                 type="button" disabled>
                 Menunggu Persetujuan
               </button>
-              <form action="{{ route('clubs.join.request.cancel', [$club->id, $pendingRequest->id]) }}" method="POST">
+              <form action="{{ route('clubs.join.request.cancel', [$club->id,$pendingRequest->id]) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <button
@@ -90,7 +84,7 @@
         <div class="flex flex-row gap-2 items-center absolute top-4 right-4">
           @cannot('isOwner', $club)
             <button type="button"
-              @click="OpenLeaveModal = true; selectedName = '{{ $club->name }}'; URL = '{{ route('clubs.leave', $club->id) }}'"
+              @click="OpenLeaveModal = true; selectedName = '{{ $club->name }}'; URL = '{{ route('clubs.leave',$club->id) }}'"
               class="text-accent-red bg-canvas/30 items-center flex flex-row gap-2 rounded-full text-body-mid px-4 py-2 cursor-pointer hover:bg-white/60 backdrop-blur-md transition-all duration-150">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -123,46 +117,64 @@
 
     {{-- Club Info --}}
     <div class="mt-4 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-      <div class="min-w-0">
-        <div class="mt-2 flex flex-wrap items-center gap-2 text-caption lg:text-body-mid text-ink">
-          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
-            @if ($club->visibility === 'public')
+      <div class="min-w-0 flex-1">
+        <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2 text-caption lg:text-body-mid text-ink">
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
+              @if ($club->visibility === 'public')
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-globe preview-icon">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                  <path d="M2 12h20" />
+                </svg>
+              @else
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-lock preview-icon">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              @endif
+              {{ $club->visibility }}
+            </span>
+
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              {{ $club->members_count }} Anggota
+            </span>
+
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
+              @if ($creator?->user?->avatar_full_url)
+                <img src="{{ $creator->user->avatar_full_url }}" alt=""
+                  class="size-5 rounded-full object-cover">
+              @endif
+              Owner: {{ $creator->user->name ?? 'Tidak Diketahui' }}
+            </span>
+          </div>
+
+          {{-- Fitur Pencarian Postingan di Kanan (Diperbarui dengan oninput & onkeydown) --}}
+          <div class="w-full sm:w-64 mt-2 sm:mt-0">
+            <div class="relative">
+              <input type="text" id="postSearchInput" oninput="filterClubPosts()" onkeydown="handleSearchKeyDown(event)"
+                placeholder="Cari postingan..."
+                class="w-full pl-9 pr-4 py-1.5 text-caption bg-canvas-soft border border-hairline rounded-full focus:outline-none focus:border-primary text-ink">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-globe preview-icon">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                <path d="M2 12h20" />
+                class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
               </svg>
-            @else
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-lock preview-icon">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-            @endif
-            {{ $club->visibility }}
-          </span>
-
-          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            {{ $club->members_count }} Anggota
-          </span>
-
-          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
-            @if ($creator?->user?->avatar_full_url)
-              <img src="{{ $creator->user->avatar_full_url }}" alt=""
-                class="size-5 rounded-full object-cover">
-            @endif
-            Owner: {{ $creator->user->name ?? 'Tidak Diketahui' }}
-          </span>
+            </div>
+          </div>
         </div>
+
         <div class="my-4">
           @if ($club->description)
             <p class="text-body-mid text-ink-muted max-w-2xl">{{ $club->description }}</p>
@@ -203,7 +215,7 @@
     </div>
   </section>
 
-  @if ($club->visibility === 'private' && $isNotMember)
+  @if ($club->visibility === 'private' &&$isNotMember)
     <section class="w-full h-max flex items-center justify-center">
       <div
         class="flex flex-col mt-12 items-center gap-2 justify-center w-max h-max max-w-sm lg:max-w-md p-6">
@@ -298,8 +310,14 @@
           @else
             <div class="max-w-150 space-y-4">
               @foreach ($posts as $post)
-                <x-post :post="$post" />
+                <div class="club-post-item" data-search-text="{{ Str::lower(($post->title ?? '') . ' ' . ($post->content ?? '') . ' ' . ($post->author->name ?? '')) }}">
+                  <x-post :post="$post" />
+                </div>
               @endforeach
+
+              <div id="noPostFound" class="hidden text-center py-12">
+                <p class="text-body-mid text-ink-muted font-medium">Postingan not found</p>
+              </div>
 
               <div id="mediaModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4"
                 onclick="closeMediaModal()">
@@ -342,7 +360,122 @@
     </section>
   @endif
 
+  {{-- Tombol Navigasi Search Up/Down (Awalnya disembunyikan dengan class 'hidden') --}}
+  <div id="searchNavButtons" class="fixed bottom-6 right-6 z-40 hidden flex-col gap-2">
+    <button type="button" onclick="navigateSearchResult('up')"
+      class="p-3 rounded-full bg-canvas/80 backdrop-blur-md border border-hairline shadow-lg text-ink hover:bg-primary hover:text-white transition-all cursor-pointer"
+      title="Postingan Sebelumnya">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m18 15-6-6-6 6" />
+      </svg>
+    </button>
+    <button type="button" onclick="navigateSearchResult('down')"
+      class="p-3 rounded-full bg-canvas/80 backdrop-blur-md border border-hairline shadow-lg text-ink hover:bg-primary hover:text-white transition-all cursor-pointer"
+      title="Postingan Selanjutnya">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </button>
+  </div>
+
   <script>
+    let currentSearchIndex = -1;
+    let matchedPosts = [];
+
+    // Fungsi Utama Pencarian Postingan
+    function filterClubPosts() {
+      const inputEl = document.getElementById('postSearchInput');
+      if (!inputEl) return;
+
+      const query = inputEl.value.toLowerCase().trim();
+      const posts = document.querySelectorAll('.club-post-item');
+      const noFoundMsg = document.getElementById('noPostFound');
+      const navButtons = document.getElementById('searchNavButtons');
+
+      matchedPosts = [];
+      currentSearchIndex = -1;
+
+      posts.forEach(post => {
+        const textData = (post.getAttribute('data-search-text') || post.getAttribute('data-title') || '').toLowerCase();
+        
+        if (query === '' || textData.includes(query)) {
+          post.style.display = 'block';
+          if (query !== '') {
+            matchedPosts.push(post);
+          }
+        } else {
+          post.style.display = 'none';
+        }
+      });
+
+      // Tampilkan pesan jika tidak ada hasil
+      if (noFoundMsg) {
+        if (query !== '' && matchedPosts.length === 0) {
+          noFoundMsg.classList.remove('hidden');
+        } else {
+          noFoundMsg.classList.add('hidden');
+        }
+      }
+
+      // Tampilkan tombol navigasi Naik / Turun HANYA jika sedang mencari DAN hasil > 1
+      if (navButtons) {
+        if (query !== '' && matchedPosts.length > 1) {
+          navButtons.classList.remove('hidden');
+          navButtons.classList.add('flex');
+        } else {
+          navButtons.classList.add('hidden');
+          navButtons.classList.remove('flex');
+        }
+      }
+    }
+
+    // Fungsi Menangani Event Enter di Input Search
+    function handleSearchKeyDown(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        filterClubPosts();
+
+        // Mengarahkan langsung ke postingan terbaru yang cocok dengan pencarian
+        if (matchedPosts.length > 0) {
+          currentSearchIndex = 0; // Postingan terbaru (indeks 0)
+          scrollToPost(matchedPosts[currentSearchIndex]);
+        }
+      }
+    }
+
+    // Navigasi Naik (Up) / Turun (Down) antar postingan hasil pencarian
+    function navigateSearchResult(direction) {
+      if (matchedPosts.length === 0) return;
+
+      if (direction === 'down') {
+        currentSearchIndex++;
+        if (currentSearchIndex >= matchedPosts.length) {
+          currentSearchIndex = 0; // Kembali ke postingan paling atas/terbaru
+        }
+      } else if (direction === 'up') {
+        currentSearchIndex--;
+        if (currentSearchIndex < 0) {
+          currentSearchIndex = matchedPosts.length - 1; // Ke postingan terbawah
+        }
+      }
+
+      scrollToPost(matchedPosts[currentSearchIndex]);
+    }
+
+    // Helper untuk Scroll ke Postingan Spesifik dengan Highlight
+    function scrollToPost(element) {
+      if (!element) return;
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Memberikan efek highlight sementara agar pengguna tahu posisi postingan
+      element.classList.add('ring-2', 'ring-primary', 'transition-all', 'duration-300');
+      setTimeout(() => {
+        element.classList.remove('ring-2', 'ring-primary');
+      }, 1500);
+    }
+
     function openCommentModal(modalId) {
       const modal = document.getElementById(modalId);
       if (modal) {
@@ -363,7 +496,7 @@
     const likeInFlight = {};
 
     async function toggleLike(postId) {
-      if (likeInFlight[postId]) return; // cegah klik ganda / race condition
+      if (likeInFlight[postId]) return;
       likeInFlight[postId] = true;
 
       const feedBtn = document.getElementById(`likeBtn-${postId}`);
@@ -387,7 +520,7 @@
         if (modalCount) modalCount.innerText = count;
       };
 
-      applyLikeState(!wasLiked, currentCount + (wasLiked ? -1 : 1)); // optimistic UI
+      applyLikeState(!wasLiked, currentCount + (wasLiked ? -1 : 1));
 
       try {
         const response = await fetch(feedBtn.dataset.likeUrl, {
@@ -402,13 +535,11 @@
         if (!response.ok) throw new Error('Gagal memproses like.');
 
         const data = await response.json();
-        // Sesuaikan key ini dengan response controller like kamu yang sebenarnya,
-        // mis. { liked: true, likes_count: 12 }
         applyLikeState(data.liked, data.likes_count);
 
       } catch (error) {
         console.error('Like Error:', error);
-        applyLikeState(wasLiked, currentCount); // rollback kalau request gagal
+        applyLikeState(wasLiked, currentCount);
         alert('Gagal memproses like, coba lagi.');
       } finally {
         likeInFlight[postId] = false;
@@ -492,11 +623,6 @@
       if (commentData.parent_id) {
         let parentCommentElement = modal.querySelector(`[data-comment-id="${commentData.parent_id}"]`);
 
-        // Balasan bisa ditujukan ke balasan lain (nested reply), bukan cuma ke komentar utama.
-        // Elemen reply (class "flex gap-2.5") BUKAN wrapper thread, jadi kalau di-append
-        // langsung ke situ akan merusak layout flex-nya. Naikkan ke wrapper thread utama
-        // (class "space-y-2") supaya semua balasan tetap masuk ke .replies-container yang sama,
-        // persis seperti hasil flatten $getReplies() di server saat halaman di-refresh.
         if (parentCommentElement && !parentCommentElement.classList.contains('space-y-2')) {
           parentCommentElement = parentCommentElement.closest('[data-comment-id].space-y-2');
         }
@@ -819,7 +945,7 @@
         content.innerHTML = `
             <div class="bg-white rounded-xl overflow-hidden shadow-2xl w-full max-w-3xl h-[78vh] flex flex-col">
               <div class="flex items-center justify-between p-3.5 bg-neutral-100 border-b border-neutral-200">
-                <span class="text-xs font-semibold text-neutral-700 truncate max-w-[70%]">${filename}</span>
+                <span class="text-xs font-semibold text-neutral-700 truncate max-w-[70%]" title="${filename}">${filename}</span>
                 <button type="button" onclick="downloadFileAsync('${download_url}', '${filename}', this)" class="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors cursor-pointer flex items-center gap-2">
                   <i class="fa-solid fa-download"></i> Unduh File
                 </button>

@@ -45,10 +45,10 @@ class ClubController extends Controller
 
         $recomendedClubs = $userInterestId->isNotEmpty()
             ? Club::with('hobby')
-            ->withCount('members')
-            ->whereIn('hobby_id', $userInterestId)
-            ->whereNotIn('id', $joinedClubIds)
-            ->get()
+                ->withCount('members')
+                ->whereIn('hobby_id', $userInterestId)
+                ->whereNotIn('id', $joinedClubIds)
+                ->get()
             : collect();
 
         $isEmpty = $allClubs->isEmpty() && $recomendedClubs->isEmpty();
@@ -91,7 +91,7 @@ class ClubController extends Controller
             ])
             ->withCount(['comments', 'likes'])
             ->latest()
-            ->take(20)
+            // ->take(20)
             ->get();
 
         $members = ClubMember::with('user')
@@ -450,7 +450,7 @@ class ClubController extends Controller
 
         ClubMember::where('club_id', $club->id)
             ->pluck('user_id')
-            ->each(fn ($memberId) => Notification::createForUser(
+            ->each(fn($memberId) => Notification::createForUser(
                 $memberId,
                 'Klub Dihapus',
                 'Klub ' . $club->name . ' telah dihapus oleh pemiliknya.',
