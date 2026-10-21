@@ -39,7 +39,7 @@
       @if ($isNotMember)
         @php
           $pendingRequest = $pendingRequests->get($club->id);
-          $isAlreadyRequested =$pendingRequest !== null;
+          $isAlreadyRequested = $pendingRequest !== null;
         @endphp
         @if ($club->is_required_request === true)
           @if ($isAlreadyRequested)
@@ -48,7 +48,7 @@
                 type="button" disabled>
                 Menunggu Persetujuan
               </button>
-              <form action="{{ route('clubs.join.request.cancel', [$club->id,$pendingRequest->id]) }}" method="POST">
+              <form action="{{ route('clubs.join.request.cancel', [$club->id, $pendingRequest->id]) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <button
@@ -84,7 +84,7 @@
         <div class="flex flex-row gap-2 items-center absolute top-4 right-4">
           @cannot('isOwner', $club)
             <button type="button"
-              @click="OpenLeaveModal = true; selectedName = '{{ $club->name }}'; URL = '{{ route('clubs.leave',$club->id) }}'"
+              @click="OpenLeaveModal = true; selectedName = '{{ $club->name }}'; URL = '{{ route('clubs.leave', $club->id) }}'"
               class="text-accent-red bg-canvas/30 items-center flex flex-row gap-2 rounded-full text-body-mid px-4 py-2 cursor-pointer hover:bg-white/60 backdrop-blur-md transition-all duration-150">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -151,64 +151,23 @@
             </span>
 
             <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
-              @if ($creator?->user?->avatar_full_url)
-                <img src="{{ $creator->user->avatar_full_url }}" alt=""
-                  class="size-5 rounded-full object-cover">
+              @if ($creator->user->avatar_full_url)
+                <img src="{{ $creator->user->avatar_full_url }}" alt="{{ $creator->user->name }}"
+                  class="rounded-full size-5 object-cover"
+                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                <div
+                  class="hidden size-5 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                  {{ Str::upper(Str::substr($creator->user->name, 0, 1)) }}
+                </div>
+              @else
+                <div
+                  class="size-5 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                  {{ Str::upper(Str::substr($creator->user->name, 0, 1)) }}
+                </div>
               @endif
               Owner: {{ $creator->user->name ?? 'Tidak Diketahui' }}
             </span>
           </div>
-
-          {{-- Fitur Pencarian Postingan di Kanan (Diperbarui dengan oninput & onkeydown) --}}
-          <div class="w-full sm:w-64 mt-2 sm:mt-0">
-            <div class="relative">
-              <input type="text" id="postSearchInput" oninput="filterClubPosts()" onkeydown="handleSearchKeyDown(event)"
-                placeholder="Cari postingan..."
-                class="w-full pl-9 pr-4 py-1.5 text-caption bg-canvas-soft border border-hairline rounded-full focus:outline-none focus:border-primary text-ink">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            @else
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-lock preview-icon">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-            @endif
-            {{ $club->visibility }}
-          </span>
-
-          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            {{ $club->members_count }} Anggota
-          </span>
-
-          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
-            @if ($creator->user->avatar_full_url)
-              <img src="{{ $creator->user->avatar_full_url }}" alt="{{ $creator->user->name }}"
-                class="rounded-full size-9 object-cover"
-                onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-              <div
-                class="hidden size-9 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
-                {{ Str::upper(Str::substr($creator->user->name, 0, 1)) }}
-              </div>
-            @else
-              <div
-                class="size-9 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
-                {{ Str::upper(Str::substr($creator->user->name, 0, 1)) }}
-              </div>
-            @endif
-            Owner: {{ $creator->user->name ?? 'Tidak Diketahui' }}
-          </span>
         </div>
 
         <div class="my-4">
@@ -251,7 +210,7 @@
     </div>
   </section>
 
-  @if ($club->visibility === 'private' &&$isNotMember)
+  @if ($club->visibility === 'private' && $isNotMember)
     <section class="w-full h-max flex items-center justify-center">
       <div class="flex flex-col mt-12 items-center gap-2 justify-center w-max h-max max-w-sm lg:max-w-md p-6">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
@@ -322,13 +281,32 @@
         {{-- Postingan --}}
         <div x-show="tab === 'post'">
           @if ($club->posts->isNotEmpty())
-            <header class="mb-4 flex flex-row items-center justify-between">
+            <header class="mb-4 flex flex-col lg:flex-row gap-4 lg:gap-0 lg:items-center justify-between">
               <h2 class="text-title lg:text-heading-3 text-ink font-semibold">Postingan</h2>
               @if (!$isNotMember)
-                <a href="{{ route('posts.create') }}"
-                  class="inline-flex items-center gap-2 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
-                  + Buat Postingan
-                </a>
+                <div class="flex flex-row gap-4 items-center">
+                  <div class="relative h-max w-full md:w-max">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-search preview-icon absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
+                      <path d="m21 21-4.34-4.34" />
+                      <circle cx="11" cy="11" r="8" />
+                    </svg>
+                    <input type="text" id="postSearchInput" oninput="filterClubPosts()"
+                      onkeydown="handleSearchKeyDown(event)" placeholder="Cari postingan..."
+                      class="w-full md:w-max pl-9 pr-4 py-2.5 text-caption bg-canvas-soft border border-hairline rounded-full focus:outline-none focus:border-primary text-ink">
+                  </div>
+                  <a href="{{ route('posts.create') }}"
+                    class="inline-flex items-center gap-2 shrink-0 bg-primary/10 text-primary hover:text-white text-sm font-semibold size-10.5 md:size-max md:px-5 md:py-2.5 justify-center rounded-full hover:bg-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" class="lucide lucide-plus preview-icon">
+                      <path d="M5 12h14" />
+                      <path d="M12 5v14" />
+                    </svg> <span class="hidden md:inline">Buat Postingan</span>
+                  </a>
+                </div>
               @endif
             </header>
           @endif
@@ -345,7 +323,8 @@
           @else
             <div class="max-w-150 space-y-4">
               @foreach ($posts as $post)
-                <div class="club-post-item" data-search-text="{{ Str::lower(($post->title ?? '') . ' ' . ($post->content ?? '') . ' ' . ($post->author->name ?? '')) }}">
+                <div class="club-post-item"
+                  data-search-text="{{ Str::lower(($post->title ?? '') . ' ' . ($post->content ?? '') . ' ' . ($post->author->name ?? '')) }}">
                   <x-post :post="$post" />
                 </div>
               @endforeach
@@ -433,8 +412,9 @@
       currentSearchIndex = -1;
 
       posts.forEach(post => {
-        const textData = (post.getAttribute('data-search-text') || post.getAttribute('data-title') || '').toLowerCase();
-        
+        const textData = (post.getAttribute('data-search-text') || post.getAttribute('data-title') || '')
+          .toLowerCase();
+
         if (query === '' || textData.includes(query)) {
           post.style.display = 'block';
           if (query !== '') {
@@ -502,8 +482,11 @@
     // Helper untuk Scroll ke Postingan Spesifik dengan Highlight
     function scrollToPost(element) {
       if (!element) return;
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+
       // Memberikan efek highlight sementara agar pengguna tahu posisi postingan
       element.classList.add('ring-2', 'ring-primary', 'transition-all', 'duration-300');
       setTimeout(() => {
