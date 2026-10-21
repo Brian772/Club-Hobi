@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Club;
+use App\Models\ClubMember;
+use App\Models\Hobby;
 use App\Models\User;
 
 test('profile page is displayed', function () {
@@ -10,6 +13,50 @@ test('profile page is displayed', function () {
         ->get('/profile');
 
     $response->assertOk();
+});
+
+test('another member profile shows shared profile details without exposing email', function () {
+    $viewer = User::factory()->create();
+    $member = User::factory()->create([
+        'name' => 'Rani Komunitas',
+        'email' => 'rani@example.com',
+        'bio' => 'Senang berbagi ide kreatif.',
+        'interests' => 'Fotografi, Membaca',
+    ]);
+
+    $response = $this
+        ->actingAs($viewer)
+        ->get(route('profile.show', $member));
+
+    $response->assertOk()
+        ->assertSee('Rani Komunitas')
+        ->assertSee('Senang berbagi ide kreatif.')
+        ->assertSee('Fotografi')
+        ->assertSee('Membaca')
+        ->assertDontSee('rani@example.com');
+});
+
+test('profile links back to the shared chat and lists community membership', function () {
+    $viewer = User::factory()->create();
+    $member = User::factory()->create();
+    $hobby = Hobby::create(['name' => 'Fotografi']);
+    $club = Club::factory()->create([
+        'name' => 'Klub Fotografi',
+        'hobby_id' => $hobby->id,
+        'created_by' => $viewer->id,
+    ]);
+
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $viewer->id]);
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $member->id]);
+
+    $response = $this
+        ->actingAs($viewer)
+        ->get(route('profile.show', $member));
+
+    $response->assertOk()
+        ->assertSee('Klub Fotografi')
+        ->assertSee('Lanjutkan obrolan')
+        ->assertSee(route('messages.show', [$club->id, $member->id]));
 });
 
 test('profile information can be updated', function () {
