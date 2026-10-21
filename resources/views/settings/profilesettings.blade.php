@@ -13,26 +13,35 @@
 
   <div class="app-layout">
     <div class="flex flex-col w-full">
-      <div class="page-header">
-        <a href="{{ route('settings.index') }}" class="back-link">
-
+      
+      {{-- Header Halaman: Judul di Kiri, Tombol Riwayat Postingan di Kanan --}}
+      <div class="page-header flex items-center justify-between gap-2 mb-4 w-full">
+        <a href="{{ route('settings.index') }}" class="back-link shrink-0">
           <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
             stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
 
-          <h1 class="text-ink text-heading-2 font-bold">Profile</h1>
+          <h1 class="text-ink text-heading-2 font-bold text-lg">Profile</h1>
+        </a>
+
+        {{-- Tombol Riwayat Postingan (Satu tombol saja di header untuk semua mode layar) --}}
+        <a href="{{ route('posts.index') }}" class="content-control-button text-xs px-3 py-1.5 flex items-center gap-1.5 whitespace-nowrap shrink-0">
+          <span class="content-control-icon">▣</span>
+          <span>Riwayat Postingan</span>
         </a>
       </div>
 
-      <form action="{{ route('settings.profile.update') }}" method="POST" class="profile-page-content w">
+      <form action="{{ route('settings.profile.update') }}" method="POST" class="profile-page-content w-full">
         @csrf
-        <div class="profile-avatar-section">
-          <div class="profile-avatar-left">
-            <div class="profile-avatar-lg">
+        
+        {{-- Section Foto Profil --}}
+        <div class="profile-avatar-section flex items-center justify-start gap-4 w-full">
+          <div class="profile-avatar-left flex items-center gap-4">
+            <div class="profile-avatar-lg shrink-0">
               @if ($user->avatar_full_url)
-                <img src="{{ $user->avatar_full_url }}" alt="Foto Profil">
+                <img src="{{ $user->avatar_full_url }}" alt="Foto Profil" class="w-full h-full object-cover rounded-full">
               @else
                 {{ strtoupper(substr($user->name, 0, 1)) }}
               @endif
@@ -43,14 +52,9 @@
                 <i class="fa-solid fa-pencil"></i>
                 Edit Photo
               </button>
-
-              <span class="photo-hint">JPG/PNG, max 2MB</span>
+              <span class="photo-hint text-xs text-neutral-400">JPG/PNG, max 2MB</span>
             </div>
           </div>
-
-          <a href="{{ route('posts.index') }}" class="content-control-button">
-            <span class="content-control-icon">▣</span>Riwayat Postingan
-          </a>
         </div>
 
         <div class="form-group-item">
@@ -184,7 +188,7 @@
           <div class="hobby-options">
             @forelse ($hobbies as $hobby)
               @php
-                $alreadyJoined = $interests->contains('id', $hobby->id);
+                $alreadyJoined = $interests->contains('id',$hobby->id);
               @endphp
 
               <button type="button" class="hobby-card {{ $alreadyJoined ? 'disabled' : '' }}"
@@ -308,7 +312,7 @@
         const reader = new FileReader();
         reader.onload = function (e) {
           previewImg.src = e.target.result;
-          previewImg.style.display = 'block'; 
+          previewImg.style.display = 'block';
 
           if (previewText) {
             previewText.style.display = 'none';

@@ -46,10 +46,10 @@ class ClubController extends Controller
 
         $recomendedClubs = $userInterestId->isNotEmpty()
             ? Club::with('hobby')
-            ->withCount('members')
-            ->whereIn('hobby_id', $userInterestId)
-            ->whereNotIn('id', $joinedClubIds)
-            ->get()
+                ->withCount('members')
+                ->whereIn('hobby_id', $userInterestId)
+                ->whereNotIn('id', $joinedClubIds)
+                ->get()
             : collect();
 
         $isEmpty = $allClubs->isEmpty() && $recomendedClubs->isEmpty();
@@ -92,7 +92,7 @@ class ClubController extends Controller
             ])
             ->withCount(['comments', 'likes'])
             ->latest()
-            ->take(20)
+            // ->take(20)
             ->get();
 
         $members = ClubMember::with('user')

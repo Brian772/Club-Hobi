@@ -79,28 +79,9 @@ class PostController extends Controller
             if ($request->hasFile('media')) {
                 foreach ($request->file('media') as $file) {
                     $extension = strtolower($file->getClientOriginalExtension());
-                    $mediaPath = null;
 
-                    if (in_array($extension, ['mp4', 'mov', 'avi'])) {
-                        $fileName = time() . '_' . uniqid() . '_converted.mp4';
-                        $outputPath = storage_path('app/public/posts/' . $fileName);
-
-                        $ffmpeg = FFMpeg::create([
-                            'ffmpeg.binaries'  => config('ffmpeg.binaries.ffmpeg'),
-                            'ffprobe.binaries' => config('ffmpeg.binaries.ffprobe'),
-                            'timeout'          => config('ffmpeg.timeout'),
-                            'ffmpeg.threads'   => config('ffmpeg.threads'),
-                        ]);
-
-                        $video = $ffmpeg->open($file->getRealPath());
-                        $format = new X264();
-                        $format->setAudioCodec('aac');
-                        $video->save($format, $outputPath);
-
-                        $mediaPath = 'posts/' . $fileName;
-                    } else {
-                        $mediaPath = $file->store('posts', 'public');
-                    }
+                    // Langsung simpan file ke storage tanpa konversi FFMpeg
+                    $mediaPath = $file->store('posts', 'public');
 
                     PostMedia::create([
                         'post_id' => $post->id,
