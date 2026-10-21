@@ -84,6 +84,11 @@ class ClubActivity extends Model
                 'New Approval Requirement' => $meta['new_approval_requirement'] ?? 'N/A',
             ],
 
+            'Transfer Ownership' => [
+                'Transfet To' => $meta['transferred_to']  ?? 'N/A',
+                'Previous Owner' => $meta['previous_owner'] ?? 'N/A',
+            ],
+
             default => $meta,
         };
     }
