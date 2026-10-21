@@ -156,9 +156,19 @@
           </span>
 
           <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
-            @if ($creator?->user?->avatar_full_url)
-              <img src="{{ $creator->user->avatar_full_url }}" alt=""
-                class="size-5 rounded-full object-cover">
+            @if ($creator->user->avatar_full_url)
+              <img src="{{ $creator->user->avatar_full_url }}" alt="{{ $creator->user->name }}"
+                class="rounded-full size-9 object-cover"
+                onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+              <div
+                class="hidden size-9 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                {{ Str::upper(Str::substr($creator->user->name, 0, 1)) }}
+              </div>
+            @else
+              <div
+                class="size-9 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                {{ Str::upper(Str::substr($creator->user->name, 0, 1)) }}
+              </div>
             @endif
             Owner: {{ $creator->user->name ?? 'Tidak Diketahui' }}
           </span>
@@ -205,8 +215,7 @@
 
   @if ($club->visibility === 'private' && $isNotMember)
     <section class="w-full h-max flex items-center justify-center">
-      <div
-        class="flex flex-col mt-12 items-center gap-2 justify-center w-max h-max max-w-sm lg:max-w-md p-6">
+      <div class="flex flex-col mt-12 items-center gap-2 justify-center w-max h-max max-w-sm lg:max-w-md p-6">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
           class="lucide lucide-lock preview-icon text-ink-muted">

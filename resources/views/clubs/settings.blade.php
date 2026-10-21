@@ -21,19 +21,22 @@
       openPromote: false,
       openKick: false,
       openDemote: false,
-      openDelete: false,
+      openTransfer: false,
+      openDelete: @js($errors->deleteClub->isNotEmpty()),
       openAccept: false,
       openReject: false,
       openChangevisibility: false,
       openChangeApproval: false,
-      selectedName: '',
+      selectedName: @js($errors->deleteClub->isNotEmpty() ? $club->name : ''),
+      confirmText: @js(old('confirm_name', '')),
       promoteUrl: '',
       demoteUrl: '',
+      transferUrl: '',
       kickUrl: '',
       kickRole: '',
       changevisibilityUrl: '',
       changeApprovalUrl: '',
-      deleteUrl: '',
+      deleteUrl: @js($errors->deleteClub->isNotEmpty() ? route('clubs.delete', $club->id) : ''),
       acceptUrl: '',
       rejectUrl: ''
   }" class="flex flex-col mt-4 gap-4">
@@ -247,7 +250,7 @@
                                 @can('isOwner', $club)
                                   @if ($member->role === 'member')
                                     <button type="button"
-                                      @click="openPromote = true
+                                      @click="openPromote = true;
                                     selectedName = '{{ $member->user->name }}'; promoteUrl = '{{ route('clubs.promote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -264,7 +267,7 @@
                                   @endif
                                   @if ($member->role === 'moderator')
                                     <button type="button"
-                                      @click="openDemote = true
+                                      @click="openDemote = true;
                                     selectedName = '{{ $member->user->name }}'; demoteUrl = '{{ route('clubs.demote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -279,10 +282,25 @@
                                       </svg>
                                       Demote To Moderator
                                     </button>
+                                    <button type="button"
+                                      @click="openTransfer = true;
+                                    selectedName = '{{ $member->user->name }}'; transferUrl = '{{ route('clubs.ownership.transfer', [$club->id, $member->user->id]) }}';"
+                                      class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="lucide lucide-smartphone-user-round preview-icon">
+                                        <path d="M10 22H6a2 2 0 01-2-2V4a2 2 0 012-2h10a2 2 0 012 2v4" />
+                                        <path d="M11 18h.01" />
+                                        <path d="M22 22a4 4 0 00-8 0" />
+                                        <circle cx="18" cy="15" r="3" />
+                                      </svg>
+                                      Transfer Ownership
+                                    </button>
                                   @endif
                                 @endcan
                                 <button type="button"
-                                  @click="openKick = true
+                                  @click="openKick = true;
                                 selectedName = '{{ $member->user->name }}'; kickUrl = '{{ route('clubs.kick', [$club->id, $member->user->id]) }}'; kickRole = '{{ $member->role }}';"
                                   class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-accent-red hover:bg-accent-red/10">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -401,7 +419,7 @@
                                   @endif
                                   @if ($member->role === 'moderator')
                                     <button type="button"
-                                      @click="openDemote = true
+                                      @click="openDemote = true;
                                     selectedName = '{{ $member->user->name }}'; demoteUrl = '{{ route('clubs.demote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -416,10 +434,25 @@
                                       </svg>
                                       Demote To Member
                                     </button>
+                                    <button type="button"
+                                      @click="openTransfer = true;
+                                    selectedName = '{{ $member->user->name }}'; transferUrl = '{{ route('clubs.ownership.transfer', [$club->id, $member->user->id]) }}';"
+                                      class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="lucide lucide-smartphone-user-round preview-icon">
+                                        <path d="M10 22H6a2 2 0 01-2-2V4a2 2 0 012-2h10a2 2 0 012 2v4" />
+                                        <path d="M11 18h.01" />
+                                        <path d="M22 22a4 4 0 00-8 0" />
+                                        <circle cx="18" cy="15" r="3" />
+                                      </svg>
+                                      Transfer Ownership
+                                    </button>
                                   @endif
                                 @endcan
                                 <button type="button"
-                                  @click="openKick = true
+                                  @click="openKick = true;
                                   selectedName = '{{ $member->user->name }}'; kickUrl = '{{ route('clubs.kick', [$club->id, $member->user->id]) }}'; kickRole = '{{ $member->role }}';"
                                   class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-accent-red hover:bg-accent-red/10">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -472,13 +505,13 @@
                     </td>
                     <td class="px-6 py-4 h-16 whitespace-nowrap text-caption flex flex-row gap-2">
                       <button type="button"
-                        @click="openAccept = true
+                        @click="openAccept = true;
                         selectedName = '{{ $request->user->name }}'; acceptUrl = '{{ route('clubs.join.request.accept', [$club->id, $request->user->id]) }}';"
                         class="px-2 py-1 text-primary cursor-pointer hover:underline hover:underline-offset-2">
                         Accept
                       </button>
                       <button type="button"
-                        @click="openReject = true
+                        @click="openReject = true;
                         selectedName = '{{ $request->user->name }}'; rejectUrl = '{{ route('clubs.join.request.reject', [$club->id, $request->user->id]) }}';"
                         class="px-2 py-1 text-accent-red cursor-pointer hover:underline hover:underline-offset-2">
                         Reject
@@ -602,8 +635,8 @@
                 able to recover it.</p>
             </div>
             <button type="button"
-              @click="openDelete = true
-              selectedName = '{{ $club->name }}'; deleteUrl = '{{ route('clubs.delete', $club->id) }}';"
+              @click="openDelete = true;
+              confirmText = ''; selectedName = '{{ $club->name }}'; deleteUrl = '{{ route('clubs.delete', $club->id) }}';"
               class="px-4 py-2 rounded-md text-accent-red hover:underline hover:underline-offset-2">
               Delete
             </button>
@@ -691,6 +724,37 @@
       </div>
     </div>
 
+    {{-- Transfer Ownership Modal --}}
+    <div x-show="openTransfer" x-cloak @keydown.escape.window="openTransfer = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openTransfer = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title text-ink mb-4">
+            Transfer ownership to <span x-text="selectedName"></span>?
+          </h3>
+          <p class="text-body-mid mb-4 text-ink">
+            Anda akan kehilangan akses sebagai pemilik klub dan tidak dapat membatalkan tindakan ini dari halaman ini.
+          </p>
+        </div>
+        <div class="flex flex-row justify-end gap-2">
+          <form :action="transferUrl" method="POST">
+            @csrf
+            @method('PATCH')
+            <button type="submit"
+              class="px-4 py-2 text-caption bg-primary/10 rounded text-primary hover:text-white hover:bg-primary transition-colors duration-200">
+              Transfer Ownership
+            </button>
+          </form>
+          <button type="button"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+            @click="openTransfer = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     {{-- Kick Modal --}}
     <div x-show="openKick" x-cloak @keydown.escape.window="openKick = false"
       class="fixed flex items-center justify-center inset-0 z-50">
@@ -743,27 +807,52 @@
           <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menghapus club ini? Semua data dan konten di
             dalamnya akan dihapus secara permanen dan tindakan ini tidak dapat dibatalkan.</p>
         </div>
-        <div class="flex flex-row justify-end gap-2">
-          <form :action="deleteUrl" method="POST">
+        <div class="flex flex-col gap-2 w-full">
+          <p class="text-body-mid text-ink mt-2">
+            Ketik <span class="font-semibold" x-text="selectedName"></span> untuk konfirmasi:
+          </p>
+        </div>
+        <div class="w-full">
+          <form :action="deleteUrl" method="POST" x-data="{ touched: false, showServerError: true }">
             @csrf
             @method('DELETE')
-            <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red transition-colors duration-200">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-trash">
-                <path d="M10 11v6" />
-                <path d="M14 11v6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-                <path d="M3 6h18" />
-                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
-              Delete
-            </button>
+
+            <input type="text" name="confirm_name" x-model.trim="confirmText" @input="showServerError = false"
+              @blur="touched = true" autocomplete="off"
+              :class="(touched && confirmText !== '' && confirmText.toLowerCase() !== selectedName.trim()
+              .toLowerCase()) ?
+              'border-accent-red' : 'border-hairline'"
+              class="w-full rounded-md border px-4 mb-4 py-2 focus:ring-accent-red focus:border-accent-red"
+              placeholder="Ketik nama club">
+
+            <p x-show="touched && confirmText !== '' && confirmText.toLowerCase() !== selectedName.trim().toLowerCase()"
+              x-cloak class="text-caption text-accent-red mb-4">
+              Nama club tidak sesuai.
+            </p>
+
+            @error('confirm_name', 'deleteClub')
+              <p x-show="showServerError" class="text-caption text-accent-red mb-4">{{ $message }}</p>
+            @enderror
+
+            <div class="flex flex-row gap-2 w-full justify-end items-center">
+              <button type="submit" :disabled="confirmText.toLowerCase() !== selectedName.trim().toLowerCase()"
+                class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="lucide lucide-trash">
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                Delete
+              </button>
+              <button type="button"
+                class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+                @click="openDelete = false">Cancel</button>
+            </div>
           </form>
-          <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
-            @click="openDelete = false">Cancel</button>
         </div>
       </div>
     </div>

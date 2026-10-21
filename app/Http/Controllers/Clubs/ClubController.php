@@ -11,6 +11,7 @@ use App\Models\AuditLog;
 use App\Models\ClubJoinRequest;
 use App\Models\ClubMember;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -26,7 +27,7 @@ class ClubController extends Controller
     {
         $user = Auth::user();
 
-        $allClubs = Club::withcount('members')->get();
+        $allClubs = Club::withCount('members')->get();
 
         $userInterest = array_map('trim', $user->interest_array);
 
@@ -168,7 +169,7 @@ class ClubController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'description' => 'required|string|max:255',
-            'cover_url' => 'nullable|image|mimes:jpeg,png|max:2048',
+            'cover' => 'nullable|image|mimes:jpeg,png|max:2048',
         ]);
 
         DB::beginTransaction();
@@ -206,6 +207,63 @@ class ClubController extends Controller
         }
 
         return redirect()->back()->with('success', 'Klub berhasil diperbarui!');
+    }
+
+    public function transferOwnership(Club $club, $userId)
+    {
+        if (Gate::denies('isOwner', $club)) {
+            return redirect()->route('clubs.show', ['club' => $club->id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
+        }
+
+        $newOwner = ClubMember::where('club_id', $club->id)
+            ->where('user_id', $userId)
+            ->where('role', '!=', 'owner')
+            ->first();
+
+        if (!$newOwner) {
+            return redirect()->route('clubs.settings', ['club' => $club->id])
+                ->with('error', 'Pengguna yang dipilih bukan anggota klub yang valid.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            ClubMember::where('club_id', $club->id)
+                ->where('user_id', Auth::id())
+                ->update(['role' => 'moderator']);
+
+            ClubMember::where('club_id', $club->id)
+                ->where('user_id', $userId)
+                ->update(['role' => 'owner']);
+
+            ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $club->id,
+                'action' => 'Transfer Ownership',
+                'target_type' => 'User',
+                'target_id' => $userId,
+                'metadata' => [
+                    'transferred_to' => $userId,
+                    'previous_owner' => Auth::id(),
+                ],
+            ]);
+
+            Notification::createForUser(
+                $userId,
+                'Kepemilikan klub dipindahkan',
+                'Anda sekarang menjadi pemilik klub ' . $club->name . '.',
+                'other',
+                $club->id
+            );
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->route('clubs.settings', ['club' => $club->id])->with('error', 'An error occurred while transferring ownership.');
+        }
+
+        return redirect()->route('clubs.settings', ['club' => $club->id])->with('success', 'Kepemilikan klub berhasil dipindahkan!');
     }
 
     public function leave(Request $request, $id)
@@ -431,11 +489,24 @@ class ClubController extends Controller
         return redirect()->back()->with('success', 'Approval settings updated successfully!');
     }
 
-    public function deleteClub(Club $club)
+    public function deleteClub(Request $request, Club $club)
     {
         if (Gate::denies('isOwner', $club)) {
             return redirect()->route('clubs.show', ['club' => $club->id])->with('warning', 'Anda tidak memiliki izin untuk melakukan hal ini.');
         }
+
+        $request->validateWithBag('deleteClub', [
+            'confirm_name' => [
+                'required',
+                function ($attribute, $value, $fail) use ($club) {
+                    if (mb_strtolower(trim($value)) !== mb_strtolower(trim($club->name))) {
+                        $fail('Nama club yang diketik tidak sesuai.');
+                    }
+                },
+            ],
+        ], [
+            'confirm_name.required' => 'Ketik nama club untuk konfirmasi.',
+        ]);
 
         AuditLog::create([
             'id' => Str::uuid(),
@@ -450,7 +521,7 @@ class ClubController extends Controller
 
         ClubMember::where('club_id', $club->id)
             ->pluck('user_id')
-            ->each(fn ($memberId) => Notification::createForUser(
+            ->each(fn($memberId) => Notification::createForUser(
                 $memberId,
                 'Klub Dihapus',
                 'Klub ' . $club->name . ' telah dihapus oleh pemiliknya.',
