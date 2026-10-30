@@ -251,10 +251,10 @@
         },
     }">
       <main x-data="{ tab: 'post' }" class="flex flex-col gap-4">
-        <div class="w-full md:w-max h-max flex felx-row gap-6 p-2 rounded-full border border-hairline">
+        <div class="w-full md:w-max h-max flex felx-row gap-6 p-1.5 rounded-full border border-hairline">
           <button @click="tab = 'post'"
             :class="tab === 'post' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
-            class="w-1/2 md:w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
+            class="w-1/2 md:w-max py-1.5 px-6 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="lucide lucide-text-align-start-icon lucide-text-align-start">
@@ -266,7 +266,7 @@
           </button>
           <button @click="tab = 'member'"
             :class="tab === 'member' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
-            class="w-1/2 md:w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
+            class="w-1/2 md:w-max py-1.5 px-6 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="lucide lucide-users-round-icon lucide-users-round">

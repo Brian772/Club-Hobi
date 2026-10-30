@@ -6,7 +6,7 @@
   @if ($isEmpty)
     <section class="flex flex-col h-full">
       <div class="flex flex-row justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold">Belum Ada Klub</h2>
+        <h2 class="text-title lg:text-heading-2 font-bold">Belum Ada Klub</h2>
         <div x-data="{ MenuOpen: false }" class="relative">
           <button type="button" x-ref="button" @click="MenuOpen = true"
             class="text-ink-muted text-body-mid rounded-full p-2 hover:bg-hairline">
@@ -31,6 +31,12 @@
                 class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
                 Pengajuan Saya
               </a>
+              @if ($myClubs->isNotEmpty())
+                <a href="{{ route('clubs.list') }}"
+                  class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                  Klub Saya
+                </a>
+              @endif
             </div>
           </div>
         </div>
@@ -72,6 +78,12 @@
                   class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
                   Pengajuan Saya
                 </a>
+                @if ($myClubs->isNotEmpty())
+                  <a href="{{ route('clubs.list') }}"
+                    class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                    Klub Saya
+                  </a>
+                @endif
               </div>
             </div>
           </div>
@@ -165,6 +177,12 @@
                     class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
                     Pengajuan Saya
                   </a>
+                  @if ($myClubs->isNotEmpty())
+                    <a href="{{ route('clubs.list') }}"
+                      class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                      Klub Saya
+                    </a>
+                  @endif
                 </div>
               </div>
             </div>
@@ -176,10 +194,26 @@
 
     @if ($recomendedClubs->isNotEmpty())
       <section class="mt-8 pb-4 mb-12">
-        <h2 class="text-title lg:text-heading-2 font-bold mb-2">Rekomendasi Klub</h2>
-        <p class="text-caption text-ink-muted mb-8 line-clamp-1 font-semibold">Berdasarkan Minat :
-          <span class="font-normal">{{ implode(', ', auth()->user()->interest_array ?? []) }}</span>
-        </p>
+        <header class="flex flex-row gap-4 lg:gap-8 items-center justify-between mb-8">
+          <div class="flex flex-col gap-2">
+            <h2 class="text-title lg:text-heading-2 font-bold">Rekomendasi Klub</h2>
+            <p class="text-caption text-ink-muted line-clamp-1 font-semibold">Berdasarkan Minat :
+              <span class="font-normal">{{ implode(', ', auth()->user()->interest_array ?? []) }}</span>
+            </p>
+          </div>
+          <div class="relative h-max w-full md:w-max">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-search preview-icon absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
+              <path d="m21 21-4.34-4.34" />
+              <circle cx="11" cy="11" r="8" />
+            </svg>
+
+            <input type="text" id="clubSearchInput" oninput="filterClubPosts()"
+              onkeydown="handleSearchKeyDown(event)" placeholder="Cari Klub..."
+              class="w-full md:w-max pl-9 pr-4 py-2.5 text-caption bg-canvas-soft border border-hairline rounded-full focus:outline-none focus:border-primary text-ink">
+          </div>
+        </header>
         <div class="flex flex-row gap-4 xl:gap-6 flex-wrap">
           @foreach ($recomendedClubs as $club)
             <div

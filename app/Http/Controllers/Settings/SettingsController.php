@@ -151,4 +151,12 @@ class SettingsController extends Controller
 
         return view('settings.accountsettings', compact('user'));
     }
+
+    public function reportHistory()
+    {
+        $user = Auth::user();
+        
+
+        return view('settings.report_history', compact('user', 'reports'));
+    }
 }

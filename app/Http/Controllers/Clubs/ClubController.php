@@ -33,6 +33,10 @@ class ClubController extends Controller
 
         $userInterestId = $userInterest ? Hobby::whereIn('name', $userInterest)->pluck('id') : collect();
 
+        $myClubs = Club::withCount('members')
+            ->whereHas('members', fn($q) => $q->where('user_id', $user->id))
+            ->get();
+
         $pendingRequests = ClubJoinRequest::where('user_id', $user->id)
             ->where('status', 'pending')
             ->get()
@@ -54,7 +58,16 @@ class ClubController extends Controller
 
         $isEmpty = $allClubs->isEmpty() && $recomendedClubs->isEmpty();
 
-        return view('clubs.index', compact('recomendedClubs', 'allClubs', 'isEmpty', 'joinedClub', 'pendingRequests'));
+        return view('clubs.index', compact('recomendedClubs', 'allClubs', 'isEmpty', 'joinedClub', 'pendingRequests', 'myClubs'));
+    }
+
+    public function list()
+    {
+        $userClubs = Club::withCount('members')
+            ->whereHas('members', fn($q) => $q->where('user_id', Auth::id()))
+            ->get();
+
+        return view('clubs.list', compact('userClubs'));
     }
 
     public function show($id)
