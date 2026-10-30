@@ -53,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/request', [ClubRequestController::class, 'request'])->name('request');
         Route::get('/request/list', [ClubRequestController::class, 'listRequest'])->name('request.list');
         Route::get('/request/list/{request}', [ClubRequestController::class, 'detail'])->name('request.detail');
+        Route::get('/list', [ClubController::class, 'list'])->name('list');
         Route::post('/request/store', [ClubRequestController::class, 'storeRequest'])->name('request.store');
         Route::delete('/request/{request}/cancel', [ClubRequestController::class, 'destroylRequest'])->name('request.cancel');
         Route::get('/{club}/activity/{activity}', [ClubController::class, 'showActivity'])->name('activity.show');
@@ -122,6 +123,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/profile/hobby', [SettingsController::class, 'addHobby'])->name('profile.hobby.add');
         Route::delete('/profile/hobby/{clubId}', [SettingsController::class, 'deleteHobby'])->name('profile.hobby.delete');
         Route::get('/account', [SettingsController::class, 'accountsettings'])->name('account');
+        Route::get('/report/history', [SettingsController::class, 'reportHistory'])->name('report.history');
     });
 
     // Fitur Profil / Profile bawaan Laravel

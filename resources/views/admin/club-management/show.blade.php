@@ -17,8 +17,13 @@
     </h2>
   </header>
 
-  <main x-data="{ openDelete: false }">
-    <section class="flex flex-col gap-2 p-2 lg:p-4 rounded-lg border border-hairline">
+  <main x-data="{
+  openDelete: @js($errors->deleteClub->isNotEmpty()),
+  selectedName: @js($errors->deleteClub->isNotEmpty() ? $clubs->name : ''),
+  confirmText: @js(old('confirm_name', '')),
+  deleteUrl: @js($errors->deleteClub->isNotEmpty() ? route('clubs.delete', $clubs->id) : ''),
+  }">
+    <section class="flex flex-col gap-4 p-2 lg:p-6 rounded-lg border border-hairline">
       <img src="{{ $clubs->cover_url ? Storage::url($clubs->cover_url) : '' }}" alt="{{ $clubs->name }}" width="256"
         height="128" class="rounded-md object-cover">
       <div class="flex flex-col gap-1">
@@ -32,7 +37,7 @@
       </div>
     </section>
 
-    <section class="grid grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-4 items-center justify-start mt-4">
+    <section class="grid grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-6 items-center justify-start mt-6">
       <div class="flex flex-col items-start justify-start border border-hairline rounded-lg p-4">
         <span class="text-body-mid font-semibold text-ink-muted">Members</span>
         <span class="text-2xl ml-4 font-bold">{{ $clubs->members->count() }}</span>
@@ -43,7 +48,7 @@
       </div>
     </section>
 
-    <section class="flex flex-col gap-2 p-2 lg:p-4 rounded-lg border border-hairline mt-4">
+    <section class="flex flex-col gap-2 p-2 lg:p-4 rounded-lg border border-hairline mt-6">
       <h3 class="text-title text-ink">More Details</h3>
       <div class="mt-4">
         <div class="flex flex-col gap-2">
@@ -71,7 +76,9 @@
             <p class="text-body-mid text-ink-muted">Delete {{ $clubs->name }}. If you delete this club, you will not be
               able to recover it.</p>
           </div>
-          <button type="button" @click="openDelete = true"
+          <button type="button"
+            @click="openDelete = true;
+              confirmText = ''; selectedName = '{{ $clubs->name }}'; deleteUrl = '{{ route('clubs.delete', $clubs->id) }}';"
             class="px-4 py-2 rounded-md text-accent-red hover:underline hover:underline-offset-2">
             Delete
           </button>
@@ -84,35 +91,61 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openDelete = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
-            Delete {{ $clubs->name }}?
+            Delete <span x-text="selectedName"></span>?
           </h3>
           <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menghapus club ini? Semua data dan konten di
             dalamnya akan dihapus secara permanen dan tindakan ini tidak dapat dibatalkan.</p>
         </div>
-        <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.delete', $clubs->id) }}" method="POST">
+        <div class="flex flex-col gap-2 w-full">
+          <p class="text-body-mid text-ink mt-2">
+            Ketik <span class="font-semibold" x-text="selectedName"></span> untuk konfirmasi:
+          </p>
+        </div>
+        <div class="w-full">
+          <form :action="deleteUrl" method="POST" x-data="{ touched: false, showServerError: true }">
             @csrf
             @method('DELETE')
-            <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-trash">
-                <path d="M10 11v6" />
-                <path d="M14 11v6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-                <path d="M3 6h18" />
-                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
-              Delete
-            </button>
+
+            <input type="text" name="confirm_name" x-model.trim="confirmText" @input="showServerError = false"
+              @blur="touched = true" autocomplete="off"
+              :class="(touched && confirmText !== '' && confirmText.toLowerCase() !== selectedName.trim()
+                  .toLowerCase()) ?
+              'border-accent-red' : 'border-hairline'"
+              class="w-full rounded-md border px-4 mb-4 py-2 focus:ring-accent-red focus:border-accent-red"
+              placeholder="Ketik nama club">
+
+            <p x-show="touched && confirmText !== '' && confirmText.toLowerCase() !== selectedName.trim().toLowerCase()"
+              x-cloak class="text-caption text-accent-red mb-4">
+              Nama club tidak sesuai.
+            </p>
+
+            @error('confirm_name', 'deleteClub')
+              <p x-show="showServerError" class="text-caption text-accent-red mb-4">{{ $message }}</p>
+            @enderror
+
+            <div class="flex flex-row gap-2 w-full justify-end items-center">
+              <button type="submit" :disabled="confirmText.toLowerCase() !== selectedName.trim().toLowerCase()"
+                class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-trash">
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                Delete
+              </button>
+              <button type="button"
+                class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+                @click="openDelete = false">Cancel</button>
+            </div>
           </form>
-          <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
-            @click="openDelete = false">Cancel</button>
         </div>
       </div>
     </div>
