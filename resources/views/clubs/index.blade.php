@@ -192,15 +192,20 @@
       </section>
     @endif
 
-    @if ($recomendedClubs->isNotEmpty())
-      <section class="mt-8 pb-4 mb-12">
-        <header class="flex flex-row gap-4 lg:gap-8 items-center justify-between mb-8">
-          <div class="flex flex-col gap-2">
-            <h2 class="text-title lg:text-heading-2 font-bold">Rekomendasi Klub</h2>
-            <p class="text-caption text-ink-muted line-clamp-1 font-semibold">Berdasarkan Minat :
-              <span class="font-normal">{{ implode(', ', auth()->user()->interest_array ?? []) }}</span>
-            </p>
-          </div>
+    @php
+      $search = trim(request('search', ''));
+    @endphp
+
+    <header class="flex flex-col md:flex-row gap-4 lg:gap-8 my-8 items-center justify-between">
+      <div class="flex flex-col gap-2">
+        <h2 class="text-title lg:text-heading-2 font-bold">Rekomendasi Klub</h2>
+        <p class="text-caption text-ink-muted line-clamp-1 font-semibold">Berdasarkan Minat :
+          <span class="font-normal">{{ implode(', ', auth()->user()->interest_array ?? []) }}</span>
+        </p>
+      </div>
+      @if ($recomendedClubs->isNotEmpty() || $search !== '')
+        <form id="club-search-form" action="{{ route('clubs.index') }}" method="GET" data-turbo="false"
+          class="flex flex-row gap-2 w-full md:w-max items-center">
           <div class="relative h-max w-full md:w-max">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -209,11 +214,20 @@
               <circle cx="11" cy="11" r="8" />
             </svg>
 
-            <input type="text" id="clubSearchInput" oninput="filterClubPosts()"
-              onkeydown="handleSearchKeyDown(event)" placeholder="Cari Klub..."
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Klub..."
               class="w-full md:w-max pl-9 pr-4 py-2.5 text-caption bg-canvas-soft border border-hairline rounded-full focus:outline-none focus:border-primary text-ink">
           </div>
-        </header>
+
+          <button type="submit"
+            class="bg-primary text-white py-2 px-4 rounded-full hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-light">
+            Cari
+          </button>
+        </form>
+      @endif
+    </header>
+
+    @if ($recomendedClubs->isNotEmpty())
+      <section class="mt-8 pb-4 mb-12">
         <div class="flex flex-row gap-4 xl:gap-6 flex-wrap">
           @foreach ($recomendedClubs as $club)
             <div
@@ -274,12 +288,15 @@
           @endforeach
         </div>
       </section>
+    @elseif ($search !== '')
+      <section class="mt-8 pb-4 mb-12">
+        <div class="flex flex-col w-full h-max pt-12 justify-center items-center">
+          <p class="text-title text-ink">Tidak ada klub ditemukan</p>
+          <span class="text-ink-muted text-body-mid">Tidak ada klub yang sesuai dengan pencarian anda.</span>
+        </div>
+      </section>
     @else
       <section class="mt-8 pb-4 mb-12">
-        <h2 class="text-title lg:text-heading-2 font-bold mb-2">Rekomendasi Klub</h2>
-        <p class="text-caption text-ink-muted mb-8 line-clamp-1 font-semibold">Berdasarkan Minat :
-          <span class="font-normal">{{ implode(', ', auth()->user()->interest_array ?? []) }}</span>
-        </p>
         <div class="flex flex-col w-full h-max pt-12 justify-center items-center">
           <p class="text-title text-ink">Tidak ada rekomendasi klub</p>
           <span class="text-ink-muted text-body-mid">Tidak ada rekomendasi klub berdasarkan minat anda.</span>
@@ -287,4 +304,34 @@
       </section>
     @endif
   @endif
+
+  <script>
+    const clubSearchForm = document.getElementById('club-search-form');
+    const scrollContainer = document.querySelector('main');
+
+    clubSearchForm?.addEventListener('submit', function() {
+      sessionStorage.setItem(
+        'club-scroll-position',
+        scrollContainer ? scrollContainer.scrollTop : window.scrollY
+      );
+    });
+
+    window.addEventListener('pageshow', function() {
+      const savedPosition = sessionStorage.getItem('club-scroll-position');
+
+      if (savedPosition === null) {
+        return;
+      }
+
+      requestAnimationFrame(function() {
+        if (scrollContainer) {
+          scrollContainer.scrollTop = Number(savedPosition);
+        } else {
+          window.scrollTo(0, Number(savedPosition));
+        }
+
+        sessionStorage.removeItem('club-scroll-position');
+      });
+    });
+  </script>
 @endsection

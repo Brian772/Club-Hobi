@@ -113,6 +113,7 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
+    scroll-behavior: smooth;
   }
 }
 
