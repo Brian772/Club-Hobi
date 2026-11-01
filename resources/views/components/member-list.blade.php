@@ -3,26 +3,33 @@
   <div class="flex flex-row gap-2 items-center justify-start w-max">
     <div class="min-w-10 mr-2">
       @if ($member->user->avatar_full_url)
-      <img 
-        src="{{ $member->user->avatar_full_url }}"
-        alt="{{ $member->user->name }}"
-        class="rounded-full size-10 object-cover"
-        onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-        <div class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+        <img src="{{ $member->user->avatar_full_url }}" alt="{{ $member->user->name }}"
+          class="rounded-full size-10 object-cover"
+          onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+        <div
+          class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
           {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
         </div>
       @else
-        <div class="size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+        <div
+          class="size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
           {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
         </div>
       @endif
     </div>
     <div class="flex flex-col gap-2">
-      <h3 class="text-body-mid font-semibold text-ink">{{ $member->user->name }}
-        @if ($member->user->role_global === 'admin')
-          <span
-            class="text-overline text-primary bg-primary/10 rounded-full px-2 py-1 font-semibold">Admin</span>
-        @endif
+      <h3 class="text-body-mid flex flex-row gap-4 font-semibold text-ink">{{ $member->user->name }}
+        <div class="flex flex-row gap-2">
+          @if ($member->user->role_global === 'admin')
+            <span class="text-small text-primary bg-primary/10 rounded-full px-2 py-1 font-semibold">Admin</span>
+          @endif
+          @if ($member->role === 'owner')
+            <span class="text-small text-ink px-2 py-1 font-semibold">Owner</span>
+          @endif
+          @if ($member->role === 'moderator')
+            <span class="text-small text-ink px-2 py-1 font-semibold">Moderator</span>
+          @endif
+        </div>
       </h3>
     </div>
   </div>
@@ -77,10 +84,10 @@
                   '{{ $member->user->id }}',
                   '{{ route('reports.store') }}',
                   @js([
-                    'name' => $member->user->name,
-                    'avatar' => $member->user->avatar_full_url ?? asset('images/default-avatar.svg'),
-                    'joined' => $member->user->created_at->format('d M Y'),
-                  ])
+    'name' => $member->user->name,
+    'avatar' => $member->user->avatar_full_url ?? asset('images/default-avatar.svg'),
+    'joined' => $member->user->created_at->format('d M Y'),
+])
                 )"
               class="flex flex-row gap-2 items-center w-full cursor-pointer px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"

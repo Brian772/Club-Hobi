@@ -23,7 +23,7 @@ use Illuminate\Support\Str;
 class ClubController extends Controller
 {
     use AuthorizesRequests;
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
 
@@ -48,13 +48,30 @@ class ClubController extends Controller
 
         $joinedClubIds = $joinedClub->pluck('id');
 
-        $recomendedClubs = $userInterestId->isNotEmpty()
+        $search = trim($request->input('search', ''));
+
+        $recomendedClubsQuery = $userInterestId->isNotEmpty()
             ? Club::with('hobby')
-                ->withCount('members')
-                ->whereIn('hobby_id', $userInterestId)
-                ->whereNotIn('id', $joinedClubIds)
-                ->get()
+            ->withCount('members')
+            ->whereIn('hobby_id', $userInterestId)
+            ->whereNotIn('id', $joinedClubIds)
             : collect();
+
+        if ($search !== '') {
+            $keyword = '%' . $search . '%';
+
+            $recomendedClubsQuery
+                ->where(function ($query) use ($keyword) {
+                    $query->where('name', 'like', $keyword)
+                        ->orWhere('description', 'like', $keyword);
+                })
+                ->orderByRaw(
+                    'CASE WHEN name LIKE ? THEN 0 ELSE 1 END',
+                    [$keyword]
+                );
+        }
+
+        $recomendedClubs = $recomendedClubsQuery->get();
 
         $isEmpty = $allClubs->isEmpty() && $recomendedClubs->isEmpty();
 
@@ -63,8 +80,12 @@ class ClubController extends Controller
 
     public function list()
     {
-        $userClubs = Club::withCount('members')
-            ->whereHas('members', fn($q) => $q->where('user_id', Auth::id()))
+        $userClubs = Club::with('hobby')
+            ->withCount('members')
+            ->whereHas('members', function ($query) {
+                $query->where('user_id', Auth::id())
+                    ->where('role', 'owner');
+            })
             ->get();
 
         return view('clubs.list', compact('userClubs'));
