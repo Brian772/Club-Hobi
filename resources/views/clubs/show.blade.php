@@ -465,6 +465,9 @@
           currentSearchIndex = 0;
           scrollToPost(matchedPosts[currentSearchIndex]);
         }
+      } else if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && matchedPosts.length > 1) {
+        event.preventDefault();
+        navigateSearchResult(event.key === 'ArrowUp' ? 'up' : 'down');
       }
     }
 
