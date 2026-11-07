@@ -93,8 +93,7 @@
             <div
               class="flex flex-col items-stretch border min-w-75 w-100 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
-                {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                <img src="{{ Storage::url($club->cover_url) }}" alt="{{ $club->name }}"
                   loading="lazy" draggable="false" class="w-full h-48 rounded-t-lg object-cover">
               @else
                 <div class="w-full h-48 rounded-t-lg bg-gray-200 flex items-center justify-center">
@@ -205,7 +204,7 @@
       </div>
       @if ($recomendedClubs->isNotEmpty() || $search !== '')
         <form id="club-search-form" action="{{ route('clubs.index') }}" method="GET" data-turbo="false"
-          class="flex flex-row gap-2 w-full md:w-max items-center">
+          role="search" class="flex flex-row gap-2 w-full md:w-max items-center">
           <div class="relative h-max w-full md:w-max">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -214,7 +213,8 @@
               <circle cx="11" cy="11" r="8" />
             </svg>
 
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Klub..."
+            <input type="search" name="search" value="{{ $search }}" autocomplete="off"
+              placeholder="Cari Klub..."
               class="w-full md:w-max pl-9 pr-4 py-2.5 text-caption bg-canvas-soft border border-hairline rounded-full focus:outline-none focus:border-primary text-ink">
           </div>
 
@@ -233,7 +233,7 @@
             <div
               class="flex flex-col items-stretch min-w-75 w-100 lg:w-75 border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
+                <img src="{{ Storage::url($club->cover_url) }}" alt="{{ $club->name }}"
                   class="w-full h-48 rounded-t-lg object-cover" draggable="false" loading="lazy">
               @else
                 <div class="w-full h-48 rounded-t-lg bg-gray-200 flex items-center justify-center">

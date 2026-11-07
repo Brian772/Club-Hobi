@@ -46,8 +46,8 @@
                 {{-- Input Search --}}
                 <div class="w-full md:w-64">
                     <div class="relative">
-                        <input type="text" id="postSearchInput" oninput="filterClubPosts()" onkeydown="handleSearchKeyDown(event)"
-                            placeholder="Cari postingan..."
+                        <input type="text" id="postSearchInput" onkeydown="handleSearchKeyDown(event)"
+                            placeholder="Cari postingan, tekan Enter..."
                             class="w-full pl-9 pr-4 py-1.5 text-xs bg-white border border-neutral-300 rounded-full focus:outline-none focus:border-blue-600 text-neutral-800 shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -266,6 +266,9 @@
                     currentSearchIndex = 0;
                     scrollToPost(matchedPosts[currentSearchIndex]);
                 }
+            } else if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && matchedPosts.length > 1) {
+                event.preventDefault();
+                navigateSearchResult(event.key === 'ArrowUp' ? 'up' : 'down');
             }
         }
 
