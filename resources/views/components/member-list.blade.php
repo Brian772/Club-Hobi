@@ -23,12 +23,6 @@
           @if ($member->user->role_global === 'admin')
             <span class="text-small text-primary bg-primary/10 rounded-full px-2 py-1 font-semibold">Admin</span>
           @endif
-          @if ($member->role === 'owner')
-            <span class="text-small text-ink px-2 py-1 font-semibold">Owner</span>
-          @endif
-          @if ($member->role === 'moderator')
-            <span class="text-small text-ink px-2 py-1 font-semibold">Moderator</span>
-          @endif
         </div>
       </h3>
     </div>
