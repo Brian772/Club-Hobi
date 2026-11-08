@@ -64,14 +64,11 @@
             <div class="form-group">
                 <label>Lampiran Media</label>
 
-                {{-- Input File Tersembunyi untuk Tambah File Baru --}}
                 <input type="file" name="media[]" id="mediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple
                     class="hidden" onchange="addNewFiles(this.files)">
 
-                {{-- Container Horizontal Blok Media --}}
                 <div class="flex items-center gap-3 overflow-x-auto pb-2" id="mediaContainer">
 
-                    {{-- Render Media Lama (Mendukung $post->media maupun $post->media_url) --}}
                     @php
                         $existingMediaList = collect();
                         if (isset($post->media) && count($post->media) > 0) {
@@ -93,7 +90,6 @@
                         <div class="existing-media-block relative w-24 h-24 shrink-0 rounded-xl overflow-hidden border border-neutral-200 bg-neutral-100 group"
                             data-id="{{ $item->id ?? '' }}">
 
-                            {{-- Tombol Hapus (X) saat hover --}}
                             <button type="button" onclick="removeExistingMedia('{{ $item->id ?? '' }}', this)"
                                 class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer hover:bg-red-600">
                                 &times;
@@ -145,17 +141,21 @@
     </div>
 
     <script>
+
         let newFiles = [];
 
         function removeExistingMedia(id, btnElement) {
             if (id && id !== 'single') {
                 const inputContainer = document.getElementById('deletedMediaInputs');
+
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'delete_media[]';
                 input.value = id;
+
                 inputContainer.appendChild(input);
             }
+
             btnElement.closest('.existing-media-block').remove();
         }
 
@@ -163,23 +163,28 @@
             if (!files || files.length === 0) return;
 
             const maxFiles = 5;
-            if (selectedFiles.length + files.length > maxFiles) {
+            const existingCount = document.querySelectorAll(
+                '.existing-media-block'
+            ).length;
+
+            if (existingCount + newFiles.length + files.length > maxFiles) {
                 alert(`Maksimal file yang dapat diunggah adalah ${maxFiles} file.`);
+
+                document.getElementById('mediaInput').value = '';
                 return;
             }
-            btnElement.closest('.existing-media-block').remove();
-        }
 
             Array.from(files).forEach(file => {
-                selectedFiles.push(file);
+                newFiles.push(file);
             });
 
-            renderPreviews();
-            updateFileInput();
+            renderNewPreviews();
+            updateNewFileInput();
         }
 
         function removeNewFile(index) {
             newFiles.splice(index, 1);
+
             renderNewPreviews();
             updateNewFileInput();
         }
@@ -193,46 +198,67 @@
 
             newFiles.forEach((file, index) => {
                 const wrapper = document.createElement('div');
-                wrapper.className = 'new-media-block relative w-24 h-24 shrink-0 rounded-xl overflow-hidden border border-neutral-200 bg-neutral-100 group';
+
+                wrapper.className =
+                    'new-media-block relative w-24 h-24 shrink-0 rounded-xl overflow-hidden border border-neutral-200 bg-neutral-100 group';
 
                 const deleteBtn = document.createElement('button');
+
                 deleteBtn.type = 'button';
-                deleteBtn.className = 'absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer hover:bg-red-600';
+                deleteBtn.className =
+                    'absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer hover:bg-red-600';
+
                 deleteBtn.innerHTML = '&times;';
+
                 deleteBtn.onclick = (e) => {
                     e.stopPropagation();
                     removeNewFile(index);
                 };
 
                 const content = document.createElement('div');
-                content.className = 'w-full h-full flex flex-col items-center justify-center p-1 text-center';
+
+                content.className =
+                    'w-full h-full flex flex-col items-center justify-center p-1 text-center';
+
+                const fileName = document.createElement('span');
+
+                fileName.className =
+                    'text-[9px] text-neutral-600 truncate w-full px-1';
+
+                fileName.textContent = file.name;
 
                 if (file.type.startsWith('image/')) {
                     const img = document.createElement('img');
+
                     img.src = URL.createObjectURL(file);
                     img.className = 'w-full h-full object-cover';
+
                     wrapper.appendChild(img);
-                } else if (file.type.startsWith('video/')) {
-                    content.innerHTML = `
-                        <i class="fa-solid fa-file-video text-2xl text-blue-500 mb-1"></i>
-                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                    `;
-                    wrapper.appendChild(content);
-                } else if (file.type.startsWith('audio/')) {
-                    content.innerHTML = `
-                        <i class="fa-solid fa-file-audio text-2xl text-purple-500 mb-1"></i>
-                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                    `;
-                    wrapper.appendChild(content);
+
                 } else {
-                    content.innerHTML = `
-                        <i class="fa-solid fa-file-lines text-2xl text-amber-500 mb-1"></i>
-                        <span class="text-[9px] text-neutral-600 truncate w-full px-1">${file.name}</span>
-                    `;
+                    const icon = document.createElement('i');
+
+                    if (file.type.startsWith('video/')) {
+                        icon.className =
+                            'fa-solid fa-file-video text-2xl text-blue-500 mb-1';
+
+                    } else if (file.type.startsWith('audio/')) {
+                        icon.className =
+                            'fa-solid fa-file-audio text-2xl text-purple-500 mb-1';
+
+                    } else {
+                        icon.className =
+                            'fa-solid fa-file-lines text-2xl text-amber-500 mb-1';
+                    }
+
+                    content.appendChild(icon);
+                    content.appendChild(fileName);
+
                     wrapper.appendChild(content);
                 }
 
                 wrapper.appendChild(deleteBtn);
+
                 container.insertBefore(wrapper, addButton);
             });
         }
@@ -247,5 +273,6 @@
 
             input.files = dataTransfer.files;
         }
+
     </script>
 @endsection
