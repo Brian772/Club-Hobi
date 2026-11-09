@@ -95,9 +95,14 @@
               {{ $otherInitial }}
             </div>
             <div>
-              <div data-message-content class="bg-white text-gray-900 text-sm px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100">
-                {{ $msg->content }}
-              </div>
+              @if($msg->photo_path && !$msg->deleted_at)
+                <img data-message-image src="{{ route('messages.image', [$club->id, $otherUser->id, $msg->id]) }}" alt="Foto yang dikirim" loading="lazy" class="mb-2 max-h-80 max-w-full rounded-xl object-contain">
+              @endif
+              @if($msg->content !== '')
+                <div data-message-content class="bg-white text-gray-900 text-sm px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100">
+                  {{ $msg->content }}
+                </div>
+              @endif
               <span data-message-time class="text-[10px] text-gray-400 ml-2 mt-1 block">
                 {{ $msg->send_at ? $msg->send_at->format('H:i') : '' }}
               </span>
@@ -135,9 +140,14 @@
                 </div>
               @endif
               <div class="flex flex-col items-end">
-                <div data-message-content class="bg-[#0070F3] text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm">
-                  {{ $msg->content }}
-                </div>
+                @if($msg->photo_path && !$msg->deleted_at)
+                  <img data-message-image src="{{ route('messages.image', [$club->id, $otherUser->id, $msg->id]) }}" alt="Foto yang dikirim" loading="lazy" class="mb-2 max-h-80 max-w-full rounded-xl object-contain">
+                @endif
+                @if($msg->content !== '')
+                  <div data-message-content class="bg-[#0070F3] text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm">
+                    {{ $msg->content }}
+                  </div>
+                @endif
                 <span data-message-time class="text-[10px] text-gray-400 mr-2 mt-1 block">
                   {{ $msg->send_at ? $msg->send_at->format('H:i') : '' }}
                   @if($msg->edited_at && !$msg->deleted_at)
@@ -189,22 +199,33 @@
       @endforeach
     @endif
   </div>
+      <label for="photoInput" title="Kirim foto" class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:scale-95 text-gray-700 transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 7a2 2 0 0 1 2-2h2l1.5-2h5L16 5h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" />
+          <circle cx="12" cy="12" r="3.5" />
+        </svg>
+      </label>
+      <input type="file" name="photo" id="photoInput" accept="image/*" class="sr-only">
 
   {{-- Chat Input Form matching Figma --}}
   <div class="pt-3 pb-1 border-t border-gray-100 bg-white/70 backdrop-blur-sm">
-    <form action="{{ route('messages.store', [$club->id, $otherUser->id]) }}" method="POST" data-turbo="false" class="w-full flex items-center gap-3" id="chatForm">
+    <form action="{{ route('messages.store', [$club->id, $otherUser->id]) }}" method="POST" enctype="multipart/form-data" data-turbo="false" class="w-full flex items-center gap-3" id="chatForm">
       @csrf
       <input type="text"
              name="content"
              id="messageInput"
-             required
+             maxlength="5000"
              autocomplete="off"
              placeholder="Ketik Pesan..."
              class="flex-1 bg-white border border-gray-200 rounded-full py-3.5 pl-6 pr-4 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm transition">
 
-      <button type="submit"
+      <button type="submit" aria-label="Kirim pesan"
               class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:scale-95 text-gray-900 transition">
         <svg class="w-5 h-5 -rotate-45" fill="currentColor" viewBox="0 0 24 24">
+      <div id="photoSelection" class="hidden w-full -mt-1 pl-12 text-xs text-gray-500">
+        <span id="photoName"></span>
+        <button type="button" id="removePhoto" class="ml-2 font-semibold text-primary hover:underline">Hapus foto</button>
+      </div>
           <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
         </svg>
       </button>

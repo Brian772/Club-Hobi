@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/{club}/{conversation}/updates', [MessageController::class, 'updates'])->name('messages.updates');
     Route::get('/messages/{club}/{conversation}/show', [MessageController::class, 'show'])->name('messages.show');
+    Route::get('/messages/{club}/{conversation}/message/{message}/image', [MessageController::class, 'image'])->name('messages.image');
     Route::post('/messages/{club}/{conversation}', [MessageController::class, 'store'])->name('messages.store');
     Route::patch('/messages/{club}/{conversation}/message/{message}', [MessageController::class, 'update'])->name('messages.update');
     Route::delete('/messages/{club}/{conversation}/message/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');

@@ -199,8 +199,7 @@ async function refreshNotifications() {
 function renderMessage(container, message) {
   const existing = container.querySelector(`[data-message-id="${message.id}"]`);
   if (existing) {
-    const content = existing.querySelector('[data-message-content]');
-    if (content) content.textContent = message.content;
+    updateMessageBody(existing.querySelector('[data-message-time]')?.parentElement, message, message.sender_id === container.dataset.currentUserId);
     if (message.is_deleted) {
       existing.querySelector('[data-message-actions]')?.remove();
       existing.querySelector('[data-message-editor]')?.remove();
@@ -229,11 +228,6 @@ function renderMessage(container, message) {
 
   const contentColumn = document.createElement('div');
   contentColumn.className = isMine ? 'flex flex-col items-end' : '';
-  const bubble = document.createElement('div');
-  bubble.className = isMine
-    ? 'bg-[#0070F3] text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm'
-    : 'bg-white text-gray-900 text-sm px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100';
-  bubble.textContent = message.content;
 
   const time = document.createElement('span');
   time.className = isMine
@@ -243,7 +237,8 @@ function renderMessage(container, message) {
     ? new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit' }).format(new Date(message.send_at))
     : '';
 
-  contentColumn.append(bubble, time);
+  contentColumn.append(time);
+  updateMessageBody(contentColumn, message, isMine);
   if (!isMine) {
     const avatar = document.createElement('div');
     avatar.className = 'w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-xs shrink-0 select-none mt-0.5';
@@ -261,6 +256,41 @@ function renderMessage(container, message) {
   }
 
   container.append(row);
+}
+
+function updateMessageBody(contentColumn, message, isMine) {
+  if (!contentColumn) return;
+
+  const time = contentColumn.querySelector('[data-message-time]');
+  let image = contentColumn.querySelector('[data-message-image]');
+  if (message.photo_url && !message.is_deleted) {
+    if (!image) {
+      image = document.createElement('img');
+      image.dataset.messageImage = '';
+      image.alt = 'Foto yang dikirim';
+      image.loading = 'lazy';
+      image.className = 'mb-2 max-h-80 max-w-full rounded-xl object-contain';
+      contentColumn.insertBefore(image, time);
+    }
+    image.src = message.photo_url;
+  } else {
+    image?.remove();
+  }
+
+  let bubble = contentColumn.querySelector('[data-message-content]');
+  if (message.content) {
+    if (!bubble) {
+      bubble = document.createElement('div');
+      bubble.dataset.messageContent = '';
+      bubble.className = isMine
+        ? 'bg-[#0070F3] text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm'
+        : 'bg-white text-gray-900 text-sm px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100';
+      contentColumn.insertBefore(bubble, time);
+    }
+    bubble.textContent = message.content;
+  } else {
+    bubble?.remove();
+  }
 }
 
 async function refreshConversation(container) {
@@ -292,7 +322,11 @@ function initializeChat() {
   const container = document.getElementById('chatMessages');
   const form = document.getElementById('chatForm');
   const input = document.getElementById('messageInput');
-  if (!container || !form || !input) {
+  const photoInput = document.getElementById('photoInput');
+  const photoSelection = document.getElementById('photoSelection');
+  const photoName = document.getElementById('photoName');
+  const removePhotoButton = document.getElementById('removePhoto');
+  if (!container || !form || !input || !photoInput || !photoSelection || !photoName || !removePhotoButton) {
     cleanupChat();
     return;
   }
@@ -302,12 +336,28 @@ function initializeChat() {
   container.scrollTop = container.scrollHeight;
   input.focus();
   const onInput = () => input.setCustomValidity('');
+  const onPhotoChange = () => {
+    const file = photoInput.files?.[0];
+    photoName.textContent = file?.name ?? '';
+    photoSelection.classList.toggle('hidden', !file);
+    input.setCustomValidity('');
+  };
+  const onRemovePhoto = () => {
+    photoInput.value = '';
+    onPhotoChange();
+  };
   input.addEventListener('input', onInput);
+  photoInput.addEventListener('change', onPhotoChange);
+  removePhotoButton.addEventListener('click', onRemovePhoto);
 
   const onSubmit = async (event) => {
     event.preventDefault();
     const content = input.value.trim();
-    if (!content) return;
+    if (!content && !photoInput.files?.length) {
+      input.setCustomValidity('Tulis pesan atau pilih foto.');
+      input.reportValidity();
+      return;
+    }
 
     const submitButton = form.querySelector('button[type="submit"]');
     submitButton.disabled = true;
@@ -328,6 +378,8 @@ function initializeChat() {
       container.dataset.after = data.chat_message.send_at;
       container.scrollTop = container.scrollHeight;
       input.value = '';
+      photoInput.value = '';
+      onPhotoChange();
       input.setCustomValidity('');
       input.focus();
       refreshNotifications();
@@ -340,7 +392,7 @@ function initializeChat() {
   };
   form.addEventListener('submit', onSubmit);
 
-  activeChat = { container, form, input, onInput, onSubmit };
+  activeChat = { container, form, input, photoInput, removePhotoButton, onInput, onPhotoChange, onRemovePhoto, onSubmit };
   refreshConversation(container);
   chatPollingTimer = window.setInterval(() => refreshConversation(container), 2000);
 }
@@ -352,6 +404,8 @@ function cleanupChat() {
   if (activeChat) {
     activeChat.form.removeEventListener('submit', activeChat.onSubmit);
     activeChat.input.removeEventListener('input', activeChat.onInput);
+    activeChat.photoInput.removeEventListener('change', activeChat.onPhotoChange);
+    activeChat.removePhotoButton.removeEventListener('click', activeChat.onRemovePhoto);
     activeChat = null;
   }
 }

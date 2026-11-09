@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class MessageController extends Controller
@@ -151,15 +152,34 @@ class MessageController extends Controller
 
         return response()->json([
             'messages' => $messages->map(fn (Message $message) => [
-                'id' => $message->id,
-                'sender_id' => $message->sender_id,
-                'content' => $message->content,
-                'send_at' => $message->send_at?->toIso8601String(),
-                'is_read' => $message->is_read,
-                'edited_at' => $message->edited_at?->toIso8601String(),
-                'is_deleted' => $message->deleted_at !== null,
+                ...$this->messagePayload($message),
             ]),
         ]);
+    public function image(string $clubId, string $conversation, string $messageId)
+    {
+        $club = Club::findOrFail($clubId);
+        $otherUser = User::findOrFail($conversation);
+        $this->authorizeConversation($club, $otherUser);
+
+        $message = Message::where('id', $messageId)
+            ->where('club_id', $club->id)
+            ->whereNull('deleted_at')
+            ->whereNotNull('photo_path')
+            ->where(function ($query) use ($otherUser) {
+                $query->where(fn ($query) => $query->where('sender_id', Auth::id())->where('receiver_id', $otherUser->id))
+                    ->orWhere(fn ($query) => $query->where('sender_id', $otherUser->id)->where('receiver_id', Auth::id()));
+            })
+            ->firstOrFail();
+
+        $disk = Storage::disk('local');
+        abort_unless($disk->exists($message->photo_path), 404);
+
+        return response()->file($disk->path($message->photo_path), [
+            'Content-Type' => $disk->mimeType($message->photo_path) ?? 'application/octet-stream',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
     }
 
     /**
@@ -167,8 +187,9 @@ class MessageController extends Controller
      */
     public function store(Request $request, string $clubId, string $conversation)
     {
-        $request->validate([
-            'content' => 'required|string|max:5000',
+        $validated = $request->validate([
+            'content' => ['required_without:photo', 'nullable', 'string', 'max:5000', 'not_regex:/^\s*$/'],
+            'photo' => ['nullable', 'image', 'max:5120'],
         ]);
 
         $authId = Auth::id();
@@ -180,7 +201,8 @@ class MessageController extends Controller
             'club_id'     => $club->id,
             'sender_id'   => $authId,
             'receiver_id' => $otherUser->id,
-            'content'     => trim($request->input('content')),
+            'content'     => $content,
+            'photo_path'  => $photoPath,
             'is_read'     => false,
             'send_at'     => now(),
         ];
@@ -190,7 +212,7 @@ class MessageController extends Controller
         Notification::create([
             'user_id' => $otherUser->id,
             'title' => 'Pesan baru',
-            'content' => auth()->user()->name . ': ' . Str::limit($chatData['content'], 80),
+            'content' => auth()->user()->name . ': ' . ($content !== '' ? Str::limit($content, 80) : 'Mengirim foto'),
             'type' => 'message',
             'source_id' => $chat->id,
             'is_read' => false,
@@ -199,18 +221,24 @@ class MessageController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'chat_message' => $chat,
+                'chat_message' => $this->messagePayload($chat),
             ]);
         }
 
         return redirect()->route('messages.show', [$club->id, $otherUser->id]);
     }
 
+        $content = trim($validated['content'] ?? '');
     public function update(Request $request, string $clubId, string $conversation, string $messageId)
     {
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:5000'],
         ]);
+
+        $photoPath = $request->file('photo')?->store('chat-images', 'local');
+        if ($request->hasFile('photo') && !$photoPath) {
+            abort(500, 'Foto gagal disimpan.');
+        }
 
         $club = Club::findOrFail($clubId);
         $otherUser = User::findOrFail($conversation);
@@ -256,5 +284,21 @@ class MessageController extends Controller
             ->unique();
 
         abort_unless($memberIds->contains(Auth::id()) && $memberIds->contains($otherUser->id), 403);
+    }
+
+    private function messagePayload(Message $message): array
+    {
+        return [
+            'id' => $message->id,
+            'sender_id' => $message->sender_id,
+            'content' => $message->content,
+            'photo_url' => $message->photo_path && !$message->deleted_at
+                ? route('messages.image', [$message->club_id, $message->sender_id === Auth::id() ? $message->receiver_id : $message->sender_id, $message->id])
+                : null,
+            'send_at' => $message->send_at?->toIso8601String(),
+            'is_read' => $message->is_read,
+            'edited_at' => $message->edited_at?->toIso8601String(),
+            'is_deleted' => $message->deleted_at !== null,
+        ];
     }
 }

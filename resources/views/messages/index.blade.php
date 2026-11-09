@@ -24,7 +24,9 @@
         @php
           $partner = $conv->user;
           $initial = strtoupper(substr($partner->name ?? 'U', 0, 1));
-          $lastContent = $conv->last_message ? $conv->last_message->content : 'Memulai percakapan...';
+          $lastContent = $conv->last_message
+            ? ($conv->last_message->content ?: ($conv->last_message->photo_path ? 'Mengirim foto' : 'Memulai percakapan...'))
+            : 'Memulai percakapan...';
           $timeAgo = $conv->last_message ? $conv->last_message->send_at->diffForHumans(['syntax' => \Carbon\CarbonInterface::DIFF_RELATIVE_TO_NOW, 'short' => true]) : '';
           // Clean Indonesian relative time like "2 hari lalu"
           $timeAgo = str_replace(' yang lalu', ' lalu', $timeAgo);

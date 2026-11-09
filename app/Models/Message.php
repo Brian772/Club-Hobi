@@ -20,6 +20,7 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'content',
+        'photo_path',
         'is_read',
         'send_at',
         'edited_at',

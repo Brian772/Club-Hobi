@@ -6,6 +6,8 @@ use App\Models\Club;
 use App\Models\ClubMember;
 use App\Models\Hobby;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\actingAs;
 
 it('creates a message with a uuid id', function () {
@@ -44,6 +46,62 @@ it('creates a notification when a message is sent', function () {
         ->where('user_id', $receiver->id)
         ->where('type', 'message')
         ->exists())->toBeTrue();
+});
+
+it('sends and displays a photo in a conversation', function () {
+    Storage::fake('local');
+    $sender = User::factory()->create();
+    $receiver = User::factory()->create();
+    $outsider = User::factory()->create();
+    Hobby::create(['name' => 'Fotografi']);
+    $club = Club::factory()->create();
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $sender->id, 'role' => 'member']);
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $receiver->id, 'role' => 'member']);
+
+    $response = actingAs($sender)->postJson(route('messages.store', [$club->id, $receiver->id]), [
+        'photo' => UploadedFile::fake()->image('photo.jpg'),
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('chat_message.content', '')
+        ->assertJsonPath('chat_message.sender_id', $sender->id);
+
+    $message = Message::query()->firstOrFail();
+    expect($message->photo_path)->not->toBeNull()
+        ->and($response->json('chat_message.photo_url'))->toBe(route('messages.image', [$club->id, $receiver->id, $message->id]));
+    Storage::disk('local')->assertExists($message->photo_path);
+
+    actingAs($receiver)
+        ->get(route('messages.image', [$club->id, $sender->id, $message->id]))
+        ->assertOk();
+
+    actingAs($outsider)
+        ->get(route('messages.image', [$club->id, $sender->id, $message->id]))
+        ->assertForbidden();
+
+    actingAs($receiver)
+        ->get(route('messages.show', [$club->id, $sender->id]))
+        ->assertOk()
+        ->assertSee(route('messages.image', [$club->id, $sender->id, $message->id]));
+});
+
+it('rejects empty or non-image chat uploads', function () {
+    $sender = User::factory()->create();
+    $receiver = User::factory()->create();
+    Hobby::create(['name' => 'Fotografi']);
+    $club = Club::factory()->create();
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $sender->id, 'role' => 'member']);
+    ClubMember::create(['club_id' => $club->id, 'user_id' => $receiver->id, 'role' => 'member']);
+
+    actingAs($sender)
+        ->post(route('messages.store', [$club->id, $receiver->id]))
+        ->assertRedirect();
+
+    $this->post(route('messages.store', [$club->id, $receiver->id]), [
+        'photo' => UploadedFile::fake()->create('document.txt', 10, 'text/plain'),
+    ])->assertRedirect();
+
+    expect(Message::query()->where('sender_id', $sender->id)->count())->toBe(0);
 });
 
 it('marks all of the authenticated users notifications as read', function () {
