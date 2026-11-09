@@ -293,8 +293,9 @@
                       <path d="m21 21-4.34-4.34" />
                       <circle cx="11" cy="11" r="8" />
                     </svg>
-                    <input type="text" id="postSearchInput" oninput="filterClubPosts()"
-                      onkeydown="handleSearchKeyDown(event)" placeholder="Cari postingan..."
+                    {{-- Perubahan: oninput dihapus, diganti type="search" dan event keydown untuk Enter --}}
+                    <input type="search" id="postSearchInput"
+                      onkeydown="handleSearchKeyDown(event)" placeholder="Cari postingan, tekan Enter..." enterkeyhint="search"
                       class="w-full md:w-max pl-9 pr-4 py-2.5 text-caption bg-canvas-soft border border-hairline rounded-full focus:outline-none focus:border-primary text-ink">
                   </div>
                   <a href="{{ route('posts.create') }}"
@@ -330,7 +331,7 @@
               @endforeach
 
               <div id="noPostFound" class="hidden text-center py-12">
-                <p class="text-body-mid text-ink-muted font-medium">Postingan not found</p>
+                <p class="text-body-mid text-ink-muted font-medium">Postingan tidak ditemukan</p>
               </div>
 
               <div id="mediaModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4"
@@ -374,7 +375,7 @@
     </section>
   @endif
 
-  {{-- Tombol Navigasi Search Up/Down (Awalnya disembunyikan dengan class 'hidden') --}}
+  {{-- Tombol Navigasi Search Up/Down --}}
   <div id="searchNavButtons" class="fixed bottom-6 right-6 z-40 hidden flex-col gap-2">
     <button type="button" onclick="navigateSearchResult('up')"
       class="p-3 rounded-full bg-canvas/80 backdrop-blur-md border border-hairline shadow-lg text-ink hover:bg-primary hover:text-white transition-all cursor-pointer"
@@ -398,12 +399,20 @@
     let currentSearchIndex = -1;
     let matchedPosts = [];
 
+    const searchInputEl = document.getElementById('postSearchInput');
+
+    // Menangani saat tombol clear (silang) pada input type="search" diklik
+    searchInputEl?.addEventListener('search', function () {
+      if (searchInputEl.value.trim() === '') {
+        filterClubPosts();
+      }
+    });
+
     // Fungsi Utama Pencarian Postingan
     function filterClubPosts() {
-      const inputEl = document.getElementById('postSearchInput');
-      if (!inputEl) return;
+      if (!searchInputEl) return;
 
-      const query = inputEl.value.toLowerCase().trim();
+      const query = searchInputEl.value.toLowerCase().trim();
       const posts = document.querySelectorAll('.club-post-item');
       const noFoundMsg = document.getElementById('noPostFound');
       const navButtons = document.getElementById('searchNavButtons');
@@ -412,16 +421,15 @@
       currentSearchIndex = -1;
 
       posts.forEach(post => {
-        const textData = (post.getAttribute('data-search-text') || post.getAttribute('data-title') || '')
-          .toLowerCase();
+        const textData = (post.getAttribute('data-search-text') || '').toLowerCase();
 
-        if (query === '' || textData.includes(query)) {
-          post.style.display = 'block';
-          if (query !== '') {
-            matchedPosts.push(post);
-          }
-        } else {
-          post.style.display = 'none';
+        // Jika query kosong, kembalikan semua postingan ke kondisi semula (tampil)
+        const isMatch = query === '' || textData.includes(query);
+
+        post.style.display = isMatch ? 'block' : 'none';
+
+        if (isMatch && query !== '') {
+          matchedPosts.push(post);
         }
       });
 
@@ -452,34 +460,35 @@
         event.preventDefault();
         filterClubPosts();
 
-        // Mengarahkan langsung ke postingan terbaru yang cocok dengan pencarian
+        // Mengarahkan langsung ke postingan pertama yang cocok dengan pencarian
         if (matchedPosts.length > 0) {
-          currentSearchIndex = 0; // Postingan terbaru (indeks 0)
+          currentSearchIndex = 0;
           scrollToPost(matchedPosts[currentSearchIndex]);
         }
+      } else if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && matchedPosts.length > 1) {
+        event.preventDefault();
+        navigateSearchResult(event.key === 'ArrowUp' ? 'up' : 'down');
       }
     }
 
-    // Navigasi Naik (Up) / Turun (Down) antar postingan hasil pencarian
     function navigateSearchResult(direction) {
       if (matchedPosts.length === 0) return;
 
       if (direction === 'down') {
         currentSearchIndex++;
         if (currentSearchIndex >= matchedPosts.length) {
-          currentSearchIndex = 0; // Kembali ke postingan paling atas/terbaru
+          currentSearchIndex = 0; 
         }
       } else if (direction === 'up') {
         currentSearchIndex--;
         if (currentSearchIndex < 0) {
-          currentSearchIndex = matchedPosts.length - 1; // Ke postingan terbawah
+          currentSearchIndex = matchedPosts.length - 1; 
         }
       }
 
       scrollToPost(matchedPosts[currentSearchIndex]);
     }
 
-    // Helper untuk Scroll ke Postingan Spesifik dengan Highlight
     function scrollToPost(element) {
       if (!element) return;
       element.scrollIntoView({

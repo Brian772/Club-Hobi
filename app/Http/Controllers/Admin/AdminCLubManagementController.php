@@ -20,7 +20,7 @@ class AdminClubManagementController extends Controller
 
     public function show(Club $club)
     {
-        $clubs = Club::with('creator', 'hobby')->where('id', $club->id)->first();
+        $clubs = Club::with('creator', 'hobby', 'members')->where('id', $club->id)->first();
 
         return view('admin.club-management.show', compact('clubs'));
     }

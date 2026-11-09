@@ -112,8 +112,6 @@ class PostController extends Controller
 
         return redirect()->route('posts.index')->with('success', 'Postingan berhasil dibuat.');
     }
-
-    // TAMBAHKAN METHOD SHOW INI UNTUK MENGATASI ERROR
     public function show(Post $post)
     {
         if ($post->user_id !== Auth::id()) {
