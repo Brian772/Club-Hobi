@@ -7,6 +7,12 @@ use App\Models\Club;
 use App\Models\User;
 use App\Models\Hobby;
 use Illuminate\Http\Request;
+use App\Models\AuditLog;
+use App\Models\ClubMember;
+use App\Models\Notification;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class AdminClubManagementController extends Controller
 {
