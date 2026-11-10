@@ -61,7 +61,7 @@
     openDelete: @js($errors->deleteClub->isNotEmpty()),
     selectedName: @js($errors->deleteClub->isNotEmpty() ? $clubs->name : ''),
     confirmText: @js(old('confirm_name', '')),
-    deleteUrl: @js($errors->deleteClub->isNotEmpty() ? route('clubs.delete', $clubs->id) : ''),
+    deleteUrl: @js($errors->deleteClub->isNotEmpty() ? route('club-management.delete', $clubs->id) : ''),
   }" class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
     <section class="flex flex-col gap-4 lg:col-span-2">
       {{-- Club overview --}}
@@ -280,8 +280,8 @@
           @csrf
           @method('DELETE')
 
-          <label for="confirm-name" class="block text-caption font-semibold text-ink">
-            Type <span class="font-semibold" x-text="selectedName"></span> to confirm:
+          <label for="confirm-name" class="block text-caption font-semibold text-ink-muted">
+            Type <span class="font-semibold text-ink" x-text="selectedName"></span> to confirm:
           </label>
           <input type="text" id="confirm-name" name="confirm_name" x-model="confirmText"
             @input="showServerError = false" @blur="touched = true" autocomplete="off"
@@ -300,11 +300,7 @@
           @enderror
 
           <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <button type="button" @click="openDelete = false"
-              class="rounded-md border border-hairline bg-canvas px-4 py-2 text-caption font-semibold text-ink transition-colors duration-150 hover:bg-canvas-soft">
-              Cancel
-            </button>
-            <button type="submit" :disabled="confirmText !== selectedName"
+              <button type="submit" :disabled="confirmText !== selectedName"
               class="inline-flex items-center justify-center gap-2 rounded-md bg-accent-red px-4 py-2 text-caption font-semibold text-white transition-colors duration-150 hover:bg-accent-red/90 disabled:cursor-not-allowed disabled:opacity-60">
               <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -315,6 +311,10 @@
                 <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
               </svg>
               Delete club
+            </button>
+            <button type="button" @click="openDelete = false"
+              class="rounded-md border border-hairline bg-canvas px-4 py-2 text-caption font-semibold text-ink transition-colors duration-150 hover:bg-canvas-soft">
+              Cancel
             </button>
           </div>
         </form>

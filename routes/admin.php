@@ -31,4 +31,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
   Route::get('/audit-logs/{auditLog}', [AuditController::class, 'show'])->name('audit-logs.show');
   Route::put('/hobbies/store', [AdminOverviewController::class, 'storeHobby'])->name('hobbies.store');
   Route::delete('/hobbies/delete/{hobby}', [AdminOverviewController::class, 'deleteHobby'])->name('hobbies.delete');
+  Route::delete('/clubs-management/delete/{club}', [AdminClubManagementController::class, 'deleteClub'])->name('club-management.delete');
 });
