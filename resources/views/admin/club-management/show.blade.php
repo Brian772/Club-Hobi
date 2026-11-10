@@ -61,7 +61,7 @@
     openDelete: @js($errors->deleteClub->isNotEmpty()),
     selectedName: @js($errors->deleteClub->isNotEmpty() ? $clubs->name : ''),
     confirmText: @js(old('confirm_name', '')),
-    deleteUrl: @js($errors->deleteClub->isNotEmpty() ? route('club-management.delete', $clubs->id) : ''),
+    deleteUrl: @js($errors->deleteClub->isNotEmpty() ? route('admin.club-management.delete', $clubs->id) : ''),
   }" class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
     <section class="flex flex-col gap-4 lg:col-span-2">
       {{-- Club overview --}}
