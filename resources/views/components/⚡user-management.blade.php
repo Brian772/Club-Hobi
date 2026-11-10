@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Models\AuditLog;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 new class extends Component {
     use WithPagination;
@@ -98,11 +99,15 @@ new class extends Component {
 
         if ($this->selectUserId) {
             $targetId = $this->selectUserId;
+            
+            $suspendedUntil = $this->suspendDate 
+            ? Carbon::parse($this->suspendDate)->endOfDay() 
+            : null;
 
             User::whereKey($this->selectUserId)->update([
                 'status' => 'suspended',
                 'reason' => $this->reason,
-                'suspended_until' => $this->suspendDate,
+                'suspended_until' => $suspendedUntil,
                 'status_updated_at' => now(),
             ]);
 
@@ -114,7 +119,7 @@ new class extends Component {
                 'target_id' => $targetId,
                 'metadata' => [
                     'reason' => $this->reason,
-                    'suspend_until' => $this->suspendDate,
+                    'suspend_until' => $suspendedUntil,
                     'previous_status' => 'active',
                     'new_status' => 'suspended',
                 ],

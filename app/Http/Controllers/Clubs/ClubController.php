@@ -533,7 +533,7 @@ class ClubController extends Controller
             'confirm_name' => [
                 'required',
                 function ($attribute, $value, $fail) use ($club) {
-                    if (mb_strtolower(trim($value)) !== mb_strtolower(trim($club->name))) {
+                    if ($value !== $club->name) {
                         $fail('Nama club yang diketik tidak sesuai.');
                     }
                 },

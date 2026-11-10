@@ -3,7 +3,7 @@
 @section('title', 'Orbii | Klub Saya')
 
 @section('content')
-  <div class="flex flex-col gap-4">
+  <div>
     <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-6">
       <a href="{{ route('clubs.index') }}" class="text-ink-muted">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 16 9">
@@ -15,13 +15,14 @@
       </a>
       <h2 class="text-title lg:text-heading-2 text-ink-secondary">Klub Saya</h2>
     </header>
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-row gap-4 xl:gap-6 flex-wrap">
       @forelse ($userClubs as $club)
         <div
-          class="flex flex-col items-stretch min-w-75 w-100 lg:w-75 border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+          class="flex flex-col items-stretch border min-w-75 w-100 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
           @if ($club->cover_url)
+            {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
             <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
-              class="w-full h-48 rounded-t-lg object-cover" draggable="false" loading="lazy">
+              loading="lazy" draggable="false" class="w-full h-48 rounded-t-lg object-cover">
           @else
             <div class="w-full h-48 rounded-t-lg bg-gray-200 flex items-center justify-center">
               <span class="text-ink-muted">Tidak ada gambar</span>
@@ -71,13 +72,13 @@
           </div>
         </div>
       @empty
-        <div class="flex flex-col h-full justify-center items-center">
-      <h2 class="text-title text-ink">Tidak ada klub</h2>
-      <p class="text-body-mid text-ink-muted">Anda belum memiliki klub apa pun.</p>
-      <a href="{{ route('clubs.request') }}"
-        class="text-primary bg-primary/10 hover:text-white mt-8 hover:bg-primary rounded-md px-4 py-2">+ Ajukan Klub
-        Baru</a>
-    </div>
+        <div class="flex flex-col w-full h-full justify-center items-center text-center">
+          <h2 class="text-title text-ink">Tidak ada klub</h2>
+          <p class="text-body-mid text-ink-muted">Anda belum memiliki klub apa pun.</p>
+          <a href="{{ route('clubs.request') }}"
+            class="text-primary bg-primary/10 hover:text-white mt-8 hover:bg-primary rounded-md px-4 py-2">+ Ajukan Klub
+            Baru</a>
+        </div>
       @endforelse
     </div>
   </div>

@@ -817,15 +817,14 @@
             @csrf
             @method('DELETE')
 
-            <input type="text" name="confirm_name" x-model.trim="confirmText" @input="showServerError = false"
+            <input type="text" name="confirm_name" x-model="confirmText" @input="showServerError = false"
               @blur="touched = true" autocomplete="off"
-              :class="(touched && confirmText !== '' && confirmText.toLowerCase() !== selectedName.trim()
-              .toLowerCase()) ?
+              :class="(touched && confirmText !== '' && confirmText !== selectedName) ?
               'border-accent-red' : 'border-hairline'"
               class="w-full rounded-md border px-4 mb-4 py-2 focus:ring-accent-red focus:border-accent-red"
               placeholder="Ketik nama club">
 
-            <p x-show="touched && confirmText !== '' && confirmText.toLowerCase() !== selectedName.trim().toLowerCase()"
+            <p x-show="touched && confirmText !== '' && confirmText !== selectedName"
               x-cloak class="text-caption text-accent-red mb-4">
               Nama club tidak sesuai.
             </p>
@@ -835,7 +834,7 @@
             @enderror
 
             <div class="flex flex-row gap-2 w-full justify-end items-center">
-              <button type="submit" :disabled="confirmText.toLowerCase() !== selectedName.trim().toLowerCase()"
+              <button type="submit" :disabled="confirmText !== selectedName"
                 class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red transition-colors duration-200">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"

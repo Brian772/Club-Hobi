@@ -6,13 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Appeal;
 use App\Models\AuditLog;
-use Illuminate\Support\Facades\AUTH;
+use Illuminate\Support\Facades\Auth;
 
 class AppealController extends Controller
 {
     public function index()
     {
-        $user = AUTH::user();
+        $user = Auth::user();
 
         $alreadyAppealed = Appeal::where('user_id', AUTH::user()->id)
             ->where('status', 'pending')
