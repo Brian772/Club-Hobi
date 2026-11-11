@@ -21,6 +21,8 @@ class Message extends Model
         'receiver_id',
         'content',
         'photo_path',
+        'view_once',
+        'viewed_at',
         'is_read',
         'send_at',
         'edited_at',
@@ -29,7 +31,9 @@ class Message extends Model
 
     protected $casts = [
         'is_read' => 'boolean',
+        'view_once' => 'boolean',
         'send_at' => 'datetime',
+        'viewed_at' => 'datetime',
         'edited_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];

@@ -1,6 +1,7 @@
 let realtimeStarted = false;
 let activeChat = null;
 let chatPollingTimer = null;
+const refreshingChats = new WeakSet();
 
 function csrfToken() {
   return document.querySelector('meta[name="csrf-token"]')?.content ?? '';
@@ -27,6 +28,7 @@ function addMessageActions(container, row, message) {
   menu.className = 'absolute right-full top-0 z-20 mr-1 w-36 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg';
   const editButton = document.createElement('button');
   editButton.type = 'button';
+  editButton.dataset.messageEdit = '';
   editButton.setAttribute('@click', 'editing = true; menuOpen = false');
   editButton.className = 'flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50';
   editButton.innerHTML = '<svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 20h9"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>Edit pesan';
@@ -233,9 +235,8 @@ function renderMessage(container, message) {
   time.className = isMine
     ? 'text-[10px] text-gray-400 mr-2 mt-1 block'
     : 'text-[10px] text-gray-400 ml-2 mt-1 block';
-  time.textContent = message.send_at
-    ? new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit' }).format(new Date(message.send_at))
-    : '';
+  time.dateTime = message.send_at ?? '';
+  time.textContent = formatMessageTime(message.send_at);
 
   contentColumn.append(time);
   updateMessageBody(contentColumn, message, isMine);
@@ -263,7 +264,12 @@ function updateMessageBody(contentColumn, message, isMine) {
 
   const time = contentColumn.querySelector('[data-message-time]');
   let image = contentColumn.querySelector('[data-message-image]');
-  if (message.photo_url && !message.is_deleted) {
+  if (message.view_once && !message.is_deleted) {
+    image?.remove();
+    renderViewOncePhoto(contentColumn, message, isMine, time);
+  } else if (message.photo_url && !message.is_deleted) {
+    contentColumn.querySelector('[data-view-once-button]')?.remove();
+    contentColumn.querySelector('[data-view-once-status]')?.remove();
     if (!image) {
       image = document.createElement('img');
       image.dataset.messageImage = '';
@@ -275,8 +281,11 @@ function updateMessageBody(contentColumn, message, isMine) {
     image.src = message.photo_url;
   } else {
     image?.remove();
+    contentColumn.querySelector('[data-view-once-button]')?.remove();
+    contentColumn.querySelector('[data-view-once-status]')?.remove();
   }
 
+  updateMessageStatus(time, message);
   let bubble = contentColumn.querySelector('[data-message-content]');
   if (message.content) {
     if (!bubble) {
@@ -293,9 +302,87 @@ function updateMessageBody(contentColumn, message, isMine) {
   }
 }
 
-async function refreshConversation(container) {
-  if (document.hidden) return;
+function renderViewOncePhoto(contentColumn, message, isMine, time) {
+  const openedImage = contentColumn.querySelector('[data-view-once-opened]');
+  if (message.viewed_at) {
+    contentColumn.querySelector('[data-view-once-button]')?.remove();
+    if (!isMine && openedImage) return;
+    let status = contentColumn.querySelector('[data-view-once-status]');
+    if (!status) {
+      status = document.createElement('span');
+      status.dataset.viewOnceStatus = '';
+      status.className = 'mb-2 rounded-xl bg-gray-100 px-4 py-3 text-xs text-gray-500';
+      contentColumn.insertBefore(status, time);
+    }
+    status.textContent = isMine ? 'Foto sekali lihat · Sudah dibuka' : 'Foto sekali lihat sudah dibuka';
+    return;
+  }
 
+  if (isMine) {
+    let status = contentColumn.querySelector('[data-view-once-status]');
+    if (!status) {
+      status = document.createElement('span');
+      status.dataset.viewOnceStatus = '';
+      status.className = 'mb-2 rounded-xl bg-blue-50 px-4 py-3 text-xs text-blue-700';
+      contentColumn.insertBefore(status, time);
+    }
+    status.textContent = 'Foto sekali lihat · Belum dibuka';
+    return;
+  }
+
+  if (!contentColumn.querySelector('[data-view-once-button]')) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.viewOnceButton = '';
+    button.dataset.viewOnceUrl = message.view_once_url;
+    button.className = 'mb-2 rounded-xl bg-white px-4 py-3 text-sm text-gray-700 shadow-sm border border-gray-100';
+    button.textContent = 'Lihat foto sekali';
+    contentColumn.insertBefore(button, time);
+  }
+}
+
+function updateMessageStatus(time, message) {
+  if (!time || message.sender_id === undefined) return;
+  const isMine = message.sender_id === document.getElementById('chatMessages')?.dataset.currentUserId;
+  if (!isMine || message.is_deleted) return;
+
+  const row = time.closest('[data-message-id]');
+  const wasRead = row?.dataset.messageRead === 'true'
+    || time.querySelector('[data-message-status]')?.dataset.isRead === 'true';
+  setMessageReadStatus(row, time, wasRead || Boolean(message.is_read));
+}
+
+function applyReadReceipt(container, messageId) {
+  const message = container.querySelector(`[data-message-id="${messageId}"]`);
+  if (!message) return;
+  message.dataset.messageRead = 'true';
+  const time = message.querySelector('[data-message-time]');
+  if (time) setMessageReadStatus(message, time, true);
+  message.querySelector('[data-message-edit]')?.remove();
+  message.querySelector('[data-message-editor]')?.remove();
+}
+
+function setMessageReadStatus(row, time, isRead) {
+  let status = time.querySelector('[data-message-status]');
+  if (!status) {
+    status = document.createElement('span');
+    status.dataset.messageStatus = '';
+    status.innerHTML = '<svg class="inline h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 16 12" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m1 6 3.5 4L11 2M6 6l3.5 4L15 2"/></svg>';
+    time.append(' ', status);
+  }
+
+  if (row) row.dataset.messageRead = isRead ? 'true' : 'false';
+  status.dataset.isRead = isRead ? 'true' : 'false';
+  status.title = isRead ? 'Terbaca' : 'Belum terbaca';
+  status.setAttribute('aria-label', status.title);
+  status.classList.toggle('text-sky-500', isRead);
+  status.classList.toggle('text-gray-400', !isRead);
+}
+
+async function refreshConversation(container) {
+  if (document.hidden || refreshingChats.has(container)) return;
+
+  refreshingChats.add(container);
   const url = new URL(container.dataset.chatUpdatesUrl, window.location.origin);
   if (container.dataset.after) url.searchParams.set('after', container.dataset.after);
 
@@ -306,7 +393,7 @@ async function refreshConversation(container) {
     });
     if (!response.ok) return;
 
-    const { messages } = await response.json();
+    const { messages, read_message_ids: readMessageIds } = await response.json();
     const wasNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 100;
     messages.forEach((message) => {
       renderMessage(container, message);
@@ -314,8 +401,12 @@ async function refreshConversation(container) {
         container.dataset.after = message.send_at;
       }
     });
+    (readMessageIds ?? []).forEach((messageId) => applyReadReceipt(container, messageId));
     if (messages.length && wasNearBottom) container.scrollTop = container.scrollHeight;
-  } catch (_) {}
+  } catch (_) {
+  } finally {
+    refreshingChats.delete(container);
+  }
 }
 
 function initializeChat() {
@@ -325,30 +416,73 @@ function initializeChat() {
   const photoInput = document.getElementById('photoInput');
   const photoSelection = document.getElementById('photoSelection');
   const photoName = document.getElementById('photoName');
+  const photoPreview = document.getElementById('photoPreview');
+  const viewOnceInput = document.getElementById('viewOnceInput');
   const removePhotoButton = document.getElementById('removePhoto');
-  if (!container || !form || !input || !photoInput || !photoSelection || !photoName || !removePhotoButton) {
+  if (!container || !form || !input || !photoInput || !photoSelection || !photoName || !photoPreview || !viewOnceInput || !removePhotoButton) {
     cleanupChat();
     return;
   }
   if (activeChat?.container === container) return;
   cleanupChat();
 
+  localizeMessageTimes(container);
   container.scrollTop = container.scrollHeight;
   input.focus();
+  let previewUrl = null;
   const onInput = () => input.setCustomValidity('');
   const onPhotoChange = () => {
     const file = photoInput.files?.[0];
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = file ? URL.createObjectURL(file) : null;
     photoName.textContent = file?.name ?? '';
     photoSelection.classList.toggle('hidden', !file);
+    photoSelection.classList.toggle('flex', Boolean(file));
+    viewOnceInput.disabled = !file;
+    if (!file) viewOnceInput.checked = false;
+    if (previewUrl) photoPreview.src = previewUrl;
+    else photoPreview.removeAttribute('src');
     input.setCustomValidity('');
   };
   const onRemovePhoto = () => {
     photoInput.value = '';
     onPhotoChange();
   };
+  const onViewOnceClick = async (event) => {
+    const button = event.target.closest('[data-view-once-button]');
+    if (!button || !container.contains(button)) return;
+    button.disabled = true;
+    try {
+      const response = await fetch(button.dataset.viewOnceUrl, {
+        headers: { Accept: 'image/*' },
+        credentials: 'same-origin',
+      });
+      if (response.status === 410) {
+        const status = document.createElement('span');
+        status.dataset.viewOnceStatus = '';
+        status.className = 'mb-2 rounded-xl bg-gray-100 px-4 py-3 text-xs text-gray-500';
+        status.textContent = 'Foto sekali lihat sudah dibuka';
+        button.replaceWith(status);
+        return;
+      }
+      if (!response.ok) throw new Error('Foto gagal dibuka.');
+
+      const image = document.createElement('img');
+      image.dataset.viewOnceOpened = '';
+      image.alt = 'Foto sekali lihat';
+      image.className = 'mb-2 max-h-80 max-w-full rounded-xl object-contain';
+      image.src = URL.createObjectURL(await response.blob());
+      button.replaceWith(image);
+      refreshConversation(container);
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = error.message || 'Foto gagal dibuka. Coba lagi.';
+    }
+  };
   input.addEventListener('input', onInput);
   photoInput.addEventListener('change', onPhotoChange);
   removePhotoButton.addEventListener('click', onRemovePhoto);
+  container.addEventListener('click', onViewOnceClick);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -392,9 +526,30 @@ function initializeChat() {
   };
   form.addEventListener('submit', onSubmit);
 
-  activeChat = { container, form, input, photoInput, removePhotoButton, onInput, onPhotoChange, onRemovePhoto, onSubmit };
+  activeChat = {
+    container, form, input, photoInput, removePhotoButton, onInput, onPhotoChange,
+    onRemovePhoto, onViewOnceClick, onSubmit,
+    revokePreview: () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    },
+  };
   refreshConversation(container);
-  chatPollingTimer = window.setInterval(() => refreshConversation(container), 2000);
+  chatPollingTimer = window.setInterval(() => refreshConversation(container), 5000);
+}
+
+function formatMessageTime(value) {
+  if (!value) return '';
+  return new Intl.DateTimeFormat('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value));
+}
+
+function localizeMessageTimes(container) {
+  container.querySelectorAll('[data-message-time][datetime]').forEach((time) => {
+    const textNode = [...time.childNodes].find((node) => node.nodeType === Node.TEXT_NODE);
+    if (textNode) textNode.nodeValue = `${formatMessageTime(time.dateTime)} `;
+  });
 }
 
 function cleanupChat() {
@@ -406,6 +561,8 @@ function cleanupChat() {
     activeChat.input.removeEventListener('input', activeChat.onInput);
     activeChat.photoInput.removeEventListener('change', activeChat.onPhotoChange);
     activeChat.removePhotoButton.removeEventListener('click', activeChat.onRemovePhoto);
+    activeChat.container.removeEventListener('click', activeChat.onViewOnceClick);
+    activeChat.revokePreview();
     activeChat = null;
   }
 }
@@ -417,8 +574,8 @@ function initializeRealtime() {
     refreshPresence();
     refreshNotifications();
     window.setInterval(sendHeartbeat, 30000);
-    window.setInterval(refreshPresence, 5000);
-    window.setInterval(refreshNotifications, 5000);
+    window.setInterval(refreshPresence, 15000);
+    window.setInterval(refreshNotifications, 15000);
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         sendHeartbeat();

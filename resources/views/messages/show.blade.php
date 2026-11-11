@@ -43,7 +43,30 @@
     </div>
 
     {{-- Three Dots Menu --}}
-    <div class="relative" x-data="{ open: false }">
+    <div class="relative" x-data="{
+      open: false,
+      openReportModal: false,
+      contentType: null,
+      contentId: null,
+      reportedUserId: null,
+      reportUrl: null,
+      reportTarget: null,
+      openReport(type, contentId, reportedUserId = null, url = null, target = null) {
+        this.contentType = type;
+        this.contentId = contentId;
+        this.reportedUserId = reportedUserId;
+        this.reportUrl = url;
+        this.reportTarget = target;
+        this.openReportModal = true;
+      },
+      closeReport() {
+        this.contentType = null;
+        this.contentId = null;
+        this.reportedUserId = null;
+        this.reportUrl = null;
+        this.openReportModal = false;
+      }
+    }">
       <button @click="open = !open" type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition">
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
           <circle cx="12" cy="5" r="2" />
@@ -52,14 +75,21 @@
         </svg>
       </button>
       <div x-show="open" @click.outside="open = false" x-cloak
-           class="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-20">
-        <a href="{{ route('profile.show', ['user' => $otherUser->id]) }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-50">
+           class="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg z-20">
+        <a href="{{ route('profile.show', ['user' => $otherUser->id]) }}" class="block px-7 py-2.5 text-base text-gray-800 hover:bg-gray-50">
           Lihat Profil
         </a>
-        <a href="{{ route('messages.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-50">
-          Tutup Obrolan
+        <a href="{{ route('messages.index') }}" class="block px-7 py-2.5 text-base text-gray-800 hover:bg-gray-50">
+          Keluar Obrolan
         </a>
+        <div class="my-1.5 border-t border-gray-200"></div>
+        <button type="button"
+          @click="openReport('user', '{{ $otherUser->id }}', '{{ $otherUser->id }}', '{{ route('reports.store') }}', @js(['name' => $otherUser->name, 'avatar' => $otherUser->avatar_full_url ?? '', 'joined' => $otherUser->created_at?->format('d M Y') ?? '']); open = false"
+          class="block w-full px-7 py-2.5 text-left text-base text-gray-800 hover:bg-gray-50">
+          Laporkan Pengguna
+        </button>
       </div>
+      <x-report-modal />
     </div>
   </div>
 
@@ -89,13 +119,19 @@
 
         @if(!$isMe)
           {{-- Received Message (Left) --}}
-          <div data-message-id="{{ $msg->id }}" class="flex items-start gap-2.5 max-w-[80%] md:max-w-[70%]">
+          <div data-message-id="{{ $msg->id }}" data-message-read="true" class="flex items-start gap-2.5 max-w-[80%] md:max-w-[70%]">
             {{-- Partner Initial Avatar --}}
             <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-xs shrink-0 select-none mt-0.5">
               {{ $otherInitial }}
             </div>
             <div>
-              @if($msg->photo_path && !$msg->deleted_at)
+              @if($msg->view_once && !$msg->deleted_at)
+                @if($msg->viewed_at)
+                  <span data-view-once-status class="mb-2 rounded-xl bg-gray-100 px-4 py-3 text-xs text-gray-500">Foto sekali lihat sudah dibuka</span>
+                @else
+                  <button type="button" data-view-once-button data-view-once-url="{{ route('messages.image', [$club->id, $otherUser->id, $msg->id]) }}" class="mb-2 rounded-xl bg-white px-4 py-3 text-sm text-gray-700 shadow-sm border border-gray-100">Lihat foto sekali</button>
+                @endif
+              @elseif($msg->photo_path && !$msg->deleted_at)
                 <img data-message-image src="{{ route('messages.image', [$club->id, $otherUser->id, $msg->id]) }}" alt="Foto yang dikirim" loading="lazy" class="mb-2 max-h-80 max-w-full rounded-xl object-contain">
               @endif
               @if($msg->content !== '')
@@ -103,14 +139,14 @@
                   {{ $msg->content }}
                 </div>
               @endif
-              <span data-message-time class="text-[10px] text-gray-400 ml-2 mt-1 block">
+              <span data-message-time datetime="{{ $msg->send_at?->toIso8601String() }}" class="text-[10px] text-gray-400 ml-2 mt-1 block">
                 {{ $msg->send_at ? $msg->send_at->format('H:i') : '' }}
               </span>
             </div>
           </div>
         @else
           {{-- Sent Message (Right) --}}
-          <div data-message-id="{{ $msg->id }}" x-data="{ menuOpen: false, editing: false, confirmDelete: false }" @click.outside="menuOpen = false" class="group flex flex-col items-end max-w-[80%] md:max-w-[70%] ml-auto">
+          <div data-message-id="{{ $msg->id }}" data-message-read="{{ $msg->is_read ? 'true' : 'false' }}" x-data="{ menuOpen: false, editing: false, confirmDelete: false }" @click.outside="menuOpen = false" class="group flex flex-col items-end max-w-[80%] md:max-w-[70%] ml-auto">
             <div class="flex items-start justify-end gap-2.5">
               @if(!$msg->deleted_at)
                 <div data-message-actions class="relative self-center opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity">
@@ -122,13 +158,15 @@
                     </svg>
                   </button>
                   <div x-show="menuOpen" x-cloak @keydown.escape.window="menuOpen = false" class="absolute right-full top-0 z-20 mr-1 w-36 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
-                    <button type="button" @click="editing = true; menuOpen = false" class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50">
-                      <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 20h9" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" />
-                      </svg>
-                      Edit pesan
-                    </button>
+                    @unless($msg->is_read)
+                      <button type="button" data-message-edit @click="editing = true; menuOpen = false" class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50">
+                        <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 20h9" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" />
+                        </svg>
+                        Edit pesan
+                      </button>
+                    @endunless
                     <button type="button" @click="confirmDelete = true; menuOpen = false" class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50">
                       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 6h18" />
@@ -140,7 +178,11 @@
                 </div>
               @endif
               <div class="flex flex-col items-end">
-                @if($msg->photo_path && !$msg->deleted_at)
+                @if($msg->view_once && !$msg->deleted_at)
+                  <span data-view-once-status class="mb-2 rounded-xl bg-blue-50 px-4 py-3 text-xs text-blue-700">
+                    Foto sekali lihat · {{ $msg->viewed_at ? 'Sudah dibuka' : 'Belum dibuka' }}
+                  </span>
+                @elseif($msg->photo_path && !$msg->deleted_at)
                   <img data-message-image src="{{ route('messages.image', [$club->id, $otherUser->id, $msg->id]) }}" alt="Foto yang dikirim" loading="lazy" class="mb-2 max-h-80 max-w-full rounded-xl object-contain">
                 @endif
                 @if($msg->content !== '')
@@ -148,11 +190,16 @@
                     {{ $msg->content }}
                   </div>
                 @endif
-                <span data-message-time class="text-[10px] text-gray-400 mr-2 mt-1 block">
+                <span data-message-time datetime="{{ $msg->send_at?->toIso8601String() }}" class="text-[10px] text-gray-400 mr-2 mt-1 block">
                   {{ $msg->send_at ? $msg->send_at->format('H:i') : '' }}
                   @if($msg->edited_at && !$msg->deleted_at)
                     <span data-message-edited>(diedit)</span>
                   @endif
+                  <span data-message-status data-is-read="{{ $msg->is_read ? 'true' : 'false' }}" title="{{ $msg->is_read ? 'Terbaca' : 'Belum terbaca' }}" aria-label="{{ $msg->is_read ? 'Terbaca' : 'Belum terbaca' }}" class="{{ $msg->is_read ? 'text-sky-500' : 'text-gray-400' }}">
+                    <svg class="inline h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 16 12" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m1 6 3.5 4L11 2M6 6l3.5 4L15 2" />
+                    </svg>
+                  </span>
                 </span>
               </div>
               <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center text-xs shrink-0 select-none mt-0.5">
@@ -160,7 +207,8 @@
               </div>
             </div>
             @if(!$msg->deleted_at)
-              <form x-show="editing" x-cloak action="{{ route('messages.update', [$club->id, $otherUser->id, $msg->id]) }}" method="POST" class="mt-2 flex w-full items-center gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
+              @unless($msg->is_read)
+              <form data-message-editor x-show="editing" x-cloak action="{{ route('messages.update', [$club->id, $otherUser->id, $msg->id]) }}" method="POST" class="mt-2 flex w-full items-center gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
                 @csrf
                 @method('PATCH')
                 <input type="text" name="content" value="{{ $msg->content }}" maxlength="5000" required aria-label="Edit pesan" class="min-w-0 flex-1 border-0 bg-transparent px-2 py-1 text-xs text-gray-800 focus:ring-0">
@@ -175,6 +223,7 @@
                   </svg>
                 </button>
               </form>
+              @endunless
               <div x-show="confirmDelete" x-cloak x-transition.opacity @keydown.escape.window="confirmDelete = false" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/45 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="delete-message-title-{{ $msg->id }}">
                 <div @click.stop class="w-full max-w-sm rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl">
                   <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600">
@@ -199,18 +248,30 @@
       @endforeach
     @endif
   </div>
-      <label for="photoInput" title="Kirim foto" class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:scale-95 text-gray-700 transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 7a2 2 0 0 1 2-2h2l1.5-2h5L16 5h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" />
-          <circle cx="12" cy="12" r="3.5" />
-        </svg>
-      </label>
-      <input type="file" name="photo" id="photoInput" accept="image/*" class="sr-only">
 
   {{-- Chat Input Form matching Figma --}}
   <div class="pt-3 pb-1 border-t border-gray-100 bg-white/70 backdrop-blur-sm">
-    <form action="{{ route('messages.store', [$club->id, $otherUser->id]) }}" method="POST" enctype="multipart/form-data" data-turbo="false" class="w-full flex items-center gap-3" id="chatForm">
+    <form action="{{ route('messages.store', [$club->id, $otherUser->id]) }}" method="POST" enctype="multipart/form-data" data-turbo="false" class="w-full space-y-3" id="chatForm">
       @csrf
+      <div id="photoSelection" class="hidden items-center gap-3 rounded-xl border border-gray-200 bg-white p-2">
+        <img id="photoPreview" alt="Pratinjau foto" class="h-16 w-16 rounded-lg object-cover">
+        <div class="min-w-0 flex-1">
+          <span id="photoName" class="block truncate text-xs text-gray-600"></span>
+          <label class="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
+            <input type="checkbox" name="view_once" id="viewOnceInput" value="1" disabled class="rounded border-gray-300 text-primary focus:ring-primary">
+            Sekali lihat
+          </label>
+        </div>
+        <button type="button" id="removePhoto" class="shrink-0 rounded-lg px-2 py-1 text-xs font-semibold text-primary hover:bg-primary/10">Hapus</button>
+      </div>
+      <div class="flex w-full items-center gap-3">
+        <label for="photoInput" title="Kirim foto" class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:scale-95 text-gray-700 transition cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7a2 2 0 0 1 2-2h2l1.5-2h5L16 5h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" />
+            <circle cx="12" cy="12" r="3.5" />
+          </svg>
+        </label>
+      <input type="file" name="photo" id="photoInput" accept="image/*" class="sr-only">
       <input type="text"
              name="content"
              id="messageInput"
@@ -220,15 +281,12 @@
              class="flex-1 bg-white border border-gray-200 rounded-full py-3.5 pl-6 pr-4 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm transition">
 
       <button type="submit" aria-label="Kirim pesan"
-              class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:scale-95 text-gray-900 transition">
+              class="ml-auto shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:opacity-90 active:scale-95 transition">
         <svg class="w-5 h-5 -rotate-45" fill="currentColor" viewBox="0 0 24 24">
-      <div id="photoSelection" class="hidden w-full -mt-1 pl-12 text-xs text-gray-500">
-        <span id="photoName"></span>
-        <button type="button" id="removePhoto" class="ml-2 font-semibold text-primary hover:underline">Hapus foto</button>
-      </div>
           <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
         </svg>
       </button>
+      </div>
     </form>
   </div>
 </div>
