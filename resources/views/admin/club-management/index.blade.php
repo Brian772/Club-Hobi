@@ -267,7 +267,7 @@
           <template x-for="club in filteredClubs" :key="club.id">
             <article
               class="group flex flex-col overflow-hidden rounded-lg border border-hairline bg-canvas transition-shadow duration-200 hover:shadow-md sm:flex-row">
-              <a :href="club.url" class="relative block h-40 w-full shrink-0 overflow-hidden bg-canvas-light sm:h-auto sm:min-h-36 sm:w-44"
+              <a :href="club.url" class="relative block h-40 w-full shrink-0 overflow-hidden bg-canvas-light sm:min-h-36 sm:w-44"
                 :aria-label="`View ${club.name}`">
                 <template x-if="club.cover">
                   <img :src="club.cover" :alt="`${club.name} cover`" loading="lazy"

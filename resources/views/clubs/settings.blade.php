@@ -793,66 +793,66 @@
       </div>
     </div>
 
-    {{-- Delete Modal --}}
-    <div x-show="openDelete" x-cloak @keydown.escape.window="openDelete = false"
-      class="fixed flex items-center justify-center inset-0 z-50">
-      <div @click="openDelete = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
-      </div>
-      <div
-        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
-        <div class="flex flex-col gap-2 mb-4">
-          <h3 class="text-title mb-4 text-ink">
-            Delete <span x-text="selectedName"></span>?
-          </h3>
-          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menghapus club ini? Semua data dan konten di
-            dalamnya akan dihapus secara permanen dan tindakan ini tidak dapat dibatalkan.</p>
-        </div>
-        <div class="flex flex-col gap-2 w-full">
-          <p class="text-body-mid text-ink mt-2">
-            Ketik <span class="font-semibold" x-text="selectedName"></span> untuk konfirmasi:
-          </p>
-        </div>
-        <div class="w-full">
-          <form :action="deleteUrl" method="POST" x-data="{ touched: false, showServerError: true }">
-            @csrf
-            @method('DELETE')
+    {{-- Delete confirmation modal --}}
+    <div x-show="openDelete" x-cloak x-transition.opacity @keydown.escape.window="openDelete = false"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/40" @click="openDelete = false"></div>
 
-            <input type="text" name="confirm_name" x-model="confirmText" @input="showServerError = false"
-              @blur="touched = true" autocomplete="off"
-              :class="(touched && confirmText !== '' && confirmText !== selectedName) ?
-              'border-accent-red' : 'border-hairline'"
-              class="w-full rounded-md border px-4 mb-4 py-2 focus:ring-accent-red focus:border-accent-red"
-              placeholder="Ketik nama club">
-
-            <p x-show="touched && confirmText !== '' && confirmText !== selectedName"
-              x-cloak class="text-caption text-accent-red mb-4">
-              Nama club tidak sesuai.
+      <div role="dialog" aria-modal="true" aria-labelledby="delete-detail-title"
+        class="relative z-10 max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-lg border border-hairline bg-canvas p-6 shadow-xl">
+        <div class="flex items-start gap-3">
+          <div>
+            <h2 id="delete-detail-title" class="text-title font-semibold text-ink">Delete <span
+                x-text="selectedName"></span>?</h2>
+            <p class="mt-2 text-caption text-ink-muted">
+              Are you sure you want to delete this club? All data and content will be permanently deleted and this
+              action cannot be undone.
             </p>
-
-            @error('confirm_name', 'deleteClub')
-              <p x-show="showServerError" class="text-caption text-accent-red mb-4">{{ $message }}</p>
-            @enderror
-
-            <div class="flex flex-row gap-2 w-full justify-end items-center">
-              <button type="submit" :disabled="confirmText !== selectedName"
-                class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" class="lucide lucide-trash">
-                  <path d="M10 11v6" />
-                  <path d="M14 11v6" />
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-                  <path d="M3 6h18" />
-                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                </svg>
-                Delete
-              </button>
-              <button type="button"
-                class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
-                @click="openDelete = false">Cancel</button>
-            </div>
-          </form>
+          </div>
         </div>
+
+        <form :action="deleteUrl" method="POST" x-data="{ touched: false, showServerError: true }" class="mt-5">
+          @csrf
+          @method('DELETE')
+
+          <label for="confirm-name" class="block text-caption font-semibold text-ink-muted">
+            Type <span class="font-semibold text-ink" x-text="selectedName"></span> to confirm:
+          </label>
+          <input type="text" id="confirm-name" name="confirm_name" x-model="confirmText"
+            @input="showServerError = false" @blur="touched = true" autocomplete="off"
+            :class="(touched && confirmText !== '' && confirmText !== selectedName) ?
+                'border-accent-red' : 'border-hairline'"
+            class="mt-2 w-full rounded-lg border px-3 py-2 text-caption text-ink placeholder:text-ink-faint focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            placeholder="Type club name">
+
+          <p x-show="touched && confirmText !== '' && confirmText !== selectedName" x-cloak
+            class="mt-1.5 text-caption text-accent-red">
+            Club name does not match.
+          </p>
+
+          @error('confirm_name', 'deleteClub')
+            <p x-show="showServerError" class="mt-1.5 text-caption text-accent-red">{{ $message }}</p>
+          @enderror
+
+          <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="submit" :disabled="confirmText !== selectedName"
+              class="inline-flex items-center justify-center gap-2 rounded-md bg-accent-red px-4 py-2 text-caption font-semibold text-white transition-colors duration-150 hover:bg-accent-red/90 disabled:cursor-not-allowed disabled:opacity-60">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 11v6" />
+                <path d="M14 11v6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                <path d="M3 6h18" />
+                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+              Delete club
+            </button>
+            <button type="button" @click="openDelete = false"
+              class="rounded-md border border-hairline bg-canvas px-4 py-2 text-caption font-semibold text-ink transition-colors duration-150 hover:bg-canvas-soft">
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
