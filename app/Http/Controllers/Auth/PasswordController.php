@@ -23,7 +23,7 @@ class PasswordController extends Controller
 
         return back()->with(
             'success',
-            'Password berhasil diperbarui.'
+            'Success reset password.'
         );
     }
 }

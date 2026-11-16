@@ -50,16 +50,18 @@
     data-notification-updates-url="{{ route('notifications.updates') }}"
   @endauth>
 
-  @if (Route::is('login') || Route::is('register') || Route::is('home'))
+  @if (Route::is('login') || Route::is('register') || Route::is('password.request') || Route::is('password.email') || Route::is('password.reset') || Route::is('password.store'))
+    <div class="flex flex-col p-6 lg:p-8 min-h-dvh items-center justify-center">
+      <x-alert />
+      @yield('content')
+    </div>
+  @elseif (Route::is('home'))
     <div x-data="{ navOpen: false }" class="flex flex-col p-6 lg:p-8 min-h-dvh items-center justify-center">
       <x-alert />
 
-      {{-- panel --}}
       <div x-show="navOpen" x-cloak @keydown.escape.window="navOpen = false" class="lg:hidden fixed inset-0 z-50">
-        {{-- background gelap --}}
         <div x-transition.opacity @click="navOpen = false" class="fixed inset-0 z-40 bg-black/30"></div>
 
-        {{-- panel --}}
         <div x-transition.opacity @click.stop
           class="fixed top-20 right-4 w-xs h-max max-h-[calc(100dvh-6rem)] overflow-y-auto rounded-lg z-50 max-w-sm bg-canvas border border-hairline">
           <div class="flex items-center justify-between p-4">
@@ -90,35 +92,33 @@
       @yield('content')
 
     </div>
-    @if (Route::is('home'))
-      <footer class="bg-canvas-light/50 pt-12 pb-4 mt-24">
-        <div class="w-full px-4 sm:px-6 lg:px-8">
-          <div class="flex flex-col md:flex-row justify-around items-start md:items-center">
-            <div class="mb-4 md:mb-0">
-              <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" draggable="false" class="w-max h-16 object-contain mb-2">
-              <p class="text-body-mid text-ink">Find your people. Your hobby, your space.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 w-max gap-6 xl:gap-16">
-              <div class="flex flex-col gap-2 items-start">
-                <span class="text-ink text-body-mid font-semibold mb-2">Navigation</span>
-                <a href="#explore" class="text-body-mid text-ink hover:text-primary">Explore</a>
-                <a href="#discover" class="text-body-mid text-ink hover:text-primary">Discover</a>
-                <a href="#how-it-works" class="text-body-mid text-ink hover:text-primary">How It Works</a>
-                <a href="#preview" class="text-body-mid text-ink hover:text-primary">Preview</a>
-              </div>
-              <div class="flex flex-col gap-2 items-start">
-                <span class="text-ink text-body-mid font-semibold mb-2">Account</span>
-                <a href="{{ route('login') }}" class="text-body-mid text-ink hover:text-primary">Login</a>
-                <a href="{{ route('register') }}" class="text-body-mid text-ink hover:text-primary">Register</a>
-              </div>
-            </div>
+    <footer class="bg-canvas-light/50 pt-12 pb-4 mt-24">
+      <div class="w-full px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-around items-start md:items-center">
+          <div class="mb-4 md:mb-0">
+            <img src="{{ asset('images/orbii-v2.svg') }}" alt="Orbii Logo" draggable="false" class="w-max h-16 object-contain mb-2">
+            <p class="text-body-mid text-ink">Find your people. Your hobby, your space.</p>
           </div>
-          <div class="mt-8 text-center border-t border-hairline pt-4">
-            <p class="text-caption text-ink">&copy; 2026 Orbii. All rights reserved.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 w-max gap-6 xl:gap-16">
+            <div class="flex flex-col gap-2 items-start">
+              <span class="text-ink text-body-mid font-semibold mb-2">Navigation</span>
+              <a href="#explore" class="text-body-mid text-ink hover:text-primary">Explore</a>
+              <a href="#discover" class="text-body-mid text-ink hover:text-primary">Discover</a>
+              <a href="#how-it-works" class="text-body-mid text-ink hover:text-primary">How It Works</a>
+              <a href="#preview" class="text-body-mid text-ink hover:text-primary">Preview</a>
+            </div>
+            <div class="flex flex-col gap-2 items-start">
+              <span class="text-ink text-body-mid font-semibold mb-2">Account</span>
+              <a href="{{ route('login') }}" class="text-body-mid text-ink hover:text-primary">Login</a>
+              <a href="{{ route('register') }}" class="text-body-mid text-ink hover:text-primary">Register</a>
+            </div>
           </div>
         </div>
-      </footer>
-    @endif
+        <div class="mt-8 text-center border-t border-hairline pt-4">
+          <p class="text-caption text-ink">&copy; 2026 Orbii. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
   @elseif (Route::is('appeal') || Route::is('verification.notice'))
     <div class="flex flex-col p-6 lg:p-8 min-h-dvh items-center justify-center">
       <x-alert />
@@ -128,16 +128,13 @@
   @else
     <div x-data="{ sidebarOpen: false, notifOpen: false }" class="min-h-dvh p-6 flex flex-col lg:flex-row lg:p-4.25">
 
-      {{-- sidebar desktop --}}
       <aside
         class="hidden lg:fixed lg:inset-y-4 lg:left-4 lg:z-30 lg:flex lg:h-[calc(100vh-2rem)] lg:w-60 lg:shrink-0 lg:overflow-hidden lg:rounded-lg lg:border lg:border-hairline lg:bg-canvas">
         @include('layouts.partials.sidebar-content')
       </aside>
 
-      {{-- sidebar mobile --}}
       <div x-show="sidebarOpen" x-cloak @keydown.escape.window="sidebarOpen = false"
         class="lg:hidden fixed inset-0 z-50">
-        {{-- background gelap --}}
         <div
           x-transition:enter="transition-opacity ease-out duration-200"
           x-transition:enter-start="opacity-0"
@@ -148,7 +145,6 @@
           @click="sidebarOpen = false"
           class="fixed inset-0 z-40 bg-black/30"></div>
 
-        {{-- panel --}}
         <div
           x-transition:enter="transition ease-out duration-200"
           x-transition:enter-start="-translate-x-8 opacity-0"

@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use App\Mail\VerifyEmailCustom;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Mail;
 
@@ -144,7 +145,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return [];
         }
 
-        return collect(explode(',',  $this->interests))
+        return collect(explode(',', $this->interests))
             ->map(fn($item) => trim($item))
             ->filter()
             ->values()
@@ -190,9 +191,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Appeal::class, 'user_id');
     }
-    
+
     public function reports()
     {
-        return $this->morphMany(Report::class, 'reportable',  'content_type', 'content_id');
+        return $this->morphMany(Report::class, 'reportable', 'content_type', 'content_id');
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }
