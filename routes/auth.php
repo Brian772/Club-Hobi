@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -15,10 +14,9 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Auth\Events\Verified;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpKernel\Attribute\RateLimit;
 
 Route::get(
     'register/{step?}',
@@ -26,9 +24,9 @@ Route::get(
 )->name('register');
 
 Route::post(
-        'register/step-3',
-        [RegisteredUserController::class, 'step3']
-    )->name('register.step3');
+    'register/step-3',
+    [RegisteredUserController::class, 'step3']
+)->name('register.step3');
 
 Route::get('forgot-password', [PasswordResetController::class, 'create'])->name('password.request');
 Route::post('forgot-password', [PasswordResetController::class, 'storeLink'])->name('password.email');
@@ -63,28 +61,7 @@ Route::middleware('guest')->group(function () {
 
     Route::get('auth/{provider}/callback', [SocialiteController::class, 'handleProviderCallback'])
         ->name('social.callback');
-
-    Route::get(
-        'forgot-password',
-        [PasswordResetLinkController::class, 'create']
-    )->name('password.request');
-
-    Route::post(
-        'forgot-password',
-        [PasswordResetLinkController::class, 'store']
-    )->name('password.email');
-
-    Route::get(
-        'reset-password/{token}',
-        [NewPasswordController::class, 'create']
-    )->name('password.reset');
-
-    Route::post(
-        'reset-password',
-        [NewPasswordController::class, 'store']
-    )->name('password.store');
 });
-
 
 Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
     $user = User::findOrFail($id);
@@ -124,14 +101,13 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) 
         ->with('success', 'Email kamu berhasil diverifikasi. Silakan masuk kembali!');
 })->middleware('signed', 'throttle:6,1')->name('verification.verify');
 
-
 Route::middleware('auth')->group(function () {
 
     Route::get('/email/verify', [EmailVerificationPromptController::class, 'index'])->name('verification.notice');
 
     Route::post('/email/verification-notification', function (Request $request) {
-        $user = $request->user();
-        $key = 'verification-email:' . $user->id;
+        $user =$request->user();
+        $key = 'verification-email:' .$user->id;
 
         if (RateLimiter::tooManyAttempts($key, 1)) {
             $seconds = RateLimiter::availableIn($key);
@@ -144,7 +120,7 @@ Route::middleware('auth')->group(function () {
         RateLimiter::hit($key, 60);
 
         try {
-            $user->sendEmailVerificationNotification(); 
+            $user->sendEmailVerificationNotification();
         } catch (\Throwable $th) {
             RateLimiter::clear($key);
             return back()->withErrors([
@@ -154,7 +130,7 @@ Route::middleware('auth')->group(function () {
 
         return back()->with('status', 'verification-link-sent');
     })->name('verification.send');
-    
+
     Route::get(
         'confirm-password',
         [ConfirmablePasswordController::class, 'show']
@@ -174,4 +150,4 @@ Route::middleware('auth')->group(function () {
         'logout',
         [AuthenticatedSessionController::class, 'destroy']
     )->name('logout');
-});
+}); 
