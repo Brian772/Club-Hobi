@@ -15,6 +15,8 @@ class Club extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    protected $casts = ['created_at' => 'datetime', 'updated_at' => 'datetime'];
+
     protected $fillable = [
         'id',
         'name',
@@ -22,7 +24,16 @@ class Club extends Model
         'description',
         'created_by',
         'cover_url',
+        'visibility',
+        'is_required_request',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_required_request' => 'boolean',
+        ];
+    }
 
     public function hobby()
     {

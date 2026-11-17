@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Account Settings')
+
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -7,7 +9,21 @@
 @endsection
 
 @section('content')
-    {{-- Header Halaman --}}
+    @if (session('success'))
+        <div id="topRightNotification" class="fixed top-5 right-5 z-50 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-300">
+            {{ session('success') }}
+        </div>
+        <script>
+            setTimeout(() => {
+                const notif = document.getElementById('topRightNotification');
+                if (notif) {
+                    notif.style.opacity = '0';
+                    setTimeout(() => notif.remove(), 300);
+                }
+            }, 4000);
+        </script>
+    @endif
+
     <div class="page-header">
         <a href="{{ route('settings.index') }}" class="back-link">
             <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -19,61 +35,63 @@
         </a>
     </div>
 
-    {{-- Group Email --}}
+    @if (session('status'))
+        <div class="p-3 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
+            {{ session('status') }}
+        </div>
+    @endif
+
     <div class="form-group-item">
         <label class="input-label">Email</label>
         <div class="input-verified-wrapper">
             <input type="email" class="custom-input-box" value="{{ $user->email }}" readonly>
-            <div class="account-status-card">
-                <div class="account-status-icon">
-                    {{-- Pengecekan Real dari Database --}}
-                    @if ($user->hasVerifiedEmail())
-                        <span class="verified-badge">
-                            <i class="fa-solid fa-circle-check"></i>
-                            Verified
-                        </span>
-                    @else
-                        <span class="unverified-badge">
-                            <i class="fa-solid fa-circle-xmark"></i>
-                            Belum Diverifikasi
-                        </span>
-                    @endif
-                </div>
-            </div>
+
+            @if ($user->hasVerifiedEmail())
+                <span class="verified-badge">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Verified
+                </span>
+            @else
+                <span class="unverified-badge">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    Not Verified Yet
+                </span>
+            @endif
         </div>
     </div>
 
-    {{-- Group Password --}}
     <div class="form-group-item">
-        <label class="input-label">Password</label>
+        <div class="flex justify-between items-center mb-1">
+            <label class="input-label">Password</label>
+            <a href="{{ route('settings.password.edit') }}" class="text-xs text-primary font-semibold hover:underline bg-transparent border-0 cursor-pointer p-0">
+                <i class="fa-solid fa-key mr-1"></i> Reset Password?
+            </a>
+        </div>
         <input type="password" class="custom-input-box" value="********" readonly>
+        <p class="text-xs text-gray-500 mt-1">Klik tautan di atas untuk langsung mengubah password akun Anda.</p>
     </div>
 
-    {{-- Status Akun Card --}}
     <div class="account-status-card">
         <div class="account-status-icon">
             <i class="fa-solid fa-circle-check"></i>
         </div>
         <div class="account-status-text">
-            <strong>Status Akun</strong>
-            <span>Aktif, tidak ada pembatasan</span>
+            <strong>Account Status</strong>
+            <span>Active, No Restrictions</span>
         </div>
     </div>
 
-    {{-- Tombol Hapus --}}
     <div class="account-danger-actions">
         <button type="button" class="btn-delete-account" onclick="openDeleteAccountModal()">
             <i class="fa-solid fa-trash"></i>
-            Hapus Akun
+            Delete Account
         </button>
     </div>
-    </div>
 
-    {{-- Modal Hapus Akun --}}
     <div class="profile-modal-overlay" id="deleteAccountModal">
         <div class="profile-modal delete-account-modal">
             <div class="modal-header">
-                <h3>Hapus Akun</h3>
+                <h3>Delete Account</h3>
                 <button type="button" class="modal-close" onclick="closeDeleteAccountModal()">&times;</button>
             </div>
 
@@ -81,10 +99,10 @@
                 <div class="delete-account-icon">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                <h4 class="delete-account-title">Yakin ingin menghapus akun?</h4>
+                <h4 class="delete-account-title">Are you sure you want to delete your account?</h4>
                 <p class="delete-account-description">
-                    Semua data akun, profile, dan keanggotaan club akan dihapus.<br>
-                    <strong>Tindakan ini tidak dapat dibatalkan.</strong>
+                    All account data, profile information, and club memberships will be deleted.<br>
+                    <strong>This action cannot be undone.</strong>
                 </p>
 
                 <form action="{{ route('profile.destroy') }}" method="POST" id="deleteAccountForm">
@@ -93,7 +111,7 @@
 
                     <div class="delete-account-password-group" style="margin-bottom: 20px; text-align: left;">
                         <label for="deleteAccountPassword" class="input-label">
-                            Masukkan password untuk konfirmasi
+                            Enter your password to confirm
                         </label>
                         <input type="password" name="password" id="deleteAccountPassword" class="custom-input-box"
                             placeholder="Password" autocomplete="current-password" style="margin-top: 6px;">
@@ -106,38 +124,38 @@
 
                     <div class="delete-account-actions">
                         <button type="button" class="btn-delete-cancel" onclick="closeDeleteAccountModal()">
-                            Batal
+                            Cancel
                         </button>
                         <button type="submit" class="btn-delete-confirm">
                             <i class="fa-solid fa-trash"></i>
-                            Hapus Akun
+                            Delete Account
                         </button>
                     </div>
                 </form>
             </div>
         </div>
+    </div>
 
+    <script>
+        function openDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.add('show');
+        }
 
-        <script>
-            function openDeleteAccountModal() {
-                document.getElementById('deleteAccountModal').classList.add('show');
+        function closeDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.remove('show');
+        }
+
+        document.addEventListener('click', function (event) {
+            const deleteAccountModal = document.getElementById('deleteAccountModal');
+            if (event.target === deleteAccountModal) {
+                closeDeleteAccountModal();
             }
+        });
 
-            function closeDeleteAccountModal() {
-                document.getElementById('deleteAccountModal').classList.remove('show');
-            }
-
-            document.addEventListener('click', function (event) {
-                const deleteAccountModal = document.getElementById('deleteAccountModal');
-                if (event.target === deleteAccountModal) {
-                    closeDeleteAccountModal();
-                }
+        @if ($errors->userDeletion->any())
+            document.addEventListener('DOMContentLoaded', function () {
+                openDeleteAccountModal();
             });
-
-            @if ($errors->userDeletion->any())
-                document.addEventListener('DOMContentLoaded', function () {
-                    openDeleteAccountModal();
-                });
-            @endif
-        </script>
+        @endif
+    </script>
 @endsection

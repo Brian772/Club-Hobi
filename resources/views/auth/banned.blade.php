@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Appeals</title>
+  <title>Orbii | Banned</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -17,10 +17,13 @@
         class="w-37.5 md:w-full max-w-50">
     </div>
 
+    
     <div class="order-2 md:w-1/2 max-w-200 w-full p-3 flex flex-col">
       <p class="text-body-mid text-ink">Akun Anda telah diblokir. Anda dapat mengajukan banding untuk meminta agar
         akun Anda diaktifkan kembali.</p>
-      <span><a href="{{ route('appeal.create') }}" class="text-primary underline">Ajukan
+      <p class="text-ink font-semibold text-body-mid">Alasan diblokir:</p>
+      <p class="text-body-mid text-ink-muted">{{ auth()->user()->ban_reason ?? 'Tidak ada alasan yang diberikan.' }}</p>
+      <span><a href="{{ route('appeal') }}" class="text-primary underline">Ajukan
           banding</a>.</span>
 
       <form action="{{ route('logout') }}" method="POST">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Club;
+use App\Models\ClubMember;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +27,19 @@ class ProfileController extends Controller
             return redirect()->route('clubs.index')->with('error', 'User not found.');
         }
 
-        return view('profile.show', compact('profile', 'user'));
+        $clubMemberships = ClubMember::with('club')
+            ->where('user_id', $profile->id)
+            ->orderByDesc('joined_at')
+            ->get();
+        $viewerClubIds = ClubMember::where('user_id', $user->id)->pluck('club_id');
+        $sharedMembership = $clubMemberships->first(
+            fn (ClubMember $membership) => $viewerClubIds->contains($membership->club_id)
+        );
+        $chatUrl = $sharedMembership
+            ? route('messages.show', [$sharedMembership->club_id, $profile->id])
+            : route('messages.index');
+
+        return view('profile.show', compact('profile', 'user', 'clubMemberships', 'chatUrl'));
     }
     public function edit(Request $request): View
     {
@@ -35,9 +48,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $request->user()->fill($request->validated());
@@ -51,9 +61,6 @@ class ProfileController extends Controller
         return Redirect::route('profile.index')->with('status', 'profile-updated');
     }
 
-    /**
-     * Delete the user's account.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [

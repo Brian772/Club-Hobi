@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClubActivity;
 use App\Models\Post;
+use App\Models\PostMedia;
 use App\Models\Comment;
 use App\Models\Like;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use FFMpeg\FFMpeg;
+use FFMpeg\Format\Video\X264;
 
 class PostController extends Controller
 {
@@ -16,15 +23,14 @@ class PostController extends Controller
         $user = Auth::user();
 
         $posts = Post::where('user_id', $user->id)
-            ->with('club')
+            ->where('is_archived', false) // Pastikan pos yang diarsipkan tidak tampil di index
+            ->with(['club', 'media'])
             ->withCount(['comments', 'likes'])
             ->latest()
             ->get();
 
-        $totalPosts = $posts->count(); //[cite: 2]
-
-        // Tambahkan perhitungan total suka dari semua postingan milik user:
-        $totalLikes = $posts->sum('likes_count');
+        $totalPosts = Post::where('user_id', $user->id)->where('is_archived', false)->count();
+        $totalLikes = Post::where('user_id', $user->id)->where('is_archived', false)->withSum('likes', 'id')->get()->sum('likes_count');
 
         return view('posts.index', compact('posts', 'totalPosts', 'totalLikes'));
     }
@@ -32,7 +38,8 @@ class PostController extends Controller
     public function create()
     {
         $clubs = Auth::user()->clubs;
-        return view('posts.create', compact('clubs'));
+        $user = Auth::user();
+        return view('posts.create', compact('clubs', 'user'));
     }
 
     public function store(Request $request)
@@ -41,26 +48,79 @@ class PostController extends Controller
             'club_id' => ['required'],
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
-            'media' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,mp4,mov,mp3,wav,pdf,doc,docx', 'max:20480'],
+            'media' => ['nullable', 'array'],
+            'media.*' => ['file', 'mimes:jpg,jpeg,png,webp,gif,mp4,mov,mp3,wav,pdf,doc,docx', 'max:20480'],
         ]);
 
         $user = Auth::user();
         $club = $user->clubs()->where('clubs.id', $validated['club_id'])->firstOrFail();
 
-        $mediaPath = null;
-        if ($request->hasFile('media')) {
-            $mediaPath = $request->file('media')->store('posts', 'public');
+        DB::beginTransaction();
+        try {
+
+            $post = Post::create([
+                'club_id' => $club->id,
+                'user_id' => $user->id,
+                'title' => $validated['title'],
+                'content' => $validated['content'],
+            ]);
+
+            $club->members()
+                ->where('user_id', '!=', $user->id)
+                ->pluck('user_id')
+                ->each(fn($memberId) => Notification::createForUser(
+                    $memberId,
+                    'Postingan baru di klub',
+                    $user->name . ' membagikan postingan baru: ' . $post->title,
+                    'other',
+                    $post->id
+                ));
+
+            if ($request->hasFile('media')) {
+                foreach ($request->file('media') as $file) {
+                    $extension = strtolower($file->getClientOriginalExtension());
+
+                    // Langsung simpan file ke storage tanpa konversi FFMpeg
+                    $mediaPath = $file->store('posts', 'public');
+
+                    PostMedia::create([
+                        'post_id' => $post->id,
+                        'file_path' => $mediaPath,
+                        'file_type' => $extension,
+                    ]);
+                }
+            }
+
+            ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $club->id,
+                'action' => 'Create Post',
+                'target_type' => 'Post',
+                'target_id' => $post->id,
+                'metadata' => [
+                    'title' => $validated['title'],
+                    'content' => $validated['content'],
+                ],
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'An error occurred while creating the post.');
         }
 
-        Post::create([
-            'club_id' => $club->id,
-            'user_id' => $user->id,
-            'title' => $validated['title'],
-            'content' => $validated['content'],
-            'media_url' => $mediaPath,
-        ]);
-
         return redirect()->route('posts.index')->with('success', 'Postingan berhasil dibuat.');
+    }
+    public function show(Post $post)
+    {
+        if ($post->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $post->load(['club', 'media', 'comments.user', 'likes']);
+
+        return view('posts.show', compact('post'));
     }
 
     public function edit(Post $post)
@@ -69,6 +129,7 @@ class PostController extends Controller
             abort(403);
         }
 
+        $post->load('media');
         $clubs = Auth::user()->clubs;
         return view('posts.edit', compact('post', 'clubs'));
     }
@@ -83,75 +144,43 @@ class PostController extends Controller
             'club_id' => ['required'],
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
-            'media' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,mp4,mov,mp3,wav,pdf,doc,docx', 'max:20480'],
+            'media' => ['nullable', 'array', 'max:5'],
+            'media.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,mp3,wav,pdf,doc,docx', 'max:20480'],
+            'delete_media' => ['nullable', 'array'],
+            'delete_media.*' => ['exists:post_media,id'],
         ]);
 
         $user = Auth::user();
         $club = $user->clubs()->where('clubs.id', $validated['club_id'])->firstOrFail();
 
-        $data = [
+        $post->update([
             'club_id' => $club->id,
             'title' => $validated['title'],
             'content' => $validated['content'],
-        ];
+        ]);
+
+        if ($request->has('delete_media')) {
+            $mediaToDelete = PostMedia::whereIn('id', $request->delete_media)->where('post_id', $post->id)->get();
+            foreach ($mediaToDelete as $media) {
+                Storage::disk('public')->delete($media->file_path);
+                $media->delete();
+            }
+        }
 
         if ($request->hasFile('media')) {
-            if ($post->media_url) {
-                Storage::disk('public')->delete($post->media_url);
-            }
-            $data['media_url'] = $request->file('media')->store('posts', 'public');
-        }
+            foreach ($request->file('media') as $file) {
+                $extension = strtolower($file->getClientOriginalExtension());
+                $mediaPath = $file->store('posts', 'public');
 
-        $post->update($data);
+                PostMedia::create([
+                    'post_id' => $post->id,
+                    'file_path' => $mediaPath,
+                    'file_type' => $extension,
+                ]);
+            }
+        }
 
         return redirect()->route('posts.index')->with('success', 'Postingan berhasil diperbarui.');
-    }
-
-    public function like(Post $post)
-    {
-        $userId = Auth::id();
-
-        $existingLike = Like::where('post_id', $post->id)
-            ->where('user_id', $userId)
-            ->first();
-
-        if ($existingLike) {
-            $existingLike->delete();
-        } else {
-            Like::create([
-                'post_id' => $post->id,
-                'user_id' => $userId,
-            ]);
-        }
-
-        return back();
-    }
-
-    public function storeComment(Request $request, $postId)
-    {
-        $request->validate([
-            'content' => 'required|string|max:500',
-            'parent_id' => 'nullable|exists:comments,id',
-        ]);
-
-        Comment::create([
-            'post_id' => $postId,
-            'user_id' => Auth::id(),
-            'parent_id' => $request->parent_id ?? null,
-            'content' => $request->content,
-        ]);
-
-        return back()->with('success', 'Komentar berhasil ditambahkan!');
-    }
-
-    public function destroyComment(Comment $comment)
-    {
-        if ($comment->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $comment->delete();
-        return back()->with('success', 'Komentar berhasil dihapus!');
     }
 
     public function destroy(Post $post)
@@ -160,17 +189,55 @@ class PostController extends Controller
             abort(403);
         }
 
-        $post->delete();
+        DB::beginTransaction();
+        try {
+            ClubActivity::create([
+                'id' => Str::uuid(),
+                'actor_id' => Auth::id(),
+                'club_id' => $post->club_id,
+                'action' => 'Delete Post',
+                'target_type' => 'Post',
+                'target_id' => $post->id,
+                'metadata' => [
+                    'title' => $post->title,
+                    'content' => $post->content,
+                ],
+            ]);
+
+            $post->delete();
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'An error occurred while deleting the post.');
+        }
 
         return redirect()->route('posts.index')->with('success', 'Postingan dipindahkan ke sampah.');
+    }
+
+    public function forceDelete($id)
+    {
+        $post = Post::onlyTrashed()
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        foreach ($post->media as $media) {
+            Storage::disk('public')->delete($media->file_path);
+        }
+
+        $post->forceDelete();
+
+        return redirect()->route('posts.trash')->with('success', 'Postingan dihapus secara permanen.');
     }
 
     public function trash()
     {
         $posts = Post::onlyTrashed()
             ->where('user_id', Auth::id())
-            ->with('club')
-            ->latest('deleted_at')
+            ->with(['club', 'media'])
+            ->withCount(['comments', 'likes'])
+            ->latest()
             ->get();
 
         return view('posts.trash', compact('posts'));
@@ -185,22 +252,134 @@ class PostController extends Controller
 
         $post->restore();
 
-        return redirect()->route('posts.trash')->with('success', 'Postingan berhasil dipulihkan.');
+        return redirect()->route('posts.index')->with('success', 'Postingan berhasil dikembalikan.');
     }
 
-    public function forceDelete($id)
+    public function archived()
     {
-        $post = Post::onlyTrashed()
-            ->where('id', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        $posts = Post::where('user_id', Auth::id())
+            ->where('is_archived', true)
+            ->with(['club', 'media'])
+            ->withCount(['comments', 'likes'])
+            ->latest()
+            ->get();
 
-        if ($post->media_url) {
-            Storage::disk('public')->delete($post->media_url);
+        return view('posts.archived', compact('posts'));
+    }
+
+    public function archive(Post $post)
+    {
+        if ($post->user_id !== Auth::id()) {
+            abort(403);
         }
 
-        $post->forceDelete();
+        $post->update(['is_archived' => true]);
 
-        return redirect()->route('posts.trash')->with('success', 'Postingan dihapus secara permanen.');
+        return redirect()->route('posts.index')->with('success', 'Postingan berhasil diarsipkan.');
+    }
+
+    public function unarchive(Post $post)
+    {
+        if ($post->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $post->update(['is_archived' => false]);
+
+        return redirect()->route('posts.archived')->with('success', 'Postingan berhasil dipulihkan dari arsip.');
+    }
+
+    public function like(Request $request, Post $post)
+    {
+        $userId = Auth::id();
+
+        $existingLike = Like::where('post_id', $post->id)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($existingLike) {
+            $existingLike->delete();
+            $liked = false;
+        } else {
+            Like::create([
+                'post_id' => $post->id,
+                'user_id' => $userId,
+            ]);
+            $liked = true;
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'liked' => $liked,
+                'likes_count' => $post->likes()->count(),
+            ]);
+        }
+        if ($post->user_id !== $userId) {
+            Notification::createForUser(
+                $post->user_id,
+                'Postingan disukai',
+                Auth::user()->name . ' menyukai postinganmu.',
+                'other',
+                $post->id
+            );
+        }
+
+        return back();
+    }
+
+    public function storeComment(Request $request, Post $post)
+    {
+        $validated = $request->validate([
+            'content' => ['required', 'string', 'max:1000'],
+            'parent_id' => ['nullable', 'exists:comments,id'],
+        ]);
+
+        $comment = Comment::create([
+            'post_id' => $post->id,
+            'user_id' => Auth::id(),
+            'content' => $validated['content'],
+            'parent_id' => $validated['parent_id'] ?? null,
+        ]);
+
+        $comment->load('user');
+
+        $recipientIds = collect([$post->user_id, $comment->parent?->user_id])
+            ->filter()
+            ->unique()
+            ->reject(fn($userId) => $userId === Auth::id());
+
+        foreach ($recipientIds as $recipientId) {
+            Notification::createForUser(
+                $recipientId,
+                'Komentar baru',
+                $comment->user->name . ' mengomentari postinganmu.',
+                'comment',
+                $comment->id
+            );
+        }
+
+        return response()->json([
+            'id' => $comment->id,
+            'post_id' => $comment->post_id,
+            'user_id' => $comment->user_id,
+            'parent_id' => $comment->parent_id,
+            'content' => $comment->content,
+            'created_at' => $comment->created_at,
+            'user' => [
+                'id' => $comment->user->id,
+                'name' => $comment->user->name,
+                'avatar_full_url' => $comment->user->avatar_full_url,
+            ],
+        ], 201);
+    }
+
+    public function destroyComment(Comment $comment)
+    {
+        if ($comment->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $comment->delete();
+        return back()->with('success', 'Komentar berhasil dihapus.');
     }
 }

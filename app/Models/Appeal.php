@@ -16,4 +16,11 @@ class Appeal extends Model
         'status',
         'admin_note',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
+
+

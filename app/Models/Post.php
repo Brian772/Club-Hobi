@@ -23,11 +23,17 @@ class Post extends Model
         'content',
         'media_url',
         'is_announcement',
+        'is_archived',
     ];
 
     protected $casts = [
         'is_announcement' => 'boolean',
     ];
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(PostMedia::class, 'post_id');
+    }
 
     public function club(): BelongsTo
     {
@@ -54,11 +60,8 @@ class Post extends Model
         return $this->hasMany(Like::class, 'post_id');
     }
 
-    // Aktifkan relasi ini jika model & tabel Like sudah ada
-    /*
-    public function likes(): HasMany
+    public function reports()
     {
-        return $this->hasMany(Like::class, 'post_id');
+        return $this->morphMany(Report::class, 'reportable',  'content_type', 'content_id');
     }
-    */
 }

@@ -10,7 +10,7 @@ class ClubJoinRequest extends Model
     use HasUuids;
     public $keyType = 'string';
     public $incrementing = false;
-    protected $table = 'club_join_request';
+    protected $table = 'club_join_requests';
 
     protected $fillable = [
         'club_id',

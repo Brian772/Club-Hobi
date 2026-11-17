@@ -3,15 +3,21 @@
 namespace App\Models;
 
 use App\Models\Club;
+use App\Models\Report;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use App\Mail\VerifyEmailCustom;
+use App\Notifications\ResetPasswordNotification;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -33,9 +39,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'interests',
         'role_global',
         'status',
+        'status_updated_at',
+        'reason',
         'suspended_until',
         'email_verified_at',
         'remember_token',
+        'last_seen_at',
     ];
 
     protected $hidden = [
@@ -46,6 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'suspended_until' => 'datetime',
         'email_verified_at' => 'datetime',
+        'last_seen_at' => 'datetime',
     ];
 
     protected $appends = ['avatar_full_url'];
@@ -66,23 +76,62 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Notification::class)->latest('created_at');
     }
 
+    public function sendEmailVerificationNotification(): void
+    {
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $this->id, 'hash' => sha1($this->getEmailForVerification())]
+        );
+        Mail::to($this->email)->send(new VerifyEmailCustom($url, $this));
+    }
+
+    public function isOnline(): bool
+    {
+        return $this->last_seen_at?->greaterThan(now()->subMinutes(2)) ?? false;
+    }
+
     public function getAvatarFullUrlAttribute(): ?string
     {
         $avatar = (string) ($this->avatar_url ?? '');
-        if (!$avatar === '') {
+
+        if ($avatar === '') {
             return null;
         }
 
-        if (str_starts_with($this->avatar_url, 'http://') || str_starts_with($avatar, 'https://')) {
-            return $this->avatar_url;
+        if (filter_var($avatar, FILTER_VALIDATE_URL) !== false) {
+            return $avatar;
         }
 
-        return Storage::disk('public')->url($this->avatar_url);
+        if (!Storage::disk('public')->exists($avatar)) {
+            return null;
+        }
+
+        return url('storage/' . ltrim($avatar, '/'));
     }
 
     public function getAuthPassword(): string
     {
         return $this->password_hash ?? $this->password ?? '';
+    }
+
+    public function passwordMatches(string $plainPassword): bool
+    {
+        $storedPassword = $this->password_hash ?? $this->password ?? null;
+
+        if (blank($storedPassword)) {
+            return false;
+        }
+
+        try {
+            if (Hash::check($plainPassword, $storedPassword)) {
+                return true;
+            }
+        } catch (\RuntimeException $e) {
+            // Allow legacy or manually inserted values that are not BCrypt hashes.
+        }
+
+        return hash_equals((string) $storedPassword, $plainPassword);
     }
 
     public function setPasswordAttribute($value): void
@@ -96,7 +145,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return [];
         }
 
-        return collect(explode(',',  $this->interests))
+        return collect(explode(',', $this->interests))
             ->map(fn($item) => trim($item))
             ->filter()
             ->values()
@@ -126,5 +175,30 @@ class User extends Authenticatable implements MustVerifyEmail
     public function joinRequests()
     {
         return $this->hasMany(ClubJoinRequest::class, 'user_id');
+    }
+
+    public function reportsMade()
+    {
+        return $this->hasMany(Report::class, 'reporter_id');
+    }
+
+    public function reportedRecived()
+    {
+        return $this->hasMany(Report::class, 'reported_user_id');
+    }
+
+    public function appeal()
+    {
+        return $this->hasMany(Appeal::class, 'user_id');
+    }
+
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'reportable', 'content_type', 'content_id');
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

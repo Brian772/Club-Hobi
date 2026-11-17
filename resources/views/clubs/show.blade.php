@@ -1,292 +1,1012 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | ' . $club->name)
+
 @section('styles')
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
 
 @section('content')
-  <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-3">
-    <a href="{{ route('clubs.index', $club->id) }}" class="text-ink-muted">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 16 9">
-        <path d="M0 0h16v9H0z" fill="none" />
-        <path fill="currentColor" d="M12.5 5h-9c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h9c.28 0 .5.22.5.5s-.22.5-.5.5" />
-        <path fill="currentColor"
-          d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
-      </svg>
-    </a>
-    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">{{ $club->name }}</h2>
-  </header>
-  <div class="flex flex-col justify-center items-start md:items-stretch md:flex-row w-full pb-4">
-    <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="Logo {{ $club->name }}"
-      class="rounded-md w-full md:w-100 h-48 md:h-64 object-cover mb-4 md:mb-0 md:mr-4 border border-hairline">
-    <div class="flex flex-col justify-between items-start w-full self-stretch">
-      <div class="flex flex-col gap-2">
-        <div class="flex flex-col mb-2">
-          <span class="text-caption lg:text-body-mid text-ink-muted">{{ $club->hobby->name }} <span
-              class="font-extrabold">·</span>
-            {{ $club->members_count }} Anggota</span>
-          <p class="text-caption text-ink-muted">Owner : {{ $creator->user->name ?? 'Tidak Diketahui' }}</p>
-        </div>
-        <p class="text-caption lg:text-body-mid text-ink-muted">{{ $club->description }}</p>
-      </div>
-      <?php
-      use App\Models\ClubMember;
+  <section x-data="{ OpenLeaveModal: false, selectedName: '', URL: '' }">
+    <header class="relative w-full rounded-2xl h-64">
+      @if ($club->cover_url)
+        <img src="{{ Storage::url($club->cover_url) }}" alt="{{ $club->name }}"
+          class="w-full h-full object-cover rounded-2xl border border-hairline">
+      @endif
+      <div class="absolute bg-linear-to-t from-black/60 via-black/20 to-transparent inset-0 rounded-2xl"></div>
 
-      $isOwnerOrModerator = ClubMember::where('club_id', $club->id)
-            ->where('user_id', auth()->user()->id)
-            ->whereIn('role', ['owner', 'moderator'])
-            ->first();
-      ?>
-        <div class="mt-2 flex flex-row gap-4 items-center w-full justify-start
-        {{ $isOwnerOrModerator ? 'lg:justify-between' : 'lg:justify-end' }}">
-        @can('view', $club)
-          <a href="{{ route('clubs.settings', $club->id) }}"
-            class="order-2 lg:order-1 rounded-md text-body-mid text-ink hover:bg-primary/10 hover:text-primary p-2 flex flex-row gap-2 items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-settings-icon lucide-settings">
-              <path
-                d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            Settings
-          </a>
-        @endcan
-        @cannot('isOwner', $club)
-        <form action="{{ route('clubs.leave', $club->id) }}" method="POST" class="order-1 lg:order-2">
-          @csrf
-          @method('DELETE')
-          <button type="submit"
-            class="lg:text-ink-muted text-accent-red bg-accent-red/10 rounded-md border border-accent-red lg:bg-canvas lg:border-none  text-body-mid px-4 py-2 cursor-pointer lg:hover:text-accent-red lg:hover:underline lg:hover:underline-offset-2">
-            Keluar
-          </button>
-        </form>
-        @endcannot
+      {{-- Back --}}
+      <a href="{{ route('clubs.index', $club->id) }}"
+        class="absolute top-4 left-4 flex flex-row gap-2 rounded-full bg-canvas/30 p-2 items-center text-ink hover:bg-white/60 backdrop-blur-md transition-all duration-150">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-arrow-left-icon lucide-arrow-left">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </a>
+
+      {{-- Club Title --}}
+      <div class="flex flex-col gap-2 justify-center items-start absolute bottom-4 left-4">
+        <span class="text-small rounded-full px-2 py-1 bg-white/50 backdrop-blur-md text-ink-ink font-semibold">
+          {{ $club->hobby->name }}
+        </span>
+        <h1 class="text-title lg:text-heading-1 font-semibold text-white">
+          {{ $club->name }}
+        </h1>
       </div>
 
-    </div>
-  </div>
-
-  <section id="postingan">
-    <main x-data="{ tab: 'post' }" class="flex flex-col gap-4">
-      <div class="w-full h-max flex felx-row gap-6 border-b border-hairline">
-        <button @click="tab = 'post'" :class="tab === 'post' ? 'text-primary border-b-2 border-primary' : 'text-ink'"
-          class="w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="lucide lucide-text-align-start-icon lucide-text-align-start">
-            <path d="M21 5H3" />
-            <path d="M15 12H3" />
-            <path d="M17 19H3" />
-          </svg>
-          Postingan
-        </button>
-        <button @click="tab = 'member'"
-          :class="tab === 'member' ? 'text-primary border-b-2 border-primary' : 'text-ink'"
-          class="w-max py-2 px-4 text-center flex flex-row justify-center cursor-pointer items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="lucide lucide-users-round-icon lucide-users-round">
-            <path d="M18 21a8 8 0 0 0-16 0" />
-            <circle cx="10" cy="8" r="5" />
-            <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" />
-          </svg>
-          Member
-        </button>
-      </div>
-
-      {{-- Postingan --}}
-      <div x-show="tab === 'post'">
-        <header class="mb-4">
-          <h2 class="text-title lg:text-heading-2 text-ink font-bold">Postingan</h2>
-        </header>
-        @if ($club->posts->isEmpty())
-          <p class="text-caption text-ink-muted">Belum ada postingan di klub ini.</p>
-        @else
-          @foreach ($posts as $post)
-            {{-- @if ($post->is_announcement)
-              <x-post-announcement :post="$post" />
-            @else
-              <section class="block lg:hidden">
-                <x-post-mobile :post="$post" />
-              </section>
-              <section class="hidden lg:block">
-                <x-post :post="$post" />
-              </section>
-            @endif --}}
-            <div class="bg-white rounded-xl border border-neutral-200 p-5">
-              {{-- Header Postingan --}}
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <img src="{{ $user->avatar_full_url }}" alt="Foto Profil" class="w-9 h-9 rounded-full object-cover"
-                    alt="{{ $post->user->name ?? 'User' }}">
-                  <div>
-                    <span class="text-sm font-semibold text-neutral-900">{{ $post->user->name ?? 'Anonim' }}</span>
-                    <span class="text-sm text-neutral-400">memposting di <span
-                        class="font-medium text-neutral-700">{{ $post->club->name }}</span></span>
-                  </div>
-                </div>
-                <span class="text-xs text-neutral-400">{{ $post->created_at->diffForHumans() }}</span>
-              </div>
-
-              {{-- Judul dan Isi Postingan --}}
-              @if ($post->title)
-                <h3 class="text-base font-bold text-neutral-900 mb-1">{{ $post->title }}</h3>
-              @endif
-              <p class="text-neutral-800 text-sm mb-3 leading-relaxed">{{ $post->content }}</p>
-
-              {{-- Lampiran Media (Gambar / Video) --}}
-              @if ($post->media_url)
-                @php
-                  $extension = strtolower(pathinfo($post->media_url, PATHINFO_EXTENSION));
-                  $mediaUrl = asset('storage/' . $post->media_url);
-                @endphp
-
-                <div
-                  class="mb-3 rounded-lg overflow-hidden max-h-[400px] bg-neutral-100 flex items-center justify-center cursor-pointer"
-                  onclick="openMediaModal('{{ $mediaUrl }}', '{{ $extension }}')">
-                  @if (in_array($extension, ['jpg', 'jpeg', 'png', 'webp']))
-                    <img src="{{ $mediaUrl }}"
-                      class="w-full h-[140px] object-cover rounded-lg hover:opacity-95 transition"
-                      alt="{{ $post->title }}">
-                  @elseif (in_array($extension, ['mp4', 'mov']))
-                    <video class="w-full h-[400px] object-cover rounded-lg">
-                      <source src="{{ $mediaUrl }}" type="video/{{ $extension }}">
-                    </video>
-                  @else
-                    <div class="p-4 text-center">
-                      <i class="fa-regular fa-file text-3xl text-neutral-500 mb-2"></i>
-                      <p class="text-xs text-neutral-600 font-medium">Klik untuk membuka/mengunduh dokumen</p>
-                    </div>
-                  @endif
-                </div>
-              @endif
-
-              {{-- Tombol Interaksi (Like & Comment) --}}
-              <div class="flex items-center gap-6 pt-3 border-t border-neutral-100 text-neutral-500 text-xs font-medium">
-                @php
-                  $isLiked = $post->likes->contains('user_id', auth()->id());
-                @endphp
-                <form action="{{ route('posts.like', $post->id) }}" method="POST" class="inline">
-                  @csrf
-                  <button type="submit" class="flex items-center gap-1.5 hover:text-blue-600 transition-colors">
-                    <i class="{{ $isLiked ? 'fa-solid' : 'fa-regular' }} fa-heart text-sm"></i>
-                    <span>{{ $post->likes_count ?? 0 }} Suka</span>
-                  </button>
-                </form>
-
-                <button type="button" onclick="toggleComments('comments-{{ $post->id }}')"
-                  class="flex items-center gap-1.5 hover:text-blue-600 transition-colors">
-                  <i class="fa-regular fa-comment text-sm"></i>
-                  <span>{{ $post->comments_count ?? 0 }} Komentar</span>
+      @if ($isNotMember)
+        @php
+          $pendingRequest = $pendingRequests->get($club->id);
+          $isAlreadyRequested = $pendingRequest !== null;
+        @endphp
+        @if ($club->is_required_request === true)
+          @if ($isAlreadyRequested)
+            <div class="flex flex-row gap-2 absolute top-4 right-4">
+              <button class="w-max bg-canvas/50 backdrop-blur-md rounded-full text-ink py-2 px-4 cursor-not-allowed"
+                type="button" disabled>
+                Menunggu Persetujuan
+              </button>
+              <form action="{{ route('clubs.join.request.cancel', [$club->id, $pendingRequest->id]) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button
+                  class="w-max bg-canvas/30 backdrop-blur-md text-ink hover:bg-canvas/40 hover:text-accent-red py-2 px-4 rounded-full text-center cursor-pointer transition-colors duration-150"
+                  type="submit">
+                  Batal
                 </button>
-              </div>
-
-              {{-- Section Komentar (Hidden by default) --}}
-              <div id="comments-{{ $post->id }}"
-                class="hidden pt-4 mt-3 border-t border-dashed border-neutral-200">
-                <form action="{{ route('posts.comments.store', $post->id) }}" method="POST" class="flex gap-2 mb-3">
-                  @csrf
-                  <input type="text" name="content" placeholder="Tulis komentar..." required
-                    class="flex-1 bg-neutral-50 border border-neutral-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
-                  <button type="submit"
-                    class="bg-blue-600 text-white text-xs px-3 py-2 rounded-lg font-semibold hover:bg-blue-700">
-                    Kirim
-                  </button>
-                </form>
-
-                <div class="space-y-2">
-                  @forelse ($post->comments->whereNull('parent_id') as $comment)
-                    @include('partials.comment-item', ['comment' => $comment, 'postId' => $post->id])
-                  @empty
-                    <p class="text-xs text-neutral-400">Belum ada komentar.</p>
-                  @endforelse
-                </div>
-              </div>
-
-              <div id="mediaModal" class="fixed inset-0 z-50 hidden bg-black/80 flex items-center justify-center p-4"
-                onclick="closeMediaModal()">
-                <div class="relative max-w-4xl w-full max-h-[90vh] flex items-center justify-center"
-                  onclick="event.stopPropagation()">
-                  <button onclick="closeMediaModal()"
-                    class="absolute -top-10 right-0 text-white text-2xl font-bold hover:text-neutral-300">
-                    &times;
-                  </button>
-                  <div id="modalContent" class="w-full flex justify-center"></div>
-                </div>
-              </div>
-
+              </form>
             </div>
-          @endforeach
+          @else
+            <form action="{{ route('clubs.join.request', $club->id) }}" method="POST">
+              @csrf
+              <button class="w-max bg-primary rounded-full text-white py-2 px-4 cursor-pointer absolute top-4 right-4"
+                type="submit">
+                Permintaan Bergabung
+              </button>
+            </form>
+          @endif
         @endif
+        @if ($club->is_required_request === false)
+          <form action="{{ route('clubs.join', $club->id) }}" method="POST">
+            @csrf
+            <button class="w-max bg-primary rounded-full text-white py-2 px-4 cursor-pointer absolute top-4 right-4"
+              type="submit">
+              Bergabung
+            </button>
+          </form>
+        @endif
+      @endif
+
+      @if (!$isNotMember)
+        {{-- Keluar --}}
+        <div class="flex flex-row gap-2 items-center absolute top-4 right-4">
+          @cannot('isOwner', $club)
+            <button type="button"
+              @click="OpenLeaveModal = true; selectedName = '{{ $club->name }}'; URL = '{{ route('clubs.leave', $club->id) }}'"
+              class="text-accent-red bg-canvas/30 items-center flex flex-row gap-2 rounded-full text-body-mid px-4 py-2 cursor-pointer hover:bg-white/60 backdrop-blur-md transition-all duration-150">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-log-out preview-icon">
+                <path d="m16 17 5-5-5-5" />
+                <path d="M21 12H9" />
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              </svg>
+              Keluar
+            </button>
+          @endcannot
+
+          {{-- Settings --}}
+          @can('view', $club)
+            <a href="{{ route('clubs.settings', $club->id) }}"
+              class="flex flex-row gap-2 rounded-full bg-canvas/30 px-4 py-2 items-center text-ink hover:bg-white/60 backdrop-blur-md transition-all duration-150">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-settings-icon lucide-settings">
+                <path
+                  d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              Settings
+            </a>
+          @endcan
+        </div>
+      @endif
+    </header>
+
+    {{-- Club Info --}}
+    <div class="mt-4 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <div class="min-w-0 flex-1">
+        <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2 text-caption lg:text-body-mid text-ink">
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
+              @if ($club->visibility === 'public')
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-globe preview-icon">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                  <path d="M2 12h20" />
+                </svg>
+              @else
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-lock preview-icon">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              @endif
+              {{ $club->visibility }}
+            </span>
+
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              {{ $club->members_count }} Anggota
+            </span>
+
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-canvas-soft border border-hairline">
+              @if ($creator->user->avatar_full_url)
+                <img src="{{ $creator->user->avatar_full_url }}" alt="{{ $creator->user->name }}"
+                  class="rounded-full size-5 object-cover"
+                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                <div
+                  class="hidden size-5 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                  {{ Str::upper(Str::substr($creator->user->name, 0, 1)) }}
+                </div>
+              @else
+                <div
+                  class="size-5 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+                  {{ Str::upper(Str::substr($creator->user->name, 0, 1)) }}
+                </div>
+              @endif
+              Owner: {{ $creator->user->name ?? 'Tidak Diketahui' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="my-4">
+          @if ($club->description)
+            <p class="text-body-mid text-ink-muted max-w-2xl">{{ $club->description }}</p>
+          @endif
+        </div>
       </div>
 
-      {{-- Member --}}
-      <div x-show="tab === 'member'">
-        <header class="mb-4">
-          <h2 class="text-title lg:text-heading-2 text-ink font-bold">Member</h2>
-        </header>
-        @if (empty($members))
-          <p class="text-caption text-ink-muted">Belum ada member di klub ini.</p>
-        @else
-          <div class="flex flex-col gap-2">
-            @foreach ($members as $member)
-              <x-member-list :member="$member" />
-            @endforeach
+      {{-- Leave Modal --}}
+      <div x-show="OpenLeaveModal" x-cloak @keydown.escape.window="OpenLeaveModal = false"
+        class="fixed flex items-center justify-center inset-0 z-50">
+        <div @click="OpenLeaveModal = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+        </div>
+        <div
+          class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+          <div class="flex flex-col gap-2 mb-4">
+            <h3 class="text-title mb-4 text-ink">
+              Keluar dari <span x-text="selectedName"></span>?
+            </h3>
+            <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin meninggalkan klub ini? Tindakan ini tidak
+              dapat
+              dibatalkan.</p>
           </div>
-        @endif
+          <div class="flex flex-row justify-end gap-2">
+            <form :action="URL" method="POST">
+              @csrf
+              @method('DELETE')
+              <button type="submit"
+                class="px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
+                Ya, Keluar
+              </button>
+            </form>
+            <button type="button"
+              class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+              @click="OpenLeaveModal = false">Cancel</button>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
   </section>
 
+  @if ($club->visibility === 'private' && $isNotMember)
+    <section class="w-full h-max flex items-center justify-center">
+      <div class="flex flex-col mt-12 items-center gap-2 justify-center w-max h-max max-w-sm lg:max-w-md p-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-lock preview-icon text-ink-muted">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        <h2 class="text-title text-center lg:text-2xl font-semibold text-ink-muted">Klub ini bersifat privat.</h2>
+        <p class="text-body-mid text-center text-ink-muted">Anda tidak dapat mengakses klub ini. Ikuti klub ini untuk
+          melihat postingannya.</p>
+      </div>
+    </section>
+  @else
+    <section id="postingan" x-data="{
+        openReportModal: false,
+        contentType: null,
+        contentId: null,
+        reportedUserId: null,
+        reportUrl: null,
+        reportTarget: null,
+    
+        openReport(type, contentId, reportedUserId = null, url = null, target = null) {
+            this.contentType = type;
+            this.contentId = contentId;
+            this.reportedUserId = reportedUserId;
+            this.reportUrl = url;
+            this.reportTarget = target;
+            this.openReportModal = true;
+        },
+    
+        closeReport() {
+            this.contentType = null;
+            this.contentId = null;
+            this.reportedUserId = null;
+            this.reportUrl = null;
+            this.openReportModal = false;
+        },
+    }">
+      <main x-data="{ tab: 'post' }" class="flex flex-col gap-4">
+        <div class="w-full md:w-max h-max flex felx-row gap-6 p-1.5 rounded-full border border-hairline">
+          <button @click="tab = 'post'"
+            :class="tab === 'post' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
+            class="w-1/2 md:w-max py-1.5 px-6 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-text-align-start-icon lucide-text-align-start">
+              <path d="M21 5H3" />
+              <path d="M15 12H3" />
+              <path d="M17 19H3" />
+            </svg>
+            Postingan
+          </button>
+          <button @click="tab = 'member'"
+            :class="tab === 'member' ? 'text-primary bg-primary/10' : 'text-ink bg-canvas'"
+            class="w-1/2 md:w-max py-1.5 px-6 text-center flex flex-row justify-center cursor-pointer items-center gap-2 rounded-full transition-color duration-150">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-users-round-icon lucide-users-round">
+              <path d="M18 21a8 8 0 0 0-16 0" />
+              <circle cx="10" cy="8" r="5" />
+              <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" />
+            </svg>
+            Member
+          </button>
+        </div>
+
+        {{-- Postingan --}}
+        <div x-show="tab === 'post'">
+          @if ($club->posts->isNotEmpty())
+            <header class="mb-4 flex flex-col lg:flex-row gap-4 lg:gap-0 lg:items-center justify-between">
+              <h2 class="text-title lg:text-heading-3 text-ink font-semibold">Postingan</h2>
+              @if (!$isNotMember)
+                <div class="flex flex-row gap-4 items-center">
+                  <div class="relative h-max w-full md:w-max">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-search preview-icon absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
+                      <path d="m21 21-4.34-4.34" />
+                      <circle cx="11" cy="11" r="8" />
+                    </svg>
+                    {{-- Perubahan: oninput dihapus, diganti type="search" dan event keydown untuk Enter --}}
+                    <input type="search" id="postSearchInput"
+                      onkeydown="handleSearchKeyDown(event)" placeholder="Cari postingan, tekan Enter..." enterkeyhint="search"
+                      class="w-full md:w-max pl-9 pr-4 py-2.5 text-caption bg-canvas-soft border border-hairline rounded-full focus:outline-none focus:border-primary text-ink">
+                  </div>
+                  <a href="{{ route('posts.create') }}"
+                    class="inline-flex items-center gap-2 shrink-0 bg-primary/10 text-primary hover:text-white text-sm font-semibold size-10.5 md:size-max md:px-5 md:py-2.5 justify-center rounded-full hover:bg-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" class="lucide lucide-plus preview-icon">
+                      <path d="M5 12h14" />
+                      <path d="M12 5v14" />
+                    </svg> <span class="hidden md:inline">Buat Postingan</span>
+                  </a>
+                </div>
+              @endif
+            </header>
+          @endif
+          @if ($club->posts->isEmpty())
+            <div class="flex flex-col items-center justify-center h-full">
+              <p class="text-body-mid mt-12 text-ink-muted">Belum ada postingan di klub ini.</p>
+              @if (!$isNotMember)
+                <a href="{{ route('posts.create') }}"
+                  class="inline-flex items-center mt-8 bg-primary/10 text-primary hover:text-white text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-primary">
+                  + Buat Postingan
+                </a>
+              @endif
+            </div>
+          @else
+            <div class="max-w-150 space-y-4">
+              @foreach ($posts as $post)
+                <div class="club-post-item"
+                  data-search-text="{{ Str::lower(($post->title ?? '') . ' ' . ($post->content ?? '') . ' ' . ($post->author->name ?? '')) }}">
+                  <x-post :post="$post" />
+                </div>
+              @endforeach
+
+              <div id="noPostFound" class="hidden text-center py-12">
+                <p class="text-body-mid text-ink-muted font-medium">Postingan tidak ditemukan</p>
+              </div>
+
+              <div id="mediaModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4"
+                onclick="closeMediaModal()">
+                <button onclick="closeMediaModal()"
+                  class="absolute top-4 right-4 text-white text-3xl font-bold z-50 cursor-pointer">&times;</button>
+
+                <button id="modalPrevBtn" onclick="event.stopPropagation(); changeModalSlide(-1)"
+                  class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">‹</button>
+
+                <button id="modalNextBtn" onclick="event.stopPropagation(); changeModalSlide(1)"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center text-xl z-50 cursor-pointer">›</button>
+
+                <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center"
+                  onclick="event.stopPropagation()">
+                  <div id="modalCounter" class="absolute -top-8 text-white/80 text-xs font-semibold"></div>
+                  <div id="modalContent" class="w-full flex flex-col items-center justify-center"></div>
+                </div>
+              </div>
+            </div>
+          @endif
+        </div>
+
+        {{-- Member --}}
+        <div x-show="tab === 'member'">
+          <header class="mb-4">
+            <h2 class="text-title lg:text-heading-3 text-ink font-semibold">Member</h2>
+          </header>
+          @if (empty($members))
+            <p class="text-caption text-ink-muted">Belum ada member di klub ini.</p>
+          @else
+            <div class="flex flex-col gap-2">
+              @foreach ($members as $member)
+                <x-member-list :member="$member" :club="$club" />
+              @endforeach
+            </div>
+          @endif
+        </div>
+      </main>
+      <x-report-modal />
+    </section>
+  @endif
+
+  {{-- Tombol Navigasi Search Up/Down --}}
+  <div id="searchNavButtons" class="fixed bottom-6 right-6 z-40 hidden flex-col gap-2">
+    <button type="button" onclick="navigateSearchResult('up')"
+      class="p-3 rounded-full bg-canvas/80 backdrop-blur-md border border-hairline shadow-lg text-ink hover:bg-primary hover:text-white transition-all cursor-pointer"
+      title="Postingan Sebelumnya">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m18 15-6-6-6 6" />
+      </svg>
+    </button>
+    <button type="button" onclick="navigateSearchResult('down')"
+      class="p-3 rounded-full bg-canvas/80 backdrop-blur-md border border-hairline shadow-lg text-ink hover:bg-primary hover:text-white transition-all cursor-pointer"
+      title="Postingan Selanjutnya">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </button>
+  </div>
+
   <script>
-    function toggleComments(id) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.classList.toggle('hidden');
+    let currentSearchIndex = -1;
+    let matchedPosts = [];
+
+    const searchInputEl = document.getElementById('postSearchInput');
+
+    // Menangani saat tombol clear (silang) pada input type="search" diklik
+    searchInputEl?.addEventListener('search', function () {
+      if (searchInputEl.value.trim() === '') {
+        filterClubPosts();
+      }
+    });
+
+    // Fungsi Utama Pencarian Postingan
+    function filterClubPosts() {
+      if (!searchInputEl) return;
+
+      const query = searchInputEl.value.toLowerCase().trim();
+      const posts = document.querySelectorAll('.club-post-item');
+      const noFoundMsg = document.getElementById('noPostFound');
+      const navButtons = document.getElementById('searchNavButtons');
+
+      matchedPosts = [];
+      currentSearchIndex = -1;
+
+      posts.forEach(post => {
+        const textData = (post.getAttribute('data-search-text') || '').toLowerCase();
+
+        // Jika query kosong, kembalikan semua postingan ke kondisi semula (tampil)
+        const isMatch = query === '' || textData.includes(query);
+
+        post.style.display = isMatch ? 'block' : 'none';
+
+        if (isMatch && query !== '') {
+          matchedPosts.push(post);
+        }
+      });
+
+      // Tampilkan pesan jika tidak ada hasil
+      if (noFoundMsg) {
+        if (query !== '' && matchedPosts.length === 0) {
+          noFoundMsg.classList.remove('hidden');
+        } else {
+          noFoundMsg.classList.add('hidden');
+        }
+      }
+
+      // Tampilkan tombol navigasi Naik / Turun HANYA jika sedang mencari DAN hasil > 1
+      if (navButtons) {
+        if (query !== '' && matchedPosts.length > 1) {
+          navButtons.classList.remove('hidden');
+          navButtons.classList.add('flex');
+        } else {
+          navButtons.classList.add('hidden');
+          navButtons.classList.remove('flex');
+        }
+      }
+    }
+
+    // Fungsi Menangani Event Enter di Input Search
+    function handleSearchKeyDown(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        filterClubPosts();
+
+        // Mengarahkan langsung ke postingan pertama yang cocok dengan pencarian
+        if (matchedPosts.length > 0) {
+          currentSearchIndex = 0;
+          scrollToPost(matchedPosts[currentSearchIndex]);
+        }
+      } else if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && matchedPosts.length > 1) {
+        event.preventDefault();
+        navigateSearchResult(event.key === 'ArrowUp' ? 'up' : 'down');
+      }
+    }
+
+    function navigateSearchResult(direction) {
+      if (matchedPosts.length === 0) return;
+
+      if (direction === 'down') {
+        currentSearchIndex++;
+        if (currentSearchIndex >= matchedPosts.length) {
+          currentSearchIndex = 0; 
+        }
+      } else if (direction === 'up') {
+        currentSearchIndex--;
+        if (currentSearchIndex < 0) {
+          currentSearchIndex = matchedPosts.length - 1; 
+        }
+      }
+
+      scrollToPost(matchedPosts[currentSearchIndex]);
+    }
+
+    function scrollToPost(element) {
+      if (!element) return;
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+
+      // Memberikan efek highlight sementara agar pengguna tahu posisi postingan
+      element.classList.add('ring-2', 'ring-primary', 'transition-all', 'duration-300');
+      setTimeout(() => {
+        element.classList.remove('ring-2', 'ring-primary');
+      }, 1500);
+    }
+
+    function openCommentModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeCommentModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.querySelectorAll('video, audio').forEach(media => media.pause());
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    const likeInFlight = {};
+
+    async function toggleLike(postId) {
+      if (likeInFlight[postId]) return;
+      likeInFlight[postId] = true;
+
+      const feedBtn = document.getElementById(`likeBtn-${postId}`);
+      const feedIcon = document.getElementById(`likeIcon-${postId}`);
+      const feedCount = document.getElementById(`likeCount-${postId}`);
+      const modalIcon = document.getElementById(`likeIconModal-${postId}`);
+      const modalCount = document.getElementById(`likeCountModal-${postId}`);
+
+      const wasLiked = feedBtn?.dataset.liked === 'true';
+      const currentCount = parseInt(feedCount?.innerText) || 0;
+
+      const applyLikeState = (liked, count) => {
+        if (feedBtn) feedBtn.dataset.liked = liked ? 'true' : 'false';
+        [feedIcon, modalIcon].forEach(icon => {
+          if (!icon) return;
+          icon.classList.toggle('fa-solid', liked);
+          icon.classList.toggle('fa-regular', !liked);
+          icon.classList.toggle('text-red-500', liked);
+        });
+        if (feedCount) feedCount.innerText = count;
+        if (modalCount) modalCount.innerText = count;
+      };
+
+      applyLikeState(!wasLiked, currentCount + (wasLiked ? -1 : 1));
+
+      try {
+        const response = await fetch(feedBtn.dataset.likeUrl, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+
+        if (!response.ok) throw new Error('Gagal memproses like.');
+
+        const data = await response.json();
+        applyLikeState(data.liked, data.likes_count);
+
+      } catch (error) {
+        console.error('Like Error:', error);
+        applyLikeState(wasLiked, currentCount);
+        alert('Gagal memproses like, coba lagi.');
+      } finally {
+        likeInFlight[postId] = false;
+      }
+    }
+
+    async function submitComment(event, postId) {
+      event.preventDefault();
+
+      const form = document.getElementById(`commentForm-${postId}`);
+      const inputContent = document.getElementById(`inputContent-${postId}`);
+      const submitBtn = form.querySelector('button[type="submit"]');
+
+      if (!inputContent.value.trim()) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Mengirim...';
+
+      try {
+        const response = await fetch(`/posts/${postId}/comments`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: new FormData(form)
+        });
+
+        if (!response.ok) {
+          let errorMsg = 'Gagal mengirim komentar.';
+          try {
+            const errData = await response.json();
+            errorMsg = errData.message || errorMsg;
+          } catch (e) {}
+          throw new Error(errorMsg);
+        }
+
+        const data = await response.json();
+        appendNewComment(postId, data);
+        updateCommentsCount(postId, 1);
+        inputContent.value = '';
+        cancelReply(postId);
+
+      } catch (error) {
+        console.error('Comment Error:', error);
+        alert(error.message || 'Terjadi kesalahan saat mengirim komentar.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Kirim';
+      }
+    }
+
+    function updateCommentsCount(postId, diff) {
+      const commentsCount = document.getElementById(`commentsCount-${postId}`);
+      if (commentsCount) {
+        const currentCount = parseInt(commentsCount.innerText) || 0;
+        commentsCount.innerText = Math.max(0, currentCount + diff);
+      }
+    }
+
+    function appendNewComment(postId, commentData) {
+      const modal = document.getElementById(`commentModal-${postId}`);
+      if (!modal) return;
+
+      const commentsContainer = modal.querySelector('.overflow-y-auto .space-y-4');
+      if (!commentsContainer) return;
+
+      const emptyText = commentsContainer.querySelector('p.text-center');
+      if (emptyText) emptyText.remove();
+
+      const userName = commentData.user?.name || 'User';
+      const userAvatar = commentData.user?.avatar_full_url || 'https://via.placeholder.com/32';
+
+      const escapeHtml = (text) => {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      };
+
+      if (commentData.parent_id) {
+        let parentCommentElement = modal.querySelector(`[data-comment-id="${commentData.parent_id}"]`);
+
+        if (parentCommentElement && !parentCommentElement.classList.contains('space-y-2')) {
+          parentCommentElement = parentCommentElement.closest('[data-comment-id].space-y-2');
+        }
+
+        if (parentCommentElement) {
+          let repliesContainer = parentCommentElement.querySelector('.replies-container');
+          if (!repliesContainer) {
+            repliesContainer = document.createElement('div');
+            repliesContainer.className = 'ml-9 space-y-2.5 border-l-2 border-neutral-100 pl-3 replies-container mt-2';
+            parentCommentElement.appendChild(repliesContainer);
+          }
+
+          const replyWrapper = document.createElement('div');
+          replyWrapper.className = 'flex gap-2.5';
+          replyWrapper.setAttribute('data-comment-id', commentData.id);
+          replyWrapper.innerHTML = `
+                <img src="${userAvatar}" class="size-8 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
+                <div class="flex-1 min-w-0">
+                  <p class="text-caption text-ink-secondary leading-snug break-words">
+                    <span class="font-semibold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
+                    <span>${escapeHtml(commentData.content)}</span>
+                  </p>
+                  <div class="flex items-center gap-3 mt-1 text-[10px] text-ink-muted font-medium">
+                    <span>Baru saja</span>
+                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer">Balas</button>
+                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer">Hapus</button>
+                  </div>
+                </div>`;
+
+          replyWrapper.querySelector('.reply-button').addEventListener('click', () => {
+            replyComment(postId, commentData.id, userName);
+          });
+          replyWrapper.querySelector('.delete-button').addEventListener('click', () => {
+            deleteComment(commentData.id, postId);
+          });
+
+          repliesContainer.appendChild(replyWrapper);
+        }
+      } else {
+        const newCommentWrapper = document.createElement('div');
+        newCommentWrapper.className = 'space-y-2';
+        newCommentWrapper.setAttribute('data-comment-id', commentData.id);
+        newCommentWrapper.innerHTML = `
+              <div class="flex gap-3">
+                <img src="${userAvatar}" class="size-8 rounded-full object-cover shrink-0 border border-neutral-200" alt="User">
+                <div class="flex-1 min-w-0">
+                  <p class="text-caption text-ink-secondary leading-snug break-words">
+                    <span class="font-semibold text-neutral-900 mr-1.5">${escapeHtml(userName)}</span>
+                    <span>${escapeHtml(commentData.content)}</span>
+                  </p>
+                  <div class="flex items-center gap-3 mt-1 text-[10px] text-ink-muted font-medium">
+                    <span>Baru saja</span>
+                    <button type="button" class="reply-button hover:text-blue-600 cursor-pointer">Balas</button>
+                    <button type="button" class="delete-button hover:text-red-500 cursor-pointer">Hapus</button>
+                  </div>
+                </div>
+              </div>`;
+
+        newCommentWrapper.querySelector('.reply-button').addEventListener('click', () => {
+          replyComment(postId, commentData.id, userName);
+        });
+        newCommentWrapper.querySelector('.delete-button').addEventListener('click', () => {
+          deleteComment(commentData.id, postId);
+        });
+
+        commentsContainer.appendChild(newCommentWrapper);
+      }
+
+      const scrollableArea = modal.querySelector('.overflow-y-auto');
+      if (scrollableArea) {
+        requestAnimationFrame(() => {
+          scrollableArea.scrollTop = scrollableArea.scrollHeight;
+        });
       }
     }
 
     function replyComment(postId, commentId, username) {
-      const input = document.querySelector(`#comments-${postId} input[name="content"]`);
-      let parentInput = document.querySelector(`#comments-${postId} input[name="parent_id"]`);
+      const parentInput = document.getElementById(`parentId-${postId}`);
+      const replyIndicator = document.getElementById(`replyIndicator-${postId}`);
+      const replyTarget = document.getElementById(`replyTarget-${postId}`);
+      const inputContent = document.getElementById(`inputContent-${postId}`);
 
-      if (!parentInput) {
-        parentInput = document.createElement('input');
-        parentInput.type = 'hidden';
-        parentInput.name = 'parent_id';
-        input.parentNode.appendChild(parentInput);
-      }
-
-      parentInput.value = commentId;
-      input.placeholder = `Membalas ${username}...`;
-      input.focus();
+      if (parentInput) parentInput.value = commentId;
+      if (replyTarget) replyTarget.textContent = `@${username}`;
+      if (replyIndicator) replyIndicator.classList.remove('hidden');
+      if (inputContent) inputContent.focus();
     }
 
-    function openMediaModal(url, ext) {
-      const modal = document.getElementById('mediaModal');
-      const content = document.getElementById('modalContent');
-      const imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-      const videoExtensions = ['mp4', 'mov'];
+    function cancelReply(postId) {
+      const parentInput = document.getElementById(`parentId-${postId}`);
+      const replyIndicator = document.getElementById(`replyIndicator-${postId}`);
 
-      if (imageExtensions.includes(ext)) {
-        content.innerHTML = `<img src="${url}" class="max-w-full max-h-[85vh] rounded-lg object-contain">`;
-      } else if (videoExtensions.includes(ext)) {
-        content.innerHTML =
-          `<video controls autoplay class="max-w-full max-h-[85vh] rounded-lg"><source src="${url}" type="video/${ext}"></video>`;
-      } else {
-        window.open(url, '_blank');
+      if (parentInput) parentInput.value = '';
+      if (replyIndicator) replyIndicator.classList.add('hidden');
+    }
+
+    async function deleteComment(commentId, postId) {
+      if (!confirm('Hapus komentar ini?')) return;
+
+      const modal = document.getElementById(`commentModal-${postId}`);
+      if (!modal) {
+        alert('Komentar tidak ditemukan.');
         return;
       }
 
+      const commentElement = modal.querySelector(`[data-comment-id="${commentId}"]`);
+      if (!commentElement) {
+        alert('Komentar tidak ditemukan.');
+        return;
+      }
+
+      if (commentElement.dataset.deleting === 'true') return;
+      commentElement.dataset.deleting = 'true';
+
+      const parent = commentElement.parentNode;
+      const nextSibling = commentElement.nextSibling;
+      const deletedCount = 1 + commentElement.querySelectorAll('[data-comment-id]').length;
+
+      const commentsContainer = modal.querySelector('.overflow-y-auto .space-y-4');
+      const emptyState = commentsContainer?.querySelector('p.text-center');
+
+      if (emptyState) {
+        emptyState.remove();
+      }
+
+      commentElement.remove();
+      updateCommentsCount(postId, -deletedCount);
+
+      if (
+        commentsContainer &&
+        !commentsContainer.querySelector('[data-comment-id]')
+      ) {
+        commentsContainer.insertAdjacentHTML(
+          'beforeend',
+          '<p class="text-xs text-neutral-400 text-center py-8" data-empty-comments="true">Belum ada komentar.</p>'
+        );
+      }
+
+      try {
+        const response = await fetch(`{{ url('/comments') }}/${encodeURIComponent(commentId)}`, {
+          method: 'DELETE',
+          credentials: 'same-origin',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+
+        const currentEmptyState = commentsContainer?.querySelector('[data-empty-comments="true"]');
+        if (
+          currentEmptyState &&
+          commentsContainer.querySelector('[data-comment-id]')
+        ) {
+          currentEmptyState.remove();
+        }
+      } catch (error) {
+        if (parent) {
+          if (nextSibling && nextSibling.parentNode === parent) {
+            parent.insertBefore(commentElement, nextSibling);
+          } else {
+            parent.appendChild(commentElement);
+          }
+        }
+
+        commentElement.dataset.deleting = 'false';
+        updateCommentsCount(postId, deletedCount);
+
+        const currentEmptyState = commentsContainer?.querySelector('[data-empty-comments="true"]');
+        if (currentEmptyState) {
+          currentEmptyState.remove();
+        }
+
+        console.error('Delete Comment Error:', error);
+        alert(error.message || 'Terjadi kesalahan saat menghapus komentar.');
+      }
+    }
+
+    const slideIndices = {};
+
+    function moveSlide(postId, direction) {
+      if (!(postId in slideIndices)) slideIndices[postId] = 0;
+      const slidesContainer = document.getElementById(`slides-${postId}`);
+      const totalSlides = slidesContainer.children.length;
+
+      slideIndices[postId] = (slideIndices[postId] + direction + totalSlides) % totalSlides;
+      const currentIndex = slideIndices[postId];
+      slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+      const dots = document.querySelectorAll(`#dots-${postId} span`);
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('!bg-white', idx === currentIndex);
+        dot.classList.toggle('w-2.5', idx === currentIndex);
+      });
+    }
+
+    const modalSlideIndices = {};
+
+    function moveModalSlide(postId, direction) {
+      if (!(postId in modalSlideIndices)) modalSlideIndices[postId] = 0;
+      const slidesContainer = document.getElementById(`modal-slides-${postId}`);
+      const totalSlides = slidesContainer.children.length;
+
+      modalSlideIndices[postId] = (modalSlideIndices[postId] + direction + totalSlides) % totalSlides;
+      slidesContainer.style.transform = `translateX(-${modalSlideIndices[postId] * 100}%)`;
+    }
+
+    let currentModalMediaList = [];
+    let currentModalIndex = 0;
+
+    function openMediaModal(mediaList, index = 0) {
+      currentModalMediaList = mediaList;
+      currentModalIndex = index;
+      const modal = document.getElementById('mediaModal');
       modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      renderModalContent();
+    }
+
+    async function downloadFileAsync(downloadUrl, filename, btnElement) {
+      const originalText = btnElement.innerHTML;
+      btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengunduh...';
+      btnElement.style.pointerEvents = 'none';
+
+      try {
+        const response = await fetch(downloadUrl, {
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+
+        if (response.status === 401 || response.status === 419) {
+          alert('Sesi login telah berakhir. Silakan login kembali.');
+          window.location.reload();
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Gagal mengunduh file.');
+        }
+
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename || 'download';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (error) {
+        console.error('Download error:', error);
+        alert(error.message || 'Terjadi kesalahan saat mengunduh file.');
+      } finally {
+        btnElement.innerHTML = originalText;
+        btnElement.style.pointerEvents = 'auto';
+      }
+    }
+
+    function renderModalContent() {
+      const content = document.getElementById('modalContent');
+      const counter = document.getElementById('modalCounter');
+      const prevBtn = document.getElementById('modalPrevBtn');
+      const nextBtn = document.getElementById('modalNextBtn');
+
+      if (!currentModalMediaList || currentModalMediaList.length === 0) return;
+
+      const item = currentModalMediaList[currentModalIndex];
+      const {
+        url,
+        download_url,
+        ext,
+        filename
+      } = item;
+
+      if (currentModalMediaList.length > 1) {
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.remove('hidden');
+        counter.classList.remove('hidden');
+        counter.textContent = `${currentModalIndex + 1} / ${currentModalMediaList.length}`;
+      } else {
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+        counter.classList.add('hidden');
+      }
+
+      const downloadButtonHtml = `
+            <button type="button" onclick="downloadFileAsync('${download_url}', '${filename}', this)" class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow transition-colors cursor-pointer">
+              <i class="fa-solid fa-download"></i> Unduh File
+            </button>`;
+
+      if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) {
+        content.innerHTML = `
+            <div class="relative flex flex-col items-center">
+              <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg">
+              ${downloadButtonHtml}
+            </div>`;
+      } else if (['mp4', 'mov', 'webm'].includes(ext)) {
+        const mimeType = ext === 'mov' ? 'video/quicktime' : `video/${ext}`;
+        content.innerHTML = `
+            <div class="relative flex flex-col items-center">
+              <video controls autoplay class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg">
+                <source src="${url}" type="${mimeType}">
+              </video>
+              ${downloadButtonHtml}
+            </div>`;
+      } else if (['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) {
+        content.innerHTML = `
+            <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center gap-4 min-w-[320px] max-w-md w-full">
+              <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                <i class="fa-solid fa-music text-2xl"></i>
+              </div>
+              <p class="text-sm font-semibold text-neutral-800 text-center truncate w-full">${filename}</p>
+              <audio controls autoplay class="w-full"><source src="${url}" type="audio/${ext}"></audio>
+              <button type="button" onclick="downloadFileAsync('${download_url}', '${filename}', this)" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg text-center transition-colors cursor-pointer flex items-center justify-center gap-2">
+                <i class="fa-solid fa-download"></i> Unduh File
+              </button>
+            </div>`;
+      } else {
+        content.innerHTML = `
+            <div class="bg-white rounded-xl overflow-hidden shadow-2xl w-full max-w-3xl h-[78vh] flex flex-col">
+              <div class="flex items-center justify-between p-3.5 bg-neutral-100 border-b border-neutral-200">
+                <span class="text-xs font-semibold text-neutral-700 truncate max-w-[70%]" title="${filename}">${filename}</span>
+                <button type="button" onclick="downloadFileAsync('${download_url}', '${filename}', this)" class="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors cursor-pointer flex items-center gap-2">
+                  <i class="fa-solid fa-download"></i> Unduh File
+                </button>
+              </div>
+              <iframe src="${url}" class="w-full h-full border-none"></iframe>
+            </div>`;
+      }
+    }
+
+    function changeModalSlide(direction) {
+      if (currentModalMediaList.length <= 1) return;
+      currentModalIndex = (currentModalIndex + direction + currentModalMediaList.length) % currentModalMediaList.length;
+      renderModalContent();
     }
 
     function closeMediaModal() {
       const modal = document.getElementById('mediaModal');
       const content = document.getElementById('modalContent');
       modal.classList.add('hidden');
+      document.body.style.overflow = 'auto';
       content.innerHTML = '';
+      currentModalMediaList = [];
+      currentModalIndex = 0;
     }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' || event.key === 'Esc') {
+        closeMediaModal();
+        document.querySelectorAll('[id^="commentModal-"]').forEach(m => closeCommentModal(m.id));
+      } else if (event.key === 'ArrowLeft') {
+        changeModalSlide(-1);
+      } else if (event.key === 'ArrowRight') {
+        changeModalSlide(1);
+      }
+    });
   </script>
 @endsection

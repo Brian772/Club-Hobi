@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, softDeletes;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -38,5 +39,10 @@ class Comment extends Model
     public function parent()
     {
         return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'reportable',  'content_type', 'content_id');
     }
 }

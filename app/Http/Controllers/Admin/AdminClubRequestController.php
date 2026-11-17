@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClubRequest;
 use App\Models\Club;
 use App\Models\ClubMember;
+use App\Models\AuditLog;
+use App\Models\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -16,7 +18,7 @@ class AdminClubRequestController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         $clubRequest = ClubRequest::with('requester', 'hobby')->get();
         return view("admin.clubs.request", compact("clubRequest", "user"));
     }
@@ -24,6 +26,7 @@ class AdminClubRequestController extends Controller
     public function show(ClubRequest $clubRequest)
     {
         $user = Auth::user();
+        $clubRequest = ClubRequest::with('requester')->find($clubRequest->id);
         return view("admin.clubs.request-show", compact("clubRequest", "user"));
     }
 
@@ -36,15 +39,31 @@ class AdminClubRequestController extends Controller
         DB::beginTransaction();
 
         try {
-            $club = Club::create([
+            if ($clubRequest->visibility_club === 'private') {
+                $club = Club::create([
                 'id' => Str::uuid(),
                 'name' => $clubRequest->name,
                 'hobby_id' => $clubRequest->hobby_id,
                 'description' => $clubRequest->description,
                 'created_by' => $clubRequest->user_id,
                 'cover_url' => $clubRequest->cover_url,
+                'visibility' => $clubRequest->visibility_club,
+                'is_required_request' => True,
                 'created_at' => now(),
             ]);
+            } else {
+                $club = Club::create([
+                'id' => Str::uuid(),
+                'name' => $clubRequest->name,
+                'hobby_id' => $clubRequest->hobby_id,
+                'description' => $clubRequest->description,
+                'created_by' => $clubRequest->user_id,
+                'cover_url' => $clubRequest->cover_url,
+                'visibility' => $clubRequest->visibility_club,
+                'created_at' => now(),
+            ]);
+            }
+            
 
             ClubMember::create([
                 'id' => Str::uuid(),
@@ -59,6 +78,27 @@ class AdminClubRequestController extends Controller
                 'reviewed_by' => Auth::id(),
                 'reviewed_at' => now(),
             ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Accept Club Request',
+                'target_type' => 'ClubRequest',
+                'target_id' => $clubRequest->id,
+                'metadata' => [
+                    'club_id' => $club->id,
+                    'visibility' => $clubRequest->visibility_club,
+                    'requester_id' => $clubRequest->user_id,
+                    'result' => 'approved',
+                ],
+            ]);
+            Notification::createForUser(
+                $clubRequest->user_id,
+                'Permintaan klub disetujui',
+                'Permintaan klub ' . $clubRequest->name . ' telah disetujui.',
+                'other',
+                $clubRequest->id
+            );
 
             DB::commit();
         } catch(\Throwable $e){
@@ -75,15 +115,44 @@ class AdminClubRequestController extends Controller
         if ($clubRequest->status !== 'pending') {
             return redirect()->route('admin.clubs.request')->with('error', 'Request already processed or an error occurred while processing the request.');
         }
+
+        $validatedData = request()->validateWithBag('reject', [
+            'reason' => ['required', 'string', 'min:5', 'max:255'],
+        ], [
+            'reason.required' => 'Alasan penolakan harus diisi.',
+            'reason.string' => 'Alasan penolakan harus berupa teks.',
+            'reason.max' => 'Alasan penolakan tidak boleh lebih dari 255 karakter.',
+            'reason.min' => 'Alasan penolakan harus lebih dari 5 karakter.',
+        ]);
+
         DB::beginTransaction();
 
         try {
             $clubRequest->update([
                 'status' => 'rejected',
-                'rejected_reason' => request('reason'),
+                'rejected_reason' => $validatedData['reason'],
                 'reviewed_by' => Auth::id(),
                 'reviewed_at' => now(),
             ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Reject Club Request',
+                'target_type' => 'ClubRequest',
+                'target_id' => $clubRequest->id,
+                'metadata' => [
+                    'reason' => $validatedData['reason'],
+                    'requester_id' => $clubRequest->user_id,
+                ],
+            ]);
+            Notification::createForUser(
+                $clubRequest->user_id,
+                'Permintaan klub ditolak',
+                'Permintaan klub ' . $clubRequest->name . ' tidak disetujui.',
+                'other',
+                $clubRequest->id
+            );
 
             DB::commit();
         } catch(\Throwable $e){

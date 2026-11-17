@@ -2,8 +2,10 @@
 
 use Livewire\Component;
 use App\Models\User;
+use App\Models\AuditLog;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 new class extends Component {
     use WithPagination;
@@ -18,12 +20,14 @@ new class extends Component {
     public bool $showBanModal = false;
     public bool $showUnbanModal = false;
     public bool $showUnsuspendModal = false;
+    public bool $showPromoteModal = false;
+    public bool $showDemoteModal = false;
 
     public function rules(): array
     {
         return [
             'reason' => 'required|string|max:255',
-            'suspendDate' => 'required|date',
+            'suspendDate' => $this->showSuspendModal ? 'required|date' : 'nullable',
         ];
     }
 
@@ -77,12 +81,49 @@ new class extends Component {
         $this->showUnsuspendModal = true;
     }
 
+    public function confirmPromote(string $userId): void
+    {
+        $this->selectUserId = $userId;
+        $this->showPromoteModal = true;
+    }
+
+    public function confirmDemote(string $userId): void
+    {
+        $this->selectUserId = $userId;
+        $this->showDemoteModal = true;
+    }
+
     public function suspendUser(): void
     {
         $this->validate();
 
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'suspended', 'reason' => $this->reason, 'suspended_until' => $this->suspendDate]);
+            $targetId = $this->selectUserId;
+            
+            $suspendedUntil = $this->suspendDate 
+            ? Carbon::parse($this->suspendDate)->endOfDay() 
+            : null;
+
+            User::whereKey($this->selectUserId)->update([
+                'status' => 'suspended',
+                'reason' => $this->reason,
+                'suspended_until' => $suspendedUntil,
+                'status_updated_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Suspend User',
+                'target_type' => 'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'reason' => $this->reason,
+                    'suspend_until' => $suspendedUntil,
+                    'previous_status' => 'active',
+                    'new_status' => 'suspended',
+                ],
+            ]);
         }
 
         $this->reset(['selectUserId', 'showSuspendModal']);
@@ -93,7 +134,26 @@ new class extends Component {
         $this->validate();
 
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'banned', 'reason' => $this->reason]);
+            $targetId = $this->selectUserId;
+
+            User::whereKey($this->selectUserId)->update([
+                'status' => 'banned',
+                'reason' => $this->reason,
+                'status_updated_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Ban User',
+                'target_type' => 'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'reason' => $this->reason,
+                    'previous_status' => 'active',
+                    'new_status' => 'banned',
+                ],
+            ]);
         }
 
         $this->reset(['selectUserId', 'showBanModal']);
@@ -102,7 +162,25 @@ new class extends Component {
     public function unbanUser(): void
     {
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'active', 'reason' => null]);
+            $targetId = $this->selectUserId;
+
+            User::whereKey($this->selectUserId)->update([
+                'status' => 'active',
+                'reason' => null,
+                'status_updated_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Unban User',
+                'target_type' => 'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'previous_status' => 'banned',
+                    'new_status' => 'active',
+                ],
+            ]);
         }
 
         $this->reset(['selectUserId', 'showUnbanModal']);
@@ -111,10 +189,79 @@ new class extends Component {
     public function UnsuspendUser(): void
     {
         if ($this->selectUserId) {
-            User::whereKey($this->selectUserId)->update(['status' => 'active', 'suspended_until' => null, 'reason' => null]);
+            $targetId = $this->selectUserId;
+
+            User::whereKey($this->selectUserId)->update([
+                'status' => 'active',
+                'suspended_until' => null,
+                'reason' => null,
+                'status_updated_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Unsuspend User',
+                'target_type' => 'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'previous_status' => 'suspended',
+                    'new_status' => 'active',
+                ],
+            ]);
         }
 
         $this->reset(['selectUserId', 'showUnsuspendModal']);
+    }
+
+    public function promoteUser(): void
+    {
+        if ($this->selectUserId) {
+            $targetId = $this->selectUserId;
+
+            User::whereKey($this->selectUserId)->update([
+                'role_global' => 'admin',
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Promote User',
+                'target_type' => 'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'previous_role' => 'member',
+                    'new_role' => 'admin',
+                ],
+            ]);
+        }
+
+        $this->reset(['selectUserId', 'showPromoteModal']);
+    }
+
+    public function demoteUser(): void
+    {
+        if ($this->selectUserId) {
+            $targetId = $this->selectUserId;
+
+            User::whereKey($this->selectUserId)->update([
+                'role_global' => 'member',
+            ]);
+
+            AuditLog::create([
+                'id' => Str::uuid(),
+                'user_id' => Auth::id(),
+                'action' => 'Demote User',
+                'target_type' => 'User',
+                'target_id' => $targetId,
+                'metadata' => [
+                    'previous_role' => 'admin',
+                    'new_role' => 'member',
+                ],
+            ]);
+        }
+
+        $this->reset(['selectUserId', 'showDemoteModal']);
     }
 
     public function closeModal(): void
@@ -145,7 +292,7 @@ new class extends Component {
 
 <div>
   <header class="flex flex-col lg:flex-row gap-2 lg:items-center justify-start lg:justify-between mb-4">
-    <h1 class="text-2xl font-bold">User Management</h1>
+    <h1 class="text-2xl font-semibold">User Management</h1>
     <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search users..."
       class="lg:w-1/3 px-4 py-2 w-full border border-hairline rounded-md focus:outline-none focus:ring focus:border-primary" />
   </header>
@@ -153,19 +300,19 @@ new class extends Component {
   <main class="flex flex-col gap-4 border border-hairrline p-4 rounded-lg">
     <div class="w-full h-max flex flex-row gap-4 border-b border-hairline overflow-x-auto">
       <button wire:click="setTab('all')"
-        class="px-4 py-2 text-body font-semibold focus:outline-none {{ $tab === 'all' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
+        class="px-4 py-2 text-body-mid font-semibold focus:outline-none {{ $tab === 'all' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
         All Users
       </button>
       <button wire:click="setTab('active')"
-        class="px-4 py-2 text-body font-semibold focus:outline-none {{ $tab === 'active' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
+        class="px-4 py-2 text-body-mid font-semibold focus:outline-none {{ $tab === 'active' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
         Active
       </button>
       <button wire:click="setTab('suspend')"
-        class="px-4 py-2 text-body font-semibold focus:outline-none {{ $tab === 'suspend' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
+        class="px-4 py-2 text-body-mid font-semibold focus:outline-none {{ $tab === 'suspend' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
         Suspended
       </button>
       <button wire:click="setTab('banned')"
-        class="px-4 py-2 text-body font-semibold focus:outline-none {{ $tab === 'banned' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
+        class="px-4 py-2 text-body-mid font-semibold focus:outline-none {{ $tab === 'banned' ? 'border-b-2 border-primary text-primary' : 'text-ink-muted' }}">
         Banned
       </button>
     </div>
@@ -284,6 +431,30 @@ new class extends Component {
                                 Unban User
                               </button>
                             @endif
+                            @if ($user->role_global === 'member')
+                              <button type="button" wire:click="confirmPromote('{{ $user->id }}')"
+                                class="flex flex-row w-full gap-2 items-center px-4 py-2 text-caption rounded-md text-primary hover:bg-primary/10">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award">
+                                  <circle cx="12" cy="8" r="7" />
+                                  <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.11" />
+                                </svg>
+                                Promote to Admin
+                              </button>
+                            @endif
+                            @if ($user->role_global === 'admin')
+                              <button type="button" wire:click="confirmDemote('{{ $user->id }}')"
+                                class="flex flex-row w-full gap-2 items-center px-4 py-2 text-caption rounded-md text-accent-red hover:bg-accent-red/10">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award">
+                                  <circle cx="12" cy="8" r="7" />
+                                  <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.11" />
+                                </svg>
+                                Demote to Member
+                                </bu>
+                            @endif
                           </div>
                         </div>
                       </div>
@@ -304,7 +475,7 @@ new class extends Component {
         <div x-data @keydown.escape.window="$wire.showSuspendModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Suspend User</h2>
                 <p>Are you sure you want to suspend this user? This action can be reversed later.</p>
@@ -351,7 +522,7 @@ new class extends Component {
         <div x-data x-cloak @keydown.escape.window="$wire.showBanModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Ban User</h2>
                 <p>Are you sure you want to ban this user? This action is permanent and cannot be
@@ -389,7 +560,7 @@ new class extends Component {
           @keydown.escape.window="$wire.showUnsuspendModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Unsuspend User</h2>
                 <p>Are you sure you want to unsuspend this user? This action will restore their access.</p>
@@ -418,10 +589,11 @@ new class extends Component {
         <div x-data x-cloak x-show="$wire.showUnbanModal" @keydown.escape.window="$wire.showUnbanModal = false">
           <div class="fixed inset-0 bg-black/50 z-40"></div>
           <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
               <div class="flex flex-col gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Unban User</h2>
-                <p>Are you sure you want to unban this user? The ban will be lifted, and his account will be reactivated.</p>
+                <p>Are you sure you want to unban this user? The ban will be lifted, and his account will be
+                  reactivated.</p>
               </div>
               <div class="flex justify-end gap-2">
                 <button type="button" wire:click="unbanUser"
@@ -441,7 +613,51 @@ new class extends Component {
         </div>
       @endif
 
-</div>
-</section>
-</main>
+      {{-- Promote User --}}
+      @if ($showPromoteModal)
+        <div x-data x-cloak x-show="$wire.showPromoteModal" @keydown.escape.window="$wire.showPromoteModal = false">
+          <div class="fixed inset-0 bg-black/50 z-40"></div>
+          <div class="fixed inset-0 z-50 flex items-center justify-center">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
+              <div class="flex flex-col gap-2 mb-4">
+                <h2 class="text-lg font-semibold">Promote User</h2>
+                <p>Are you sure you want to promote this user to admin? This action will grant them elevated
+                  privileges.</p>
+              </div>
+              <div class="flex justify-end gap-2">
+                <button type="button" wire:click="promoteUser"
+                  class="flex flex-row gap-2 items-center px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded">
+                  Promote User</button>
+                <button type="button" wire:click="closeModal"
+                  class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      @endif
+
+      {{-- Demote User --}}
+      @if ($showDemoteModal)
+        <div x-data x-cloak x-show="$wire.showDemoteModal" @keydown.escape.window="$wire.showDemoteModal = false">
+          <div class="fixed inset-0 bg-black/50 z-40"></div>
+          <div class="fixed inset-0 z-50 flex items-center justify-center">
+            <div class="bg-canvas border border-hairline rounded-lg shadow-lg p-6 w-full max-w-sm lg:max-w-md">
+              <div class="flex flex-col gap-2 mb-4">
+                <h2 class="text-lg font-semibold">Demote User</h2>
+                <p>Are you sure you want to demote this user to member? This action will revoke their admin privileges.
+                </p>
+              </div>
+              <div class="flex justify-end gap-2">
+                <button type="button" wire:click="demoteUser"
+                  class="flex flex-row gap-2 items-center px-4 py-2 bg-accent-red/10 text-accent-red hover:bg-accent-red hover:text-white rounded">
+                  Demote User</button>
+                <button type="button" wire:click="closeModal"
+                  class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      @endif
+    </section>
+  </main>
 </div>

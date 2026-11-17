@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Club Settings')
+
 @section('content')
   <header class="flex flex-row gap-2 lg:gap-4 items-center justify-start mb-3">
     <a href="{{ route('clubs.show', $club->id) }}" class="text-ink-muted">
@@ -10,17 +12,39 @@
           d="M6 8.5a.47.47 0 0 1-.35-.15l-3.5-3.5c-.2-.2-.2-.51 0-.71L5.65.65c.2-.2.51-.2.71 0s.2.51 0 .71L3.21 4.51l3.15 3.15c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z" />
       </svg>
     </a>
-    <h2 class="text-title lg:text-heading-2 flex flex-row items-center gap-2 justify-center text-ink">Settings -
+    <h2 class="text-title lg:text-3xl font-semibold flex flex-row items-center gap-2 justify-center text-ink">Settings -
       {{ $club->name }}
     </h2>
   </header>
 
-  <main x-data="{ openPromote: false, openKick: false, openDemote: false, openDelete: false }" class="flex flex-col mt-4 gap-4">
+  <main x-data="{
+      openPromote: false,
+      openKick: false,
+      openDemote: false,
+      openTransfer: false,
+      openDelete: @js($errors->deleteClub->isNotEmpty()),
+      openAccept: false,
+      openReject: false,
+      openChangevisibility: false,
+      openChangeApproval: false,
+      selectedName: @js($errors->deleteClub->isNotEmpty() ? $club->name : ''),
+      confirmText: @js(old('confirm_name', '')),
+      promoteUrl: '',
+      demoteUrl: '',
+      transferUrl: '',
+      kickUrl: '',
+      kickRole: '',
+      changevisibilityUrl: '',
+      changeApprovalUrl: '',
+      deleteUrl: @js($errors->deleteClub->isNotEmpty() ? route('clubs.delete', $club->id) : ''),
+      acceptUrl: '',
+      rejectUrl: ''
+  }" class="flex flex-col mt-4 gap-4">
     {{-- Edit Club --}}
     @can('update', $club)
       <section class="border border-hairline rounded-lg p-4">
         <header class="w-full flex flex-col mb-4">
-          <h3 class="text-title lg:text-heading-3 text-ink">Edit Club</h3>
+          <h3 class="text-title lg:text-2xl font-semibold text-ink">Edit Club</h3>
           <p class="text-body text-ink-muted">Update your club information below.</p>
         </header>
         <div class="max-w-4xl">
@@ -86,10 +110,43 @@
       </section>
     @endcan
 
+    {{-- Settings Club --}}
+    @can('isOwner', $club)
+      <div class="flex flex-col gap-8 border border-hairline p-4 rounded-lg">
+        <div class="flex flex-row items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <h3 class="text-body-mid font-semibold text-ink">Change visibility Club</h3>
+            <p class="text-caption text-ink-muted">Change the visibility settings of {{ $club->name }}. Current
+              visibility is {{ $club->visibility }}</p>
+          </div>
+          <button type="button"
+            @click="openChangevisibility = true; changevisibilityUrl = '{{ route('clubs.visibility.update', $club->id) }}';"
+            class="px-4 py-2 rounded-md bg-primary/10 text-primary hover:text-white hover:bg-primary transition-colors duration-300">
+            Change
+          </button>
+        </div>
+
+        @if ($club->visibility === 'public')
+          <div class="flex flex-row items-center justify-between">
+            <div class="flex flex-col gap-1">
+              <h3 class="text-body-mid font-semibold text-ink">Require Approval</h3>
+              <p class="text-caption text-ink-muted">Choose whether {{ $club->name }} requires approval before joining
+              </p>
+            </div>
+            <button type="button"
+              @click="openChangeApproval = true; changeApprovalUrl = '{{ route('clubs.approval.update', $club->id) }}';"
+              class="px-4 py-2 rounded-md bg-primary/10 text-primary hover:text-white hover:bg-primary transition-colors duration-300">
+              Change
+            </button>
+          </div>
+        @endif
+      </div>
+    @endcan
+
     {{-- Manage Member --}}
     <section x-data="{ tab: 'member' }" class="border border-hairline rounded-lg p-4">
       <header class="w-full flex flex-col mb-4">
-        <h3 class="text-title lg:text-heading-3 text-ink">Manage Member</h3>
+        <h3 class="text-title lg:text-2xl font-semibold text-ink">Manage Member</h3>
         <p class="text-body text-ink-muted">Manage your club members and moderators.</p>
       </header>
       <div class="w-full h-max flex flex-row gap-4 border-b border-hairline overflow-x-auto">
@@ -166,7 +223,7 @@
                               x-transition:leave="transition ease-in duration-200"
                               x-transition:leave-start="opacity-100 translate-y-0"
                               x-transition:leave-end="opacity-0 -translate-y-2" @click.outside="MenuOpen = false"
-                              @click.stop
+                              @click="MenuOpen = false"
                               class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
                               <a href="{{ route('profile.show', ['user' => $member->user->id]) }}"
                                 class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
@@ -178,7 +235,7 @@
                                 </svg>
                                 Lihat Profil
                               </a>
-                              <a href="{{ route('messages.index', ['conversation' => $member->user->id]) }}"
+                              <a href="{{ route('messages.show', [$club->id, $member->user->id]) }}"
                                 class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -192,7 +249,9 @@
                               @if ($member->role === 'member' || $member->role === 'moderator')
                                 @can('isOwner', $club)
                                   @if ($member->role === 'member')
-                                    <button type="button" @click="openPromote = true"
+                                    <button type="button"
+                                      @click="openPromote = true;
+                                    selectedName = '{{ $member->user->name }}'; promoteUrl = '{{ route('clubs.promote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -207,7 +266,9 @@
                                     </button>
                                   @endif
                                   @if ($member->role === 'moderator')
-                                    <button type="button" @click="openDemote = true"
+                                    <button type="button"
+                                      @click="openDemote = true;
+                                    selectedName = '{{ $member->user->name }}'; demoteUrl = '{{ route('clubs.demote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -221,9 +282,26 @@
                                       </svg>
                                       Demote To Moderator
                                     </button>
+                                    <button type="button"
+                                      @click="openTransfer = true;
+                                    selectedName = '{{ $member->user->name }}'; transferUrl = '{{ route('clubs.ownership.transfer', [$club->id, $member->user->id]) }}';"
+                                      class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="lucide lucide-smartphone-user-round preview-icon">
+                                        <path d="M10 22H6a2 2 0 01-2-2V4a2 2 0 012-2h10a2 2 0 012 2v4" />
+                                        <path d="M11 18h.01" />
+                                        <path d="M22 22a4 4 0 00-8 0" />
+                                        <circle cx="18" cy="15" r="3" />
+                                      </svg>
+                                      Transfer Ownership
+                                    </button>
                                   @endif
                                 @endcan
-                                <button type="button" @click="openKick = true"
+                                <button type="button"
+                                  @click="openKick = true;
+                                selectedName = '{{ $member->user->name }}'; kickUrl = '{{ route('clubs.kick', [$club->id, $member->user->id]) }}'; kickRole = '{{ $member->role }}';"
                                   class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-accent-red hover:bg-accent-red/10">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -297,6 +375,7 @@
                               x-transition:leave="transition ease-in duration-200"
                               x-transition:leave-start="opacity-100 translate-y-0"
                               x-transition:leave-end="opacity-0 -translate-y-2" @click.outside="MenuOpen = false"
+                              @click="MenuOpen = false"
                               class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
                               <a href="{{ route('profile.show', ['user' => $member->user->id]) }}"
                                 class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
@@ -308,7 +387,7 @@
                                 </svg>
                                 Lihat Profil
                               </a>
-                              <a href="{{ route('messages.index', ['conversation' => $member->user->id]) }}"
+                              <a href="{{ route('messages.show', [$club->id, $member->user->id]) }}"
                                 class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -322,7 +401,9 @@
                               @if ($member->role === 'member' || $member->role === 'moderator')
                                 @can('isOwner', $club)
                                   @if ($member->role === 'member')
-                                    <button type="button" @click="openPromote = true"
+                                    <button type="button"
+                                      @click="openPromote = true;
+                                    selectedName = '{{ $member->user->name }}'; promoteUrl = '{{ route('clubs.promote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -337,7 +418,9 @@
                                     </button>
                                   @endif
                                   @if ($member->role === 'moderator')
-                                    <button type="button" @click="openDemote = true"
+                                    <button type="button"
+                                      @click="openDemote = true;
+                                    selectedName = '{{ $member->user->name }}'; demoteUrl = '{{ route('clubs.demote', [$club->id, $member->user->id]) }}';"
                                       class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -351,9 +434,26 @@
                                       </svg>
                                       Demote To Member
                                     </button>
+                                    <button type="button"
+                                      @click="openTransfer = true;
+                                    selectedName = '{{ $member->user->name }}'; transferUrl = '{{ route('clubs.ownership.transfer', [$club->id, $member->user->id]) }}';"
+                                      class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-primary hover:bg-primary/10">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="lucide lucide-smartphone-user-round preview-icon">
+                                        <path d="M10 22H6a2 2 0 01-2-2V4a2 2 0 012-2h10a2 2 0 012 2v4" />
+                                        <path d="M11 18h.01" />
+                                        <path d="M22 22a4 4 0 00-8 0" />
+                                        <circle cx="18" cy="15" r="3" />
+                                      </svg>
+                                      Transfer Ownership
+                                    </button>
                                   @endif
                                 @endcan
-                                <button type="button" @click="openKick = true"
+                                <button type="button"
+                                  @click="openKick = true;
+                                  selectedName = '{{ $member->user->name }}'; kickUrl = '{{ route('clubs.kick', [$club->id, $member->user->id]) }}'; kickRole = '{{ $member->role }}';"
                                   class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md w-full text-accent-red hover:bg-accent-red/10">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -404,24 +504,18 @@
                       {{ $request->created_at->format('d M Y') }}
                     </td>
                     <td class="px-6 py-4 h-16 whitespace-nowrap text-caption flex flex-row gap-2">
-                      <form action="{{ route('clubs.join.request.accept', [$club->id, $request->id]) }}"
-                        method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                          class="px-2 py-1 text-primary cursor-pointer hover:underline hover:underline-offset-2">
-                          Accept
-                        </button>
-                      </form>
-                      <form action="{{ route('clubs.join.request.reject', [$club->id, $request->id]) }}"
-                        method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                          class="px-2 py-1 text-accent-red cursor-pointer hover:underline hover:underline-offset-2">
-                          Reject
-                        </button>
-                      </form>
+                      <button type="button"
+                        @click="openAccept = true;
+                        selectedName = '{{ $request->user->name }}'; acceptUrl = '{{ route('clubs.join.request.accept', [$club->id, $request->user->id]) }}';"
+                        class="px-2 py-1 text-primary cursor-pointer hover:underline hover:underline-offset-2">
+                        Accept
+                      </button>
+                      <button type="button"
+                        @click="openReject = true;
+                        selectedName = '{{ $request->user->name }}'; rejectUrl = '{{ route('clubs.join.request.reject', [$club->id, $request->user->id]) }}';"
+                        class="px-2 py-1 text-accent-red cursor-pointer hover:underline hover:underline-offset-2">
+                        Reject
+                      </button>
                   </tr>
                 @endforeach
               </tbody>
@@ -431,11 +525,106 @@
       </div>
     </section>
 
+    @can('isOwnerOrModerator', $club)
+      <section class="border border-hairline rounded-lg p-4">
+        <header class="mb-4 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+          <h1 class="text-2xl text-ink font-semibold">Activity Logs</h1>
+
+          <form method="GET" class="w-full lg:w-1/3">
+            <input type="text" name="search" value="{{ request('search') }}"
+              placeholder="Search by action or target type" class="px-4 py-2 border border-hairline rounded-md w-full">
+          </form>
+        </header>
+
+        <main class="border border-hairline p-4 rounded-lg">
+          <div class="flex flex-col gap-4">
+            <div id="container" class="overflow-x-auto lg:overflow-visible">
+              <table class="min-w-full h-max table-auto">
+                <thead class="border-b border-hairline">
+                  <tr>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      Actor</th>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      Action</th>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      Target</th>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      Date</th>
+                    <th scope="col" class="py-4 px-6 text-start text-body-sm font-semibold text-ink-faint uppercase">
+                      action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @forelse ($activities as $activity)
+                    <tr class="odd:bg-gray-100 even:bg-canvas">
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->user?->name ?? 'System' }}
+                      </td>
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->action }}</td>
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">{{ $activity->target_type ?? 'N/A' }}</td>
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">
+                        {{ $activity->created_at->format('d M Y, h:i') }}
+                      </td>
+                      <td class="px-6 py-4 h-16 whitespace-nowrap text-caption">
+                        <div x-data="{ MenuOpen: false }" class="relative">
+                          <button type="button" x-ref="button" @click="MenuOpen = true"
+                            class="text-ink-muted text-body-mid rounded-full p-2 hover:bg-hairline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round" class="lucide lucide-ellipsis-vertical">
+                              <circle cx="12" cy="12" r="1" />
+                              <circle cx="12" cy="5" r="1" />
+                              <circle cx="12" cy="19" r="1" />
+                            </svg>
+                          </button>
+
+                          <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
+                            <div x-anchor.noflip="$refs.button" x-transition:enter="transition ease-out duration-200"
+                              x-transition:enter-start="opacity-0 -translate-y-2"
+                              x-transition:enter-end="opacity-100 translate-y-0"
+                              x-transition:leave="transition ease-in duration-200"
+                              x-transition:leave-start="opacity-100 translate-y-0"
+                              x-transition:leave-end="opacity-0 -translate-y-2" @click.outside="MenuOpen = false"
+                              @click="MenuOpen = false"
+                              class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
+                              <a href="{{ route('clubs.activity.show', [$club->id, $activity->id]) }}"
+                                class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                  <circle cx="12" cy="12" r="10" />
+                                  <path d="M12 16v-4" />
+                                  <path d="M12 8h.01" />
+                                </svg>
+                                View Detail
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="5" class="px-6 py-4 h-16 whitespace-nowrap text-caption text-center">
+                        No Activity logs found.
+                      </td>
+                    </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-4">
+              {{ $activities->links() }}
+            </div>
+          </div>
+        </main>
+      </section>
+    @endcan
+
     {{-- Delete Club --}}
     @can('isOwner', $club)
       <section class="p-4 mt-12">
         <header class="w-full flex flex-col mb-4">
-          <h3 class="text-title lg:text-heading-3 text-ink">Danger Zone</h3>
+          <h3 class="text-title lg:text-2xl font-semibold text-ink">Danger Zone</h3>
         </header>
 
         <main class="flex flex-col gap-2 p-4 border border-accent-red rounded-lg">
@@ -445,7 +634,9 @@
               <p class="text-body-mid text-ink-muted">Delete {{ $club->name }}. If you delete this club, you will not be
                 able to recover it.</p>
             </div>
-            <button type="button" @click="openDelete = true"
+            <button type="button"
+              @click="openDelete = true;
+              confirmText = ''; selectedName = '{{ $club->name }}'; deleteUrl = '{{ route('clubs.delete', $club->id) }}';"
               class="px-4 py-2 rounded-md text-accent-red hover:underline hover:underline-offset-2">
               Delete
             </button>
@@ -459,19 +650,22 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openPromote = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
-            Promote {{ $member->user->name }} to Moderator?
+            Promote <span x-text="selectedName"></span> to Moderator?
           </h3>
-          <p class="text-body-mid mb-4 text-ink">{{ $member->user->name }} akan menjadi moderator dan mendapatkan akses untuk mengelola anggota serta konten club.</p>
+          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan menjadi moderator dan
+            mendapatkan akses
+            untuk mengelola anggota serta konten club.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.promote', [$club->id, $member->user->id]) }}" method="POST">
+          <form :action="promoteUrl" method="POST">
             @csrf
             @method('PATCH')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary transition-colors duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-layer-arrow-up">
@@ -484,7 +678,7 @@
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
             @click="openPromote = false">Cancel</button>
         </div>
       </div>
@@ -495,19 +689,22 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openDemote = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title text-ink mb-4">
-            Demote {{ $member->user->name }} to Member?
+            Demote <span x-text="selectedName"></span> to Member?
           </h3>
-          <p class="text-body-mid mb-4 text-ink">{{ $member->user->name }} akan kehilangan akses sebagai moderator dan kembali menjadi member.</p>
+          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan kehilangan akses sebagai
+            moderator dan
+            kembali menjadi member.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.demote', [$club->id, $member->user->id]) }}" method="POST">
+          <form :action="demoteUrl" method="POST">
             @csrf
             @method('PATCH')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-primary/10 rounded w-max text-primary hover:text-white hover:bg-primary transition-colors duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-layer-arrow-down">
@@ -521,8 +718,39 @@
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
             @click="openDemote = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    {{-- Transfer Ownership Modal --}}
+    <div x-show="openTransfer" x-cloak @keydown.escape.window="openTransfer = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openTransfer = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title text-ink mb-4">
+            Transfer ownership to <span x-text="selectedName"></span>?
+          </h3>
+          <p class="text-body-mid mb-4 text-ink">
+            Anda akan kehilangan akses sebagai pemilik klub dan tidak dapat membatalkan tindakan ini dari halaman ini.
+          </p>
+        </div>
+        <div class="flex flex-row justify-end gap-2">
+          <form :action="transferUrl" method="POST">
+            @csrf
+            @method('PATCH')
+            <button type="submit"
+              class="px-4 py-2 text-caption bg-primary/10 rounded text-primary hover:text-white hover:bg-primary transition-colors duration-200">
+              Transfer Ownership
+            </button>
+          </form>
+          <button type="button"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+            @click="openTransfer = false">Cancel</button>
         </div>
       </div>
     </div>
@@ -532,19 +760,22 @@
       class="fixed flex items-center justify-center inset-0 z-50">
       <div @click="openKick = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
       </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
         <div class="flex flex-col gap-2 mb-4">
           <h3 class="text-title mb-4 text-ink">
-            Kick {{ $member->user->name }}?
+            Kick <span x-text="selectedName"></span>?
           </h3>
-          <p class="text-body-mid mb-4 text-ink">{{ $member->user->name }} akan dikeluarkan dari club dan harus mengajukan permintaan baru jika ingin bergabung kembali.</p>
+          <p class="text-body-mid mb-4 text-ink"><span x-text="selectedName"></span> akan dikeluarkan dari club dan
+            harus
+            mengajukan permintaan baru jika ingin bergabung kembali.</p>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.kick', [$club->id, $member->user->id]) }}" method="POST">
+          <form :action="kickUrl" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
+              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red transition-colors duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-arrow-right-from-line">
@@ -552,50 +783,226 @@
                 <path d="M21 12H7" />
                 <path d="m15 18 6-6-6-6" />
               </svg>
-              Kick {{  $member->role }}
+              Kick <span x-text="selectedName"></span>
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
             @click="openKick = false">Cancel</button>
         </div>
       </div>
     </div>
 
-    {{-- Delete Modal --}}
-    <div x-show="openDelete" x-cloak @keydown.escape.window="openDelete = false"
-      class="fixed flex items-center justify-center inset-0 z-50">
-      <div @click="openDelete = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
-      </div>
-      <div class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-md">
-        <div class="flex flex-col gap-2 mb-4">
-          <h3 class="text-title mb-4 text-ink">
-            Delete {{ $club->name }}?
-          </h3>
-          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menghapus club ini? Semua data dan konten di dalamnya akan dihapus secara permanen dan tindakan ini tidak dapat dibatalkan.</p>
+    {{-- Delete confirmation modal --}}
+    <div x-show="openDelete" x-cloak x-transition.opacity @keydown.escape.window="openDelete = false"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/40" @click="openDelete = false"></div>
+
+      <div role="dialog" aria-modal="true" aria-labelledby="delete-detail-title"
+        class="relative z-10 max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-lg border border-hairline bg-canvas p-6 shadow-xl">
+        <div class="flex items-start gap-3">
+          <div>
+            <h2 id="delete-detail-title" class="text-title font-semibold text-ink">Delete <span
+                x-text="selectedName"></span>?</h2>
+            <p class="mt-2 text-caption text-ink-muted">
+              Are you sure you want to delete this club? All data and content will be permanently deleted and this
+              action cannot be undone.
+            </p>
+          </div>
         </div>
-        <div class="flex flex-row justify-end gap-2">
-          <form action="{{ route('clubs.delete', $club->id) }}" method="POST">
-            @csrf
-            @method('DELETE')
-            <button type="submit"
-              class="flex flex-row gap-2 items-center px-4 py-2 text-caption bg-accent-red/10 rounded w-max text-accent-red hover:text-white hover:bg-accent-red">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-trash">
+
+        <form :action="deleteUrl" method="POST" x-data="{ touched: false, showServerError: true }" class="mt-5">
+          @csrf
+          @method('DELETE')
+
+          <label for="confirm-name" class="block text-caption font-semibold text-ink-muted">
+            Type <span class="font-semibold text-ink" x-text="selectedName"></span> to confirm:
+          </label>
+          <input type="text" id="confirm-name" name="confirm_name" x-model="confirmText"
+            @input="showServerError = false" @blur="touched = true" autocomplete="off"
+            :class="(touched && confirmText !== '' && confirmText !== selectedName) ?
+                'border-accent-red' : 'border-hairline'"
+            class="mt-2 w-full rounded-lg border px-3 py-2 text-caption text-ink placeholder:text-ink-faint focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            placeholder="Type club name">
+
+          <p x-show="touched && confirmText !== '' && confirmText !== selectedName" x-cloak
+            class="mt-1.5 text-caption text-accent-red">
+            Club name does not match.
+          </p>
+
+          @error('confirm_name', 'deleteClub')
+            <p x-show="showServerError" class="mt-1.5 text-caption text-accent-red">{{ $message }}</p>
+          @enderror
+
+          <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="submit" :disabled="confirmText !== selectedName"
+              class="inline-flex items-center justify-center gap-2 rounded-md bg-accent-red px-4 py-2 text-caption font-semibold text-white transition-colors duration-150 hover:bg-accent-red/90 disabled:cursor-not-allowed disabled:opacity-60">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 11v6" />
                 <path d="M14 11v6" />
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
                 <path d="M3 6h18" />
                 <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
               </svg>
-              Delete
+              Delete club
+            </button>
+            <button type="button" @click="openDelete = false"
+              class="rounded-md border border-hairline bg-canvas px-4 py-2 text-caption font-semibold text-ink transition-colors duration-150 hover:bg-canvas-soft">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {{-- Accept Request Modal --}}
+    <div x-show="openAccept" x-cloak @keydown.escape.window="openAccept = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openAccept = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Accept Join Request?
+          </h3>
+          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menerima permintaan bergabung ini?</p>
+        </div>
+        <div class="flex flex-row justify-end gap-2">
+          <form :action="acceptUrl" method="POST">
+            @csrf
+            @method('PATCH')
+            <button type="submit"
+              class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
+              Accept
             </button>
           </form>
           <button type="button"
-            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300"
-            @click="openDelete = false">Cancel</button>
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+            @click="openAccept = false">Cancel</button>
         </div>
+      </div>
+    </div>
+
+    {{-- Reject Request Modal --}}
+    <div x-show="openReject" x-cloak @keydown.escape.window="openReject = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openReject = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Reject Join Request?
+          </h3>
+          <p class="text-body-mid mb-4 text-ink">Apakah Anda yakin ingin menolak permintaan bergabung ini?</p>
+        </div>
+        <div class="flex flex-row justify-end gap-2">
+          <form :action="rejectUrl" method="POST">
+            @csrf
+            @method('PATCH')
+            <button type="submit"
+              class="px-4 py-2 text-accent-red cursor-pointer bg-accent-red/10 hover:bg-accent-red rounded hover:text-white transition-colors duration-200">
+              Reject
+            </button>
+          </form>
+          <button type="button"
+            class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+            @click="openReject = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    {{-- Change visibility Modal --}}
+    <div x-show="openChangevisibility" x-cloak @keydown.escape.window="openChangevisibility = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openChangevisibility = false"
+        class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Change visibility
+          </h3>
+          <p class="text-body-mid text-ink">Choose who can discover this club and what non-members can see.</p>
+        </div>
+        <form :action="changevisibilityUrl" method="POST">
+          @csrf
+          @method('PATCH')
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1 items-start">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="radio" id="public" name="visibility" value="public"
+                  {{ old('visibility', $club->visibility) === 'public' ? 'checked' : '' }}>
+                <label for="public" class="text-ink text-body">Public</label>
+              </div>
+              <p class="text-caption text-ink-muted">Anyone can discover this club and view its posts and member list.
+              </p>
+            </div>
+            <div class="flex flex-col gap-1 items-start">
+              <div class="flex flex-row gap-2 items-center">
+                <input type="radio" id="private" name="visibility" value="private"
+                  {{ old('visibility', $club->visibility) === 'private' ? 'checked' : '' }}>
+                <label for="private" class="text-ink text-body">Private</label>
+              </div>
+              <p class="text-caption text-ink-muted">Anyone can discover this club, but only members can view posts and
+                member
+                details.</p>
+            </div>
+          </div>
+          <div class="flex flex-row justify-end mt-4 gap-2">
+            <button type="submit"
+              class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
+              Save Change
+            </button>
+            <button type="button"
+              class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+              @click="openChangevisibility = false">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {{-- Change Approval Modal --}}
+    <div x-show="openChangeApproval" x-cloak @keydown.escape.window="openChangeApproval = false"
+      class="fixed flex items-center justify-center inset-0 z-50">
+      <div @click="openChangeApproval = false" class="fixed flex items-center justify-center inset-0 z-40 bg-black/30">
+      </div>
+      <div
+        class="fixed p-6 h-max rounded-lg z-50 w-max bg-canvas border border-hairline overflow-hidden max-w-sm lg:max-w-md">
+        <div class="flex flex-col gap-2 mb-4">
+          <h3 class="text-title mb-4 text-ink">
+            Change Approval
+          </h3>
+          <p class="text-body-mid text-ink">Choose whether or not approval is needed to join this club</p>
+        </div>
+        <form :action="changeApprovalUrl" method="POST">
+          @csrf
+          @method('PATCH')
+          <div class="flex flex-col gap-1">
+            <div class="flex flex-row gap-2 items-center">
+              <input type="radio" id="approval_no" name="is_required_request" value="0"
+                {{ old('is_required_request', (int) $club->is_required_request) == 0 ? 'checked' : '' }}>
+              <label for="approval_no" class="text-ink text-body">No Approval Needed</label>
+            </div>
+            <div class="flex flex-row gap-2 mt-2 items-center">
+              <input type="radio" id="approval_yes" name="is_required_request" value="1"
+                {{ old('is_required_request', (int) $club->is_required_request) == 1 ? 'checked' : '' }}>
+              <label for="approval_yes" class="text-ink text-body">Required Approval</label>
+            </div>
+          </div>
+          <div class="flex flex-row justify-end gap-2 mt-4">
+            <button type="submit"
+              class="px-4 py-2 text-primary cursor-pointer bg-primary/10 hover:bg-primary rounded hover:text-white transition-colors duration-200">
+              Save changes
+            </button>
+            <button type="button"
+              class="bg-gray-200 border border-hairline rounded text-caption px-4 py-2 text-ink hover:bg-gray-300 transition-colors duration-200"
+              @click="openChangeApproval = false">Cancel</button>
+          </div>
+        </form>
       </div>
     </div>
   </main>

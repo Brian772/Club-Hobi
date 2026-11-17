@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Register')
+
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -27,8 +29,8 @@
 
           <div class="form-group">
             <x-input-label for="email" :value="__('Email')" />
-            <input type="email" id="email" name="email" value="{{ old('email') }}"
-              placeholder="example@example.com" required autofocus>
+            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="example@example.com"
+              required autofocus>
             @error('email')
               <small class="error-text">{{ $message }}</small>
             @enderror
@@ -36,7 +38,13 @@
 
           <div class="form-group">
             <x-input-label for="password" :value="__('Password')" />
-            <input type="password" id="password" name="password" placeholder="••••••••" required>
+            <div class="relative flex items-center">
+              <input type="password" id="password" name="password" placeholder="••••••••" class="w-full pr-10" required>
+              <button type="button" onclick="togglePassword('password', this)"
+                class="absolute right-3 text-neutral-500 hover:text-neutral-700 focus:outline-none">
+                <i class="bi bi-eye-slash text-lg"></i>
+              </button>
+            </div>
             @error('password')
               <small class="error-text">{{ $message }}</small>
             @enderror
@@ -44,18 +52,17 @@
 
           <div class="form-group">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="••••••••"
-              required>
+            <div class="relative flex items-center">
+              <input type="password" id="password_confirmation" name="password_confirmation" placeholder="••••••••"
+                class="w-full pr-10" required>
+              <button type="button" onclick="togglePassword('password_confirmation', this)"
+                class="absolute right-3 text-neutral-500 hover:text-neutral-700 focus:outline-none">
+                <i class="bi bi-eye-slash text-lg"></i>
+              </button>
+            </div>
           </div>
-
-          <div class="remember-me my-2 mt-6">
-            <label class="flex gap-2 flex-row">
-              <input type="checkbox" name="remember" class="rounded-sm border-ink-faint srink-0">
-              <span class="text-ink-muted text-caption">I agree to the Terms &amp; Conditions and Privacy Policy</span>
-            </label>
-          </div>
-
-          <x-secondary-button class="w-full" type="submit">
+          
+          <x-secondary-button class="w-full mt-6" type="submit">
             Next
           </x-secondary-button>
 
@@ -68,18 +75,13 @@
         </form>
 
         <div class="divider">
-          <span>Login With SSO</span>
+          <span>Or Register With</span>
         </div>
 
         <div class="social-login">
           <a href="{{ route('social.redirect', 'google') }}" class="social-button">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
             <span>Continue With Google</span>
-          </a>
-
-          <a href="{{ route('social.redirect', 'facebook') }}" class="social-button">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
-            <span>Continue With Facebook</span>
           </a>
         </div>
       </div>
@@ -108,9 +110,9 @@
           $avatarPreviewUrl = null;
 
           if ($avatarPath) {
-              $avatarPreviewUrl = str_starts_with($avatarPath, 'http')
-                  ? $avatarPath
-                  : \Illuminate\Support\Facades\Storage::disk('public')->url($avatarPath);
+            $avatarPreviewUrl = str_starts_with($avatarPath, 'http')
+              ? $avatarPath
+              : \Illuminate\Support\Facades\Storage::disk('public')->url($avatarPath);
           }
         @endphp
 
@@ -119,8 +121,6 @@
           @csrf
 
           <div class="flex items-center gap-4 justify-start w-full mb-2 profile-upload">
-            {{-- <input type="file" id="avatar_url" name="avatar_url" accept=".jpg,.jpeg,.png" hidden> --}}
-
             <div class="flex flex-row justify-start mb-2">
               <label for="avatar_url" class="w-max h-max cursor-pointer relative block">
                 <span
@@ -144,7 +144,6 @@
               </label>
             </div>
 
-            </label class="w-max h-max">
             <span class="upload-copy ml-2 justify-center items-start" id="avatar-copy">
               <strong>Upload Photo Profile</strong>
               <small>Choose File · JPG/PNG, max 5MB</small>
@@ -156,8 +155,8 @@
 
           <div class="form-group">
             <x-input-label for="name" :value="__('Full Name')" />
-            <input type="text" id="name" name="name" class="rounded-md border-outline"
-              value="{{ old('name') }}" placeholder="@username" required>
+            <input type="text" id="name" name="name" class="rounded-md border-outline" value="{{ old('name') }}"
+              placeholder="@username" required>
             @error('name')
               <small class="error-text">{{ $message }}</small>
             @enderror
@@ -178,27 +177,6 @@
             </x-secondary-button>
           </div>
         </form>
-
-        <script>
-          document.getElementById('avatar_url').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const preview = document.getElementById('avatar-preview');
-            const previewWrap = document.getElementById('avatar-preview-wrap');
-            const icon = document.getElementById('avatar-icon');
-            const copy = document.getElementById('avatar-copy');
-
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-              preview.src = ev.target.result;
-              previewWrap.style.display = 'block';
-              icon.style.display = 'none';
-              copy.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-          });
-        </script>
       </div>
 
       <div class="flex order-1 justify-center md:order-2 md:w-1/2 max-w-100 w-full">
@@ -226,8 +204,7 @@
           <div class="hobby-grid">
             @forelse($categories as $hobby)
               <label class="hobby-option">
-                <input type="checkbox" name="hobbies[]" value="{{ $hobby->name }}"
-                  {{ in_array($hobby->name, old('hobbies', [])) ? 'checked' : '' }}>
+                <input type="checkbox" name="hobbies[]" value="{{ $hobby->name }}" {{ in_array($hobby->name, old('hobbies', [])) ? 'checked' : '' }}>
                 <span>{{ $hobby->name }}</span>
               </label>
             @empty
@@ -248,4 +225,41 @@
     </div>
   @endif
 
+  <script>
+    if (document.getElementById('avatar_url')) {
+      document.getElementById('avatar_url').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const preview = document.getElementById('avatar-preview');
+        const previewWrap = document.getElementById('avatar-preview-wrap');
+        const icon = document.getElementById('avatar-icon');
+        const copy = document.getElementById('avatar-copy');
+
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          preview.src = ev.target.result;
+          previewWrap.style.display = 'block';
+          icon.style.display = 'none';
+          copy.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function togglePassword(fieldId, button) {
+      const inputField = document.getElementById(fieldId);
+      const icon = button.querySelector('i');
+
+      if (inputField.type === "password") {
+        inputField.type = "text";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+      } else {
+        inputField.type = "password";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+      }
+    }
+  </script>
 @endsection

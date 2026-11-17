@@ -13,7 +13,7 @@ class CheckAccountStatus
         'login',
         'banned',
         'register',
-        'appeal.create',
+        'appeal',
         'appeal.store',
         'logout',
     ];

@@ -2,18 +2,29 @@
   class="flex flex-row w-full lg:px-4 py-2 items-center justify-between gap-4 mx-auto border border-canvas hover:border-hairline rounded-lg transition-colors duration-300">
   <div class="flex flex-row gap-2 items-center justify-start w-max">
     <div class="min-w-10 mr-2">
-      <img src="{{ $member->user->avatar_full_url }}" alt="{{ $member->user->name }}"
-        class="rounded-full w-10 h-10 object-cover">
+      @if ($member->user->avatar_full_url)
+        <img src="{{ $member->user->avatar_full_url }}" alt="{{ $member->user->name }}"
+          class="rounded-full size-10 object-cover"
+          onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+        <div
+          class="hidden size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+          {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
+        </div>
+      @else
+        <div
+          class="size-10 items-center justify-center rounded-full bg-primary/10 text-title font-semibold text-primary flex">
+          {{ Str::upper(Str::substr($member->user->name, 0, 1)) }}
+        </div>
+      @endif
     </div>
     <div class="flex flex-col gap-2">
-      <h3 class="text-body-mid font-semibold text-ink">{{ $member->user->name }}
-        @if ($member->user->role_global === 'admin')
-          <span
-            class="text-overline text-primary bg-primary/10 rounded-full px-2 py-1 border border-primary font-semibold">Admin</span>
-        @endif
+      <h3 class="text-body-mid flex flex-row gap-4 font-semibold text-ink">{{ $member->user->name }}
+        <div class="flex flex-row gap-2">
+          @if ($member->user->role_global === 'admin')
+            <span class="text-small text-primary bg-primary/10 rounded-full px-2 py-1 font-semibold">Admin</span>
+          @endif
+        </div>
       </h3>
-      <p class="text-caption text-ink-muted"><span class="text-ink font-semibold">Hobi:
-        </span>{{ implode(', ', $member->user->interest_array ?? []) }}</p>
     </div>
   </div>
 
@@ -36,7 +47,7 @@
           <div x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2"
             x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
-            @click.outside="MenuOpen = false"
+            @click.outside="MenuOpen = false" @click="MenuOpen = false"
             class="absolute z-50 right-5 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
             <a href="{{ route('profile.show', ['user' => $member->user->id]) }}"
               class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
@@ -48,7 +59,7 @@
               </svg>
               Lihat Profil
             </a>
-            <a href="{{ route('messages.index', ['conversation' => $member->user->id]) }}"
+            <a href="{{ route('messages.show', [$club->id, $member->user->id]) }}"
               class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -58,6 +69,29 @@
               </svg>
               Kirim Pesan
             </a>
+            <div class="h-px border-b border-hairline my-2"></div>
+            <button type="button"
+              @click="
+                openReport(
+                  'user',
+                  '{{ $member->user->id }}',
+                  '{{ $member->user->id }}',
+                  '{{ route('reports.store') }}',
+                  @js([
+    'name' => $member->user->name,
+    'avatar' => $member->user->avatar_full_url ?? asset('images/default-avatar.svg'),
+    'joined' => $member->user->created_at->format('d M Y'),
+])
+                )"
+              class="flex flex-row gap-2 items-center w-full cursor-pointer px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-flag">
+                <path
+                  d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" />
+              </svg>
+              Laporkan Pengguna
+            </button>
           </div>
         </div>
       </div>

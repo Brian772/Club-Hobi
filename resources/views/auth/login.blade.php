@@ -1,28 +1,31 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Login')
+
 @section('styles')
   <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 @endsection
 
 @section('content')
   <div class="flex flex-col md:flex-row items-center justify-center">
-    <div class="order-2 md:order-1 md:w-1/2 max-w-[400px] w-full flex flex-col">
+    <div class="order-2 md:order-1 md:w-120 w-full flex flex-col">
       <h1 class="text-[26px] font-bold text-primary">
         Welcome Back To Orbii
       </h1>
 
       @if (session('warning'))
-    <div class="p-3 mb-4 text-sm text-amber-800 bg-amber-100 rounded-lg" role="alert">
-      {{ session('warning') }}
-    </div>
-    @endif
+        <div class="p-3 mb-4 text-sm text-amber-800 bg-amber-100 rounded-lg" role="alert">
+          {{ session('warning') }}
+        </div>
+      @endif
 
-    @if (session('success'))
-      <div class="p-3 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
-      {{ session('success') }}
-      </div>
-    @endif
+      @if (session('success'))
+        <div class="p-3 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
+          {{ session('success') }}
+        </div>
+      @endif
 
       <form method="POST" action="{{ route('login.authenticate') }}" data-turbo="false" class="form">
         @csrf
@@ -36,8 +39,19 @@
         </div>
 
         <div class="form-group">
-          <x-input-label for="password" :value="__('Password')" />
-          <input type="password" id="password" name="password" placeholder="••••••••" required>
+          <div class="flex justify-between items-center">
+            <x-input-label for="password" :value="__('Password')" />
+            <!-- Link menuju halaman reset/lupa password -->
+            <a href="{{ route('password.request') }}" class="text-xs text-primary hover:underline">
+              Forgot Password?
+            </a>
+          </div>
+          <div class="relative flex items-center mt-1">
+            <input type="password" id="password" name="password" placeholder="••••••••" class="w-full pr-10" required>
+            <button type="button" onclick="togglePassword('password', this)" class="absolute right-3 text-neutral-500 hover:text-neutral-700 focus:outline-none">
+              <i class="bi bi-eye-slash text-lg"></i>
+            </button>
+          </div>
           @error('password')
             <small class="error-text">{{ $message }}</small>
           @enderror
@@ -55,7 +69,7 @@
       </form>
 
       <div class="divider">
-        <span>Login With SSO</span>
+        <span>Or Login With</span>
       </div>
 
       <div class="social-login">
@@ -63,17 +77,29 @@
           <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="24px" height="24px">
           <span>Continue With Google</span>
         </a>
-
-        <a href="{{ route('social.redirect', 'facebook') }}" class="social-button">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" width="24px" height="24px">
-          <span>Continue With Facebook</span>
-        </a>
       </div>
     </div>
 
     <div class="flex order-1 md:order-2 md:max-w-100 justify-center w-full">
-      <img src="{{ asset('images/login-illustration.svg') }}" alt="Login Illustration"
+      <img src="{{ asset('images/Login-illustration.svg') }}" alt="Login Illustration"
         class="w-37.5 md:w-full max-w-100">
     </div>
   </div>
+
+  <script>
+    function togglePassword(fieldId, button) {
+      const inputField = document.getElementById(fieldId);
+      const icon = button.querySelector('i');
+
+      if (inputField.type === "password") {
+        inputField.type = "text";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+      } else {
+        inputField.type = "password";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+      }
+    }
+  </script>
 @endsection

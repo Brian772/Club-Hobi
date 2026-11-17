@@ -1,49 +1,147 @@
 @extends('layouts.app')
 
+@section('title', 'Orbii | Clubs')
+
 @section('content')
   @if ($isEmpty)
-    <section class="flex flex-col">
+    <section class="flex flex-col h-full">
       <div class="flex flex-row justify-between items-center mb-4">
-        <h2 class="text-heading-1 font-bold mb-4">Tidak Ada Klub</h2>
-        <nav>
-          <a href="{{ route('clubs.request') }}" class="text-primary hover:text-primary-active">+ Ajukan Klub Baru</a>
-          <span class="text-ink-muted mx-2">|</span>
-          <a href="{{ route('clubs.request.list') }}" class="text-primary hover:text-primary-active">Pengajuan Saya</a>
-        </nav>
+        <h2 class="text-title lg:text-heading-2 font-bold">Belum Ada Klub</h2>
+        <div x-data="{ MenuOpen: false }" class="relative">
+          <button type="button" x-ref="button" @click="MenuOpen = true"
+            class="text-ink-muted text-body-mid rounded-full p-2 hover:bg-hairline">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-ellipsis-vertical">
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="12" cy="5" r="1" />
+              <circle cx="12" cy="19" r="1" />
+            </svg>
+          </button>
+
+          <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
+            <div x-anchor.noflip="$refs.button" x-transition.opacity @click.outside="MenuOpen = false"
+              @click="MenuOpen = false"
+              class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
+              <a href="{{ route('clubs.request') }}"
+                class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                Ajukan Klub Baru
+              </a>
+              <a href="{{ route('clubs.request.list') }}"
+                class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                Pengajuan Saya
+              </a>
+              @if ($myClubs->isNotEmpty())
+                <a href="{{ route('clubs.list') }}"
+                  class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                  Klub Saya
+                </a>
+              @endif
+            </div>
+          </div>
+        </div>
       </div>
-      <p class="text-caption text-ink-muted">Belum ada klub yang tersedia saat ini. Silakan cek kembali nanti.</p>
+      <div class="flex flex-col w-full h-full justify-center items-center">
+        <p class="text-title text-ink">Tidak ada klub saat ini</p>
+        <span class="text-ink-muted text-body-mid">Buat klub pertama anda</span>
+        <a href="{{ route('clubs.request') }}"
+          class="text-primary bg-primary/10 hover:text-white mt-8 hover:bg-primary rounded-md px-4 py-2">+ Ajukan Klub
+          Baru</a>
+      </div>
     </section>
   @else
     @if ($joinedClub->isNotEmpty())
-      <section id="alreadyJoin" class="pb-4 border-b border-hairline">
+      <section id="alreadyJoin" class="pb-4 border-b border-hairline overflow-hidden h-max">
         <div class="flex flex-row  justify-between items-center mb-4">
           <h2 class="text-title lg:text-heading-2 font-bold">Klub Anda</h2>
-          <nav>
-            <a href="{{ route('clubs.request') }}" class="text-primary hover:text-primary-active">+ Ajukan Klub Baru</a>
-            <span class="text-ink-muted mx-2">|</span>
-            <a href="{{ route('clubs.request.list') }}" class="text-primary hover:text-primary-active">Pengajuan Saya</a>
-          </nav>
+          <div x-data="{ MenuOpen: false }" class="relative">
+            <button type="button" x-ref="button" @click="MenuOpen = true"
+              class="text-ink-muted text-body-mid rounded-full p-2 hover:bg-hairline">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-ellipsis-vertical">
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="12" cy="5" r="1" />
+                <circle cx="12" cy="19" r="1" />
+              </svg>
+            </button>
+
+            <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
+              <div x-anchor.noflip="$refs.button" x-transition.opacity @click.outside="MenuOpen = false"
+                @click="MenuOpen = false"
+                class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
+                <a href="{{ route('clubs.request') }}"
+                  class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                  Ajukan Klub Baru
+                </a>
+                <a href="{{ route('clubs.request.list') }}"
+                  class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                  Pengajuan Saya
+                </a>
+                @if ($myClubs->isNotEmpty())
+                  <a href="{{ route('clubs.list') }}"
+                    class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                    Klub Saya
+                  </a>
+                @endif
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
-          :class="notifOpen ? 'lg:grid-cols-1 xl:grid-cols-2' : 'lg:grid-cols-3 xl:grid-cols-3'">
+        <div class="flex flex-row gap-6 overflow-x-auto scrollbar-hide h-max pb-4">
           @foreach ($joinedClub as $club)
             <div
-              class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              class="flex flex-col items-stretch border min-w-75 w-100 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
-                {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
-                  class="w-full h-48 rounded-t-lg object-cover">
+                <img src="{{ Storage::url($club->cover_url) }}" alt="{{ $club->name }}"
+                  loading="lazy" draggable="false" class="w-full h-48 rounded-t-lg object-cover">
+              @else
+                <div class="w-full h-48 rounded-t-lg bg-gray-200 flex items-center justify-center">
+                  <span class="text-ink-muted">Tidak ada gambar</span>
+                </div>
               @endif
 
               <div class="p-4 flex flex-col flex-1">
-                <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
-                <h3 class="text-lg font-semibold mb-2 line-clamp-2">{{ $club->name }}</h3>
+                <h3 class="text-body-mid font-semibold mb-2 line-clamp-2 flex flex-row items-center justify-between">
+                  {{ $club->name }}
+                  <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
+                </h3>
                 <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
-                <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                <div class="flex flex-row items-center justify-between mt-auto">
+                  <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                  <p class="text-caption text-ink-muted flex flex-row gap-2 items-center">
+                    @if ($club->visibility === 'public')
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-globe preview-icon">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                        <path d="M2 12h20" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-lock preview-icon">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                    @endif
+                    {{ $club->visibility }}
+                  </p>
+                </div>
               </div>
               <div class="mt-auto w-full p-2">
                 <a href="{{ route('clubs.show', $club->id) }}"
-                  class="bg-primary rounded-md text-white py-2 w-full flex items-center justify-center">Lihat Klub</a>
+                  class="group bg-primary rounded-md gap-2 text-white py-2 w-full flex flex-row items-center justify-center">
+                  Lihat Klub
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-arrow-right preview-icon group-hover:translate-x-1 transition-transform duration-300">
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </a>
               </div>
             </div>
           @endforeach
@@ -54,83 +152,186 @@
         <div class="mb-12">
           <div class="flex flex-row justify-between items-center mb-4">
             <h2 class="text-title lg:text-heading-2 font-bold mb-4">Klub Anda</h2>
-            <nav>
-              <a href="{{ route('clubs.request') }}" class="text-primary hover:text-primary-active">+ Ajukan Klub
-                Baru</a>
-              <span class="text-ink-muted mx-2">|</span>
-              <a href="{{ route('clubs.request.list') }}" class="text-primary hover:text-primary-active">Pengajuan
-                Saya</a>
-            </nav>
+            <div x-data="{ MenuOpen: false }" class="relative">
+              <button type="button" x-ref="button" @click="MenuOpen = true"
+                class="text-ink-muted text-body-mid rounded-full p-2 hover:bg-hairline">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="lucide lucide-ellipsis-vertical">
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="12" cy="5" r="1" />
+                  <circle cx="12" cy="19" r="1" />
+                </svg>
+              </button>
+
+              <div x-show="MenuOpen" x-cloak @keydown.escape.window="MenuOpen = false">
+                <div x-anchor.noflip="$refs.button" x-transition.opacity @click.outside="MenuOpen = false"
+                  @click="MenuOpen = false"
+                  class="z-50 mt-2 w-max p-2 bg-canvas border border-hairline rounded-lg shadow-lg overflow-hidden">
+                  <a href="{{ route('clubs.request') }}"
+                    class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                    Ajukan Klub Baru
+                  </a>
+                  <a href="{{ route('clubs.request.list') }}"
+                    class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                    Pengajuan Saya
+                  </a>
+                  @if ($myClubs->isNotEmpty())
+                    <a href="{{ route('clubs.list') }}"
+                      class="flex flex-row gap-2 items-center px-4 py-2 text-caption rounded-md text-ink hover:bg-hairline">
+                      Klub Saya
+                    </a>
+                  @endif
+                </div>
+              </div>
+            </div>
           </div>
           <p class="text-caption text-ink-muted">Anda belum bergabung ke klub manapun.</p>
         </div>
       </section>
     @endif
 
+    @php
+      $search = trim(request('search', ''));
+    @endphp
+
+    <header class="flex flex-col md:flex-row gap-4 lg:gap-8 my-8 items-center justify-between">
+      <div class="flex flex-col gap-2">
+        <h2 class="text-title lg:text-heading-2 font-bold">Rekomendasi Klub</h2>
+        <p class="text-caption text-ink-muted line-clamp-1 font-semibold">Berdasarkan Minat :
+          <span class="font-normal">{{ implode(', ', auth()->user()->interest_array ?? []) }}</span>
+        </p>
+      </div>
+      @if ($recomendedClubs->isNotEmpty() || $search !== '')
+        <form id="club-search-form" action="{{ route('clubs.index') }}" method="GET" data-turbo="false"
+          role="search" class="flex flex-row gap-2 w-full md:w-max items-center">
+          <div class="relative h-max w-full md:w-max">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-search preview-icon absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
+              <path d="m21 21-4.34-4.34" />
+              <circle cx="11" cy="11" r="8" />
+            </svg>
+
+            <input type="search" name="search" value="{{ $search }}" autocomplete="off"
+              placeholder="Cari Klub..."
+              class="w-full md:w-max pl-9 pr-4 py-2.5 text-caption bg-canvas-soft border border-hairline rounded-full focus:outline-none focus:border-primary text-ink">
+          </div>
+
+          <button type="submit"
+            class="bg-primary text-white py-2 px-4 rounded-full hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-light">
+            Cari
+          </button>
+        </form>
+      @endif
+    </header>
+
     @if ($recomendedClubs->isNotEmpty())
-      <section class="mt-8 pb-4mb-12">
-        <h2 class="text-title lg:text-heading-2 font-bold mb-4">Rekomendasi Klub</h2>
-        <p class="text-caption text-ink-muted mb-2">Berdasarkan Minat:
-          {{ implode(', ', auth()->user()->interest_array ?? []) }}</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:grid-cols-4"
-          :class="notifOpen ? 'lg:grid-cols-1 xl:grid-cols-2' : 'lg:grid-cols-3 xl:grid-cols-3'">
+      <section class="mt-8 pb-4 mb-12">
+        <div class="flex flex-row gap-4 xl:gap-6 flex-wrap">
           @foreach ($recomendedClubs as $club)
             <div
-              class="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              class="flex flex-col items-stretch min-w-75 w-100 lg:w-75 border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
               @if ($club->cover_url)
-                {{-- <img src="{{ $club->cover_url }}" alt="{{ $club->name }}" class="w-full h-48 object-cover"> --}}
-                <img src="{{ $club->cover_url ? Storage::url($club->cover_url) : '' }}" alt="{{ $club->name }}"
-                  class="w-full h-48 rounded-t-lg object-cover">
+                <img src="{{ Storage::url($club->cover_url) }}" alt="{{ $club->name }}"
+                  class="w-full h-48 rounded-t-lg object-cover" draggable="false" loading="lazy">
+              @else
+                <div class="w-full h-48 rounded-t-lg bg-gray-200 flex items-center justify-center">
+                  <span class="text-ink-muted">Tidak ada gambar</span>
+                </div>
               @endif
 
               <div class="p-4 flex flex-col flex-1">
-                <span class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
-                <h3 class="text-lg font-semibold mb-2 line-clamp-2">{{ $club->name }}</h3>
+                <h3 class="text-body-mid font-semibold mb-2 line-clamp-2 flex flex-row items-center justify-between">
+                  {{ $club->name }}
+                  <span
+                    class="text-caption text-ink-muted">{{ $club->hobby->name ?? 'Kategori Tidak Diketahui' }}</span>
+                </h3>
                 <p class="text-caption text-ink-muted mb-2 line-clamp-2">{{ $club->description }}</p>
-                <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                <div class="flex flex-row items-center justify-between mt-auto">
+                  <p class="text-caption text-ink-muted">{{ $club->members_count }} Anggota</p>
+                  <p class="text-caption text-ink-muted flex flex-row gap-2 items-center">
+                    @if ($club->visibility === 'public')
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-globe preview-icon">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                        <path d="M2 12h20" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-lock preview-icon">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                    @endif
+                    {{ $club->visibility }}
+                  </p>
+                </div>
               </div>
               <div class="mt-auto w-full p-2">
-                <?php
-                $isAlreadyRequested = $club
-                    ->joinRequests()
-                    ->where('user_id', auth()->id())
-                    ->where('status', 'pending')
-                    ->exists();
-                
-                $pendingRequest = $pendingRequests->get($club->id);
-                $isAlreadyRequested = $pendingRequest !== null;
-                ?>
-                @if ($isAlreadyRequested)
-                  <div class="flex flex-row gap-2">
-                    <button
-                      class="w-full border border-hairline bg-canvas-soft rounded-md text-primary py-2 cursor-not-allowed"
-                      type="button" disabled>
-                      Menunggu Persetujuan
-                    </button>
-                    <form action="{{ route('clubs.join.request.cancel', [$club->id, $pendingRequest->id]) }}"
-                      method="POST">
-                      @csrf
-                      @method('DELETE')
-                      <button
-                        class="w-max bg-accent-red/10 text-accent-red py-2 px-4 rounded-md text-center cursor-pointer"
-                        type="submit">
-                        Batal
-                      </button>
-                    </form>
-                  </div>
-                @else
-                  <form action="{{ route('clubs.join.request', $club->id) }}" method="POST">
-                    @csrf
-                    <button class="w-full bg-primary rounded-md text-white py-2 cursor-pointer" type="submit">
-                      Permintaan Bergabung
-                    </button>
-                  </form>
-                @endif
+                <a href="{{ route('clubs.show', $club->id) }}"
+                  class="group bg-primary rounded-md gap-2 text-white py-2 w-full flex flex-row items-center justify-center">
+                  Lihat Klub
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-arrow-right preview-icon group-hover:translate-x-1 transition-transform duration-300">
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </a>
               </div>
             </div>
           @endforeach
         </div>
       </section>
+    @elseif ($search !== '')
+      <section class="mt-8 pb-4 mb-12">
+        <div class="flex flex-col w-full h-max pt-12 justify-center items-center">
+          <p class="text-title text-ink">Tidak ada klub ditemukan</p>
+          <span class="text-ink-muted text-body-mid">Tidak ada klub yang sesuai dengan pencarian anda.</span>
+        </div>
+      </section>
+    @else
+      <section class="mt-8 pb-4 mb-12">
+        <div class="flex flex-col w-full h-max pt-12 justify-center items-center">
+          <p class="text-title text-ink">Tidak ada rekomendasi klub</p>
+          <span class="text-ink-muted text-body-mid">Tidak ada rekomendasi klub berdasarkan minat anda.</span>
+        </div>
+      </section>
     @endif
   @endif
+
+  <script>
+    const clubSearchForm = document.getElementById('club-search-form');
+    const scrollContainer = document.querySelector('main');
+
+    clubSearchForm?.addEventListener('submit', function() {
+      sessionStorage.setItem(
+        'club-scroll-position',
+        scrollContainer ? scrollContainer.scrollTop : window.scrollY
+      );
+    });
+
+    window.addEventListener('pageshow', function() {
+      const savedPosition = sessionStorage.getItem('club-scroll-position');
+
+      if (savedPosition === null) {
+        return;
+      }
+
+      requestAnimationFrame(function() {
+        if (scrollContainer) {
+          scrollContainer.scrollTop = Number(savedPosition);
+        } else {
+          window.scrollTo(0, Number(savedPosition));
+        }
+
+        sessionStorage.removeItem('club-scroll-position');
+      });
+    });
+  </script>
 @endsection

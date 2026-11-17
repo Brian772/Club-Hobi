@@ -28,6 +28,18 @@ class Notification extends Model
         'created_at' => 'datetime',
     ];
 
+    public static function createForUser(string $userId, string $title, string $content, string $type, ?string $sourceId = null): self
+    {
+        return static::create([
+            'user_id' => $userId,
+            'title' => $title,
+            'content' => $content,
+            'type' => $type,
+            'source_id' => $sourceId,
+            'is_read' => false,
+        ]);
+    }
+
     protected static function boot() {
         parent::boot();
 
