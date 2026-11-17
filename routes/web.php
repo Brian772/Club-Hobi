@@ -15,6 +15,7 @@ use App\Http\Controllers\BannedController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\PresenceController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -26,12 +27,14 @@ Route::get('/', function () {
     return view('landing');
 })->name('home');
 
-// Route::get('/home', [DashboardController::class, 'index'])
-//   ->name('dashboard');
-
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Dashboard
+    Route::get('settings/password/edit', [PasswordResetController::class, 'editSettingsPassword'])
+        ->name('settings.password.edit');
+
+    Route::put('settings/password/update', [PasswordResetController::class, 'updateSettingsPassword'])
+        ->name('settings.password.update');
+    
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/profile', [DashboardController::class, 'profile'])->name('profile.dashboard');
     Route::get('/dashboard/posts', [DashboardController::class, 'posts'])->name('posts.dashboard');
@@ -40,7 +43,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/presence/heartbeat', [PresenceController::class, 'heartbeat'])->name('presence.heartbeat');
     Route::get('/presence/status', [PresenceController::class, 'index'])->name('presence.index');
 
-    // Fitur Pesan / Messages
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/{club}/{conversation}/updates', [MessageController::class, 'updates'])->name('messages.updates');
     Route::get('/messages/{club}/{conversation}/show', [MessageController::class, 'show'])->name('messages.show');
@@ -79,7 +81,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 
-    // Postingan & Komentar
     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
     Route::get('/posts/archived', [PostController::class, 'archived'])->name('posts.archived');
     Route::get('/posts/trash', [PostController::class, 'trash'])->name('posts.trash');
@@ -97,13 +98,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/posts/{post}/archive', [PostController::class, 'archive'])->name('posts.archive');
     Route::patch('/posts/{post}/unarchive', [PostController::class, 'unarchive'])->name('posts.unarchive');
 
-    // Download Media
     Route::get('/media/{media}/download', [DownloadController::class, 'download'])->name('media.download');
-    Route::get('/posts/{post}/download', [DownloadController::class, 'downloadPostFile'])->name('posts.download');  
+    Route::get('/posts/{post}/download', [DownloadController::class, 'downloadPostFile'])->name('posts.download');
 
-    Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
-
-    // Fitur Notifikasi
     Route::get('/notifications/updates', [NotificationController::class, 'updates'])->name('notifications.updates');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
@@ -113,7 +110,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/appeals', [AppealController::class, 'index'])->name('appeal');
     Route::post('/appeals/store', [AppealController::class, 'store'])->name('appeal.store');
 
-    // Fitur Pengaturan / Settings
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [SettingsController::class, 'settings'])->name('index');
         Route::get('/profile', [SettingsController::class, 'profilesettings'])->name('profile');
@@ -126,17 +122,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/report/history', [SettingsController::class, 'reportHistory'])->name('report.history');
     });
 
-    // Fitur Profil / Profile bawaan Laravel
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.index');
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Logout
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    Route::get('/api/user-charts', [App\Http\Controllers\ChartController::class, 'getDataUsers'])->name('api.chart');
+    Route::get('/api/user-charts', [ChartController::class, 'getDataUsers'])->name('api.chart');
 });
+
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';

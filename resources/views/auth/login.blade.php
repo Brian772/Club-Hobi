@@ -39,8 +39,14 @@
         </div>
 
         <div class="form-group">
-          <x-input-label for="password" :value="__('Password')" />
-          <div class="relative flex items-center">
+          <div class="flex justify-between items-center">
+            <x-input-label for="password" :value="__('Password')" />
+            <!-- Link menuju halaman reset/lupa password -->
+            <a href="{{ route('password.request') }}" class="text-xs text-primary hover:underline">
+              Forgot Password?
+            </a>
+          </div>
+          <div class="relative flex items-center mt-1">
             <input type="password" id="password" name="password" placeholder="••••••••" class="w-full pr-10" required>
             <button type="button" onclick="togglePassword('password', this)" class="absolute right-3 text-neutral-500 hover:text-neutral-700 focus:outline-none">
               <i class="bi bi-eye-slash text-lg"></i>

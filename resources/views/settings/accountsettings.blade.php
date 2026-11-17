@@ -9,6 +9,21 @@
 @endsection
 
 @section('content')
+    @if (session('success'))
+        <div id="topRightNotification" class="fixed top-5 right-5 z-50 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-300">
+            {{ session('success') }}
+        </div>
+        <script>
+            setTimeout(() => {
+                const notif = document.getElementById('topRightNotification');
+                if (notif) {
+                    notif.style.opacity = '0';
+                    setTimeout(() => notif.remove(), 300);
+                }
+            }, 4000);
+        </script>
+    @endif
+
     <div class="page-header">
         <a href="{{ route('settings.index') }}" class="back-link">
             <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -19,6 +34,12 @@
             <h1 class="page-titleP">Account</h1>
         </a>
     </div>
+
+    @if (session('status'))
+        <div class="p-3 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
+            {{ session('status') }}
+        </div>
+    @endif
 
     <div class="form-group-item">
         <label class="input-label">Email</label>
@@ -40,8 +61,14 @@
     </div>
 
     <div class="form-group-item">
-        <label class="input-label">Password</label>
+        <div class="flex justify-between items-center mb-1">
+            <label class="input-label">Password</label>
+            <a href="{{ route('settings.password.edit') }}" class="text-xs text-primary font-semibold hover:underline bg-transparent border-0 cursor-pointer p-0">
+                <i class="fa-solid fa-key mr-1"></i> Reset Password?
+            </a>
+        </div>
         <input type="password" class="custom-input-box" value="********" readonly>
+        <p class="text-xs text-gray-500 mt-1">Klik tautan di atas untuk langsung mengubah password akun Anda.</p>
     </div>
 
     <div class="account-status-card">
@@ -59,7 +86,6 @@
             <i class="fa-solid fa-trash"></i>
             Delete Account
         </button>
-    </div>
     </div>
 
     <div class="profile-modal-overlay" id="deleteAccountModal">
@@ -108,28 +134,28 @@
                 </form>
             </div>
         </div>
+    </div>
 
+    <script>
+        function openDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.add('show');
+        }
 
-        <script>
-            function openDeleteAccountModal() {
-                document.getElementById('deleteAccountModal').classList.add('show');
+        function closeDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.remove('show');
+        }
+
+        document.addEventListener('click', function (event) {
+            const deleteAccountModal = document.getElementById('deleteAccountModal');
+            if (event.target === deleteAccountModal) {
+                closeDeleteAccountModal();
             }
+        });
 
-            function closeDeleteAccountModal() {
-                document.getElementById('deleteAccountModal').classList.remove('show');
-            }
-
-            document.addEventListener('click', function (event) {
-                const deleteAccountModal = document.getElementById('deleteAccountModal');
-                if (event.target === deleteAccountModal) {
-                    closeDeleteAccountModal();
-                }
+        @if ($errors->userDeletion->any())
+            document.addEventListener('DOMContentLoaded', function () {
+                openDeleteAccountModal();
             });
-
-            @if ($errors->userDeletion->any())
-                document.addEventListener('DOMContentLoaded', function () {
-                    openDeleteAccountModal();
-                });
-            @endif
-        </script>
+        @endif
+    </script>
 @endsection
